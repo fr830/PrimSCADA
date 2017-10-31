@@ -1,0 +1,8 @@
+﻿<Window x:Class="SCADA.DialogWindowBrushColor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ColorEditor="clr-namespace:Lovatts.ColorEditor;assembly=Lovatts.ColorEditor"
+        Title="Настройка кисти" SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen">
+    
+        <ColorEditor:BrushEditor></ColorEditor:BrushEditor>
+</Window>

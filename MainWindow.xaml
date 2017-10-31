@@ -1,0 +1,212 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SCADA" x:Class="SCADA.MainWindow"
+        Title="SCADA" Height="350" Width="525" WindowState="Maximized" FontSize="16" Loaded="Window_Loaded_1" Closed="Window_Closed" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Margin="0" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TabControl SelectionChanged="TabControlMain_SelectionChanged_1" x:Name="TabControlMain" Grid.Column="2" Margin="7,0,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="0" Grid.RowSpan="1">
+            </TabControl>
+            <ToolBar x:Name="BottomPanel" Grid.Column="2" Margin="0,0,0,0" Grid.Row="1" FocusManager.IsFocusScope="True">
+                <Label Content="Координаты курсора:"/>
+                <Label x:Name="LabelCoordinateCursor" MinWidth="150"/>
+                <Separator/>
+                <Label Content="Координаты объекта: X:"/>
+                <TextBox x:Name="CoordinateObjectX" MinWidth="50" IsReadOnly="True" IsUndoEnabled="False" GotFocus="SelectionAllClick" PreviewKeyDown="CheckKey" PreviewTextInput="CheckDigits" LostFocus="lostFocusTextBox" MouseDoubleClick="SelectAddress" GotKeyboardFocus="SelectAddress" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton"/>
+                <Label Content="Y:"/>
+                <TextBox x:Name="CoordinateObjectY" MinWidth="50" IsReadOnly="True" IsUndoEnabled="False" GotFocus="SelectionAllClick" PreviewKeyDown="CheckKey" PreviewTextInput="CheckDigits" LostFocus="lostFocusTextBox" MouseDoubleClick="SelectAddress" GotKeyboardFocus="SelectAddress" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton"/>
+                <Separator/>
+                <Label x:Name="LabelSelected" Content="Выделенно объектов: 0"/>
+                <Separator/>
+                <Label Content="Диаметр:"/>
+                <TextBox x:Name="TextBoxDiameter" MinWidth="50" IsReadOnly="True" IsUndoEnabled="False" GotFocus="SelectionAllClick" PreviewKeyDown="CheckKey" PreviewTextInput="CheckDigits" LostFocus="lostFocusTextBox" MouseDoubleClick="SelectAddress" GotKeyboardFocus="SelectAddress" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton"/>
+                <Separator/>
+                <Label Content="Среда:"/>
+                <ComboBox x:Name="ComboBoxEnvironment" MinWidth="100" IsReadOnly="True" IsEnabled="False" SelectionChanged="EnvironmentChange"/>
+            </ToolBar>           
+            <Grid Margin="0" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ToggleButton Grid.Column="0" Content="Элементы" Margin="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5,1" Checked="ShowElements" Unchecked="HideElements" FontWeight="Normal">
+                    <ToggleButton.LayoutTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </ToggleButton.LayoutTransform>
+                </ToggleButton>
+            </Grid>
+            <TreeView x:Name="Elements" Grid.Column="1" Margin="0" Visibility="Collapsed" Grid.ColumnSpan="1" Grid.RowSpan="2" MaxWidth="200">
+                <TreeViewItem Header="Котельное оборудование" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch">
+                    <TreeViewItem Name="DragPipe" Header="Трубопровод" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>
+                    <TreeViewItem Name="DragPipe90" Header="Отвод" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>
+                    <TreeViewItem Header="Крестовина" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" Tag="CrossPipe"/>
+                    <TreeViewItem Header="Тройник" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" Tag="TeePipe"/>
+                    <TreeViewItem Header="Дутьевой вентилятор" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" Tag="Fan"/>
+                    <TreeViewItem Header="Дымосос" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" Tag="Exhauster"/>
+                    <TreeViewItem Header="Регулирующий клапан" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" Tag="Valve"/>
+                    <TreeViewItem Header="Котел" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" Tag="Boiler"/>
+                </TreeViewItem>
+                <TreeViewItem Name="DragText" Header="Text" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>
+                <TreeViewItem Name="DragDisplay" Header="Дисплей" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>
+                <TreeViewItem Name="DragImageControl" Header="Рисунок" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>
+                <TreeViewItem Header="Протоколы" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch">
+                    <TreeViewItem Name="DragEthernet" Header="TCP/UDP" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>                   
+                    <TreeViewItem Name="DragModbus" Header="Modbus" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>
+                </TreeViewItem>
+                <TreeViewItem Header="Интерфейсы" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch">                    
+                    <TreeViewItem Name="DragCom" Header="Com" HorizontalContentAlignment="Stretch" Padding="5,0" VerticalContentAlignment="Stretch" GiveFeedback="DragImage" PreviewMouseLeftButtonDown="Drag"/>                    
+                </TreeViewItem>
+            </TreeView>
+            <Grid Grid.Column="4" Margin="0" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ToggleButton Content="Обозреватель проекта" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5,1" Checked="ShowBrowseProject" Unchecked="HideBrowseProject" FontWeight="Normal">
+                    <ToggleButton.LayoutTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </ToggleButton.LayoutTransform>
+                </ToggleButton>
+            </Grid>
+            <TreeView x:Name="BrowseProject" Grid.Column="3" Margin="0,0,0,0" HorizontalContentAlignment="Center" Visibility="Collapsed" MinWidth="300" Grid.ColumnSpan="1" Grid.RowSpan="2"/>
+            <local:WindowErrorMessage x:Name="WindowErrorMessages" Grid.Row="3" Grid.Column="2"></local:WindowErrorMessage>
+        </Grid>
+        <ToolBar Margin="0" Grid.Row="1" Height="40">
+            <Button Name="BCreateProject" HorizontalAlignment="Stretch" ToolTip="Создать проект" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="CreateProject" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/CreateProject.png"/>
+            </Button>
+            <Button Name="BOpenProject" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ToolTip="Открыть проект" Click="OpenProject" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/OpenProject.png"/>
+            </Button>
+            <Button Name="BCreatePage" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsEnabled="False" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ToolTip="Создать страницу" Click="CreatePage" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/OpenFile.png"/>
+            </Button>
+            <Button Name="BOpenFile" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsEnabled="False" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ToolTip="Открыть файл" Click="OpenFile" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/CreateFile.png"/>
+            </Button>
+            <Button Name="BSaveAll" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip="Сохранить все" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}" Click="SaveAll">
+                <Image Source="Images/SaveAll.png"/>
+            </Button>
+            <Button Name="BSave" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip="Сохранить" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" RenderTransformOrigin="0.5,0.5" Click="Save" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/Save.png"/>
+            </Button>
+            <Separator/>
+            <Button HorizontalAlignment="Stretch" ToolTip="Отменить" IsEnabled="False" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/Undo.png"/>
+            </Button>
+            <Button HorizontalAlignment="Stretch" ToolTip="Вернуть" IsEnabled="False" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}">
+                <Image Source="Images/Redo.png"/>
+            </Button>
+            <Separator/>
+            <Button Name="BStartProject" HorizontalAlignment="Stretch" ToolTip="Запустить проект" IsEnabled="False" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}" Click="BStartProject_Click">
+                <Image Source="Images/Start.png"/>
+            </Button>      
+            <Button Name="BStopProject" HorizontalAlignment="Stretch" ToolTip="Остновить проект" IsEnabled="False" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}" Click="BStopProject_Click">
+                <Image Source="Images/Stop.png"/>
+            </Button>
+            <Button Name="BLockProject" HorizontalAlignment="Stretch" ToolTip="Заблокировать проект" IsEnabled="False" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}" Click="BLockProject_Click">
+                <Image Source="Images/Lock.png"/>
+            </Button>
+            <Separator/>
+            <Button Name="BArchive" HorizontalAlignment="Stretch" ToolTip="Архив" IsEnabled="False" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Style="{DynamicResource ControlOnToolBar}" Click ="BArchive_Click">
+                <Image Source="Images/Archive.png"/>
+            </Button>
+        </ToolBar>
+        <Menu Margin="0" FontSize="16">
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Создать">
+                    <MenuItem Name="MICreateProject" Header="Проект" InputGestureText="Ctrl+Shift+N" Click="CreateProject">
+                        <MenuItem.Icon>
+                            <Image Source="Images/CreateProject16.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Name="MICreatePage" Header="Страницу" InputGestureText="Ctrl+Shift+P" Click="CreatePage">
+                        <MenuItem.Icon>
+                            <Image Source="Images/OpenPage16.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="_Открыть">
+                    <MenuItem Name="MIOpenProject" Header="Проект" InputGestureText="Ctrl+Shift+O" Click="OpenProject">
+                        <MenuItem.Icon>
+                            <Image Source="Images/OpenProject16.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Name="MIOpenFile" Header="Файл" InputGestureText="Ctrl+O" Click="OpenFile">
+                        <MenuItem.Icon>
+                            <Image Source="Images/CreatePage16.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Name="MISave" Header="Сохранить" InputGestureText="Ctrl+S" Click="Save">
+                    <MenuItem.Icon>
+                        <Image Source="Images/Save16.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MISaveAs" Header="Сохранить как...">
+                    <MenuItem.Icon>
+                        <Image Source="Images/SaveAs16.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MISaveAll" Header="Сохранить все" InputGestureText="Ctrl+Shift+S" Click="SaveAll">
+                    <MenuItem.Icon>
+                        <Image Source="Images/SaveAll16.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Вид">
+                <MenuItem Name="MIWindowMessage" Header="Список сообщений" Click="MIWindowMessage_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Images/list_error.ico"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Сервис">
+                <MenuItem Header="Параметры" Click="Options">
+                    <MenuItem.Icon>
+                        <Image Source="Images/SettingEditor.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Редактор пользователей" Click="LoginManager">
+                    <MenuItem.Icon>
+                        <Image Source="Images/LoginManager.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Справка">
+                <MenuItem Header="О программе PrimSCADA" Click="About">                   
+                </MenuItem>
+                <MenuItem x:Name="MenuItemUpdate" Header="Обновить" Click="MenuItemUpdate_Click">
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+    </Grid>
+</Window>

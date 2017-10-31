@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrushEditor", "BrushEditor\BrushEditor.csproj", "{EAA5F379-0EE3-4264-9E3C-A038C9C2E62D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lovatts.ColorEditor", "Lovatts.ColorEditor\Lovatts.ColorEditor.csproj", "{C6214137-F4CD-4298-81E3-5A05CA7CB892}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAA5F379-0EE3-4264-9E3C-A038C9C2E62D}.Debug|x86.ActiveCfg = Debug|x86
+		{EAA5F379-0EE3-4264-9E3C-A038C9C2E62D}.Debug|x86.Build.0 = Debug|x86
+		{EAA5F379-0EE3-4264-9E3C-A038C9C2E62D}.Release|x86.ActiveCfg = Release|x86
+		{EAA5F379-0EE3-4264-9E3C-A038C9C2E62D}.Release|x86.Build.0 = Release|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|x86.ActiveCfg = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|x86.Build.0 = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|x86.ActiveCfg = Release|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="SCADA.TVItemNet"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SCADA"
+             mc:Ignorable="d">
+    <TreeView Name="TVItemNets">
+        <TreeViewItem Header="Список объктов приема" ItemsSource="{Binding CollectionItemNetRec}"> 
+            <TreeViewItem.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsBinding}" Checked="Checked" Unchecked="Unchecked"/>
+                        <Label Content="{Binding TypeValue}"/>
+                        <Label Content="{Binding Description}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeViewItem.ItemTemplate>
+        </TreeViewItem>
+        <TreeViewItem Header="Список объктов отправки" ItemsSource="{Binding CollectionItemNetSend}">
+            <TreeViewItem.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsBinding}" Checked="Checked" Unchecked="Unchecked"/>
+                        <Label Content="{Binding TypeValue}"/>
+                        <Label Content="{Binding Description}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeViewItem.ItemTemplate>
+        </TreeViewItem>
+        
+    </TreeView>
+</UserControl>

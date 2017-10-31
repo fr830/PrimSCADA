@@ -1,0 +1,27 @@
+﻿<Window x:Class="SCADA.DialogWindowAddDatabase"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавить базу данных" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" FontSize="16" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label>
+            Имя базы данных:
+        </Label>
+        <TextBox x:Name="TBNameDatabase" MinWidth="200" Margin="5,5,5,0" Grid.Column="1"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+            <Button x:Name="BNewDatabase" IsDefault="True" Margin="0,5,5,5" Click="BNewDatabase_Click">
+                Создать
+            </Button>
+            <Button IsCancel="True" Margin="0,5,5,5">
+                Отмена
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

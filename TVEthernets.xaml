@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="SCADA.TVEthernets"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SCADA"
+             mc:Ignorable="d">
+        <TreeView x:Name="TVEthernet">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding CollectionEthernetOperational}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label>
+                            <Label.Content>
+                                <MultiBinding>
+                                    <MultiBinding.Converter>
+                                        <local:EthernetSerIPPortConverter/>
+                                    </MultiBinding.Converter>
+                                    <Binding Path="Description" />
+                                    <Binding Path="IPAddressServer">
+                                        <Binding.Converter>
+                                            <local:EthernetSerIPConverter/>
+                                        </Binding.Converter>
+                                    </Binding>
+                                    <Binding Path="PortServer" />
+                                </MultiBinding>
+                            </Label.Content>
+                        </Label>
+                    </StackPanel>
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <DataTemplate>
+                            <Label Content="{Binding Description}">
+                            </Label>
+                        </DataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+</UserControl>

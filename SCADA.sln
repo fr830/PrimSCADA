@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCADA", "SCADA.csproj", "{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lovatts.ColorEditor", "BrushEditor\Lovatts.ColorEditor\Lovatts.ColorEditor.csproj", "{C6214137-F4CD-4298-81E3-5A05CA7CB892}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SUT.PrintEngine", "printengine-master\SUT.PrintEngine\SUT.PrintEngine.csproj", "{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0119A547-191E-4D45-9F2B-1F47E8AF6DCB}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|x86.ActiveCfg = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Debug|x86.Build.0 = Debug|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|Any CPU.ActiveCfg = Release|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|Mixed Platforms.Build.0 = Release|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|x86.ActiveCfg = Release|x86
+		{C6214137-F4CD-4298-81E3-5A05CA7CB892}.Release|x86.Build.0 = Release|x86
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Debug|x86.Build.0 = Debug|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B3D76D5-D9F4-4C0E-AFA9-143138EBC74D}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

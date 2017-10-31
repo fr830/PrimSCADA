@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="ControlOnToolBar">
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        <Style.Triggers>
+            <Trigger Property="Control.IsEnabled" Value="False">
+                <Setter Property="Control.Opacity" Value="0.3" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>  
+</ResourceDictionary>

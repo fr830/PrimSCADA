@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:SCADA">
+    <Style TargetType="{x:Type local:WindowErrorMessage}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:WindowErrorMessage}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <StackPanel>
+                            <DockPanel>
+                                <Label>
+                                    Окно сообщений
+                                </Label>
+                                <Button x:Name="BClose" HorizontalAlignment="Right" ToolTip="Закрыть окно сообщений">
+                                    <Image Source="pack://application:,,,/Images/Close16.png" Stretch="None"></Image>
+                                </Button>
+                            </DockPanel>
+                            <ListBox x:Name="LBMessageError" MinHeight="200" MaxHeight="200" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"></ListBox>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

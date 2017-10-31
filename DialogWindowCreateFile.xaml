@@ -1,0 +1,24 @@
+﻿<Window x:Class="SCADA.DialogWindowCreateFile"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="300" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" Title="Создание страницы" WindowStartupLocation="CenterScreen" FontSize="16">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="94"/>
+            <ColumnDefinition Width="94"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="53*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="52*"/>
+            <RowDefinition Height="16*"/>
+        </Grid.RowDefinitions>
+        <Popup Name="Message" PlacementTarget="{Binding ElementName=NamePage}" Placement="Bottom" AllowsTransparency="True" PopupAnimation="Slide" MaxWidth="{Binding ElementName=NamePage, Path=ActualWidth}" StaysOpen="false">
+        </Popup>
+        <Label Content="Имя страницы:" Margin="0" Grid.Row="1" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+        <TextBox Name="NamePage" Grid.Column="1" Margin="0,0,24,0" Grid.Row="1" TextWrapping="Wrap" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="14" IsUndoEnabled="True" Padding="0" Grid.ColumnSpan="2"/>
+        <Button Content="Создать" Grid.Column="1" Margin="5,0" Grid.Row="3" IsDefault="True" Click="CreatePage"/>
+        <Button Content="Отмена" Grid.Column="2" Margin="5,0,24,0" Grid.Row="3" Padding="1" IsCancel="True"/>
+
+    </Grid>
+</Window>

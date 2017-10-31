@@ -1,0 +1,9 @@
+﻿<Window x:Class="SCADA.WindowGetOptionalData"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Данные" WindowStartupLocation="Manual" FontSize="16" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ResizeMode="CanResizeWithGrip" ShowInTaskbar="False" SizeToContent="WidthAndHeight">
+    <Grid>
+        <DataGrid Grid.Row="1" x:Name="DGTable">
+        </DataGrid>
+    </Grid>
+</Window>

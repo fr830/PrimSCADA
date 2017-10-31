@@ -1,0 +1,11 @@
+﻿<Window 
+    x:Class="BrushEditor.MainWindow" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:ColorEditor="clr-namespace:Lovatts.ColorEditor;assembly=Lovatts.ColorEditor" 
+    Title="MainWindow" 
+    Height="350" 
+    Width="525">
+
+  <ColorEditor:BrushEditor></ColorEditor:BrushEditor>
+</Window>

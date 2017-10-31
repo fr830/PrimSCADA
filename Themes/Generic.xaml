@@ -1,0 +1,28 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/SCADA;component/Themes/Pipe.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/Pipe90.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/Text.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/EthernetControl.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/ColorBrushPickerTextControl.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/ColorBrushPickerBorder.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/Display.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/ImageControl.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/WindowErrorMessage.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/ComControl.xaml">
+        </ResourceDictionary>
+        <ResourceDictionary Source="/SCADA;component/Themes/ModbusControl.xaml">
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>                      
+</ResourceDictionary>

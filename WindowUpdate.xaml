@@ -1,0 +1,26 @@
+﻿<Window x:Class="SCADA.WindowUpdate"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SCADA"
+        mc:Ignorable="d"
+        Title="Обновление" Height="80" Width="300
+        " WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Loaded="Grid_Loaded_1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="143*"/>
+            <ColumnDefinition Width="151*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="145*"/>
+        </Grid.RowDefinitions>
+        <Label>
+            Доступна новая версия
+        </Label>
+        <Label x:Name="LVersionNew" Grid.Column="1" HorizontalAlignment="Left"/>
+        <Button x:Name="BDownload" Content="Скачать" Grid.Row="1" IsDefault="True" Click="BDownload_Click"/>
+        <Button x:Name="BClose" Content="Отмена" Grid.Column="1" Grid.Row="1" IsCancel="True" Click="BClose_Click"/>
+    </Grid>
+</Window>

@@ -1,0 +1,14 @@
+﻿<Application x:Class="SCADA.AppWPF"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml" Startup="StartUp" Exit="Application_Exit" ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source = "ResourceDictionary/DictionaryPipeType.xaml" />
+                <ResourceDictionary Source = "Styles/StyleButtonBaseOnToolBar.xaml"/>
+                <ResourceDictionary Source = "Styles/StyleColorButton.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>       
+    </Application.Resources>
+</Application>

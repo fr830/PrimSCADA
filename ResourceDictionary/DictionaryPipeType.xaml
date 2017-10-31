@@ -1,0 +1,186 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <LinearGradientBrush x:Key="BrushAirPipe" StartPoint="0.5,3.25087" EndPoint="0.5,-2.25087">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF0000FF" Offset="0.0186047"/>
+            <GradientStop Color="#FF313DFC" Offset="0.437209"/>
+            <GradientStop Color="#FF627BF9" Offset="0.502326"/>
+            <GradientStop Color="#FF313DFC" Offset="0.562791"/>
+            <GradientStop Color="#FF0000FF" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushExhaustPipe" StartPoint="0.5,3.25087" EndPoint="0.5,-2.25087">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFE0D900" Offset="0.0186047"/>
+            <GradientStop Color="#FFE6E940" Offset="0.437209"/>
+            <GradientStop Color="#FFECF981" Offset="0.502326"/>
+            <GradientStop Color="#FFE6E940" Offset="0.562791"/>
+            <GradientStop Color="#FFE0D900" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushMasutPipe" StartPoint="0.5,3.25087" EndPoint="0.5,-2.25087">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFFF0000" Offset="0.0186047"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.437209"/>
+            <GradientStop Color="#FFFB7979" Offset="0.502326"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.562791"/>
+            <GradientStop Color="#FFFF0000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushSteamPipe" StartPoint="0.5,3.25087" EndPoint="0.5,-2.25087">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF000000" Offset="0.0186047"/>
+            <GradientStop Color="#FF313131" Offset="0.437209"/>
+            <GradientStop Color="#FF626262" Offset="0.502326"/>
+            <GradientStop Color="#FF313131" Offset="0.562791"/>
+            <GradientStop Color="#FF000000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushWaterPipe" StartPoint="0.5,3.25087" EndPoint="0.5,-2.25087">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF00B40E" Offset="0.0186047"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.437209"/>
+            <GradientStop Color="#FF7DFF87" Offset="0.502326"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.562791"/>
+            <GradientStop Color="#FF00B40E" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushAirPipeFlange" StartPoint="0.5,1.02607" EndPoint="0.5,-0.0260735">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF0000FF" Offset="0.0186047"/>
+            <GradientStop Color="#FF313DFC" Offset="0.437209"/>
+            <GradientStop Color="#FF627BF9" Offset="0.502326"/>
+            <GradientStop Color="#FF313DFC" Offset="0.562791"/>
+            <GradientStop Color="#FF0000FF" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushExhaustPipeFlange" StartPoint="0.5,1.02607" EndPoint="0.5,-0.0260735">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFE0D900" Offset="0.0186047"/>
+            <GradientStop Color="#FFE6E940" Offset="0.437209"/>
+            <GradientStop Color="#FFECF981" Offset="0.502326"/>
+            <GradientStop Color="#FFE6E940" Offset="0.562791"/>
+            <GradientStop Color="#FFE0D900" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushMasutPipeFlange" StartPoint="0.5,1.02607" EndPoint="0.5,-0.0260735">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFFF0000" Offset="0.0186047"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.437209"/>
+            <GradientStop Color="#FFFB7979" Offset="0.502326"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.562791"/>
+            <GradientStop Color="#FFFF0000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushSteamPipeFlange" StartPoint="0.5,1.02607" EndPoint="0.5,-0.0260735">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF000000" Offset="0.0186047"/>
+            <GradientStop Color="#FF313131" Offset="0.437209"/>
+            <GradientStop Color="#FF626262" Offset="0.502326"/>
+            <GradientStop Color="#FF313131" Offset="0.562791"/>
+            <GradientStop Color="#FF000000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushWaterPipeFlange" StartPoint="0.5,1.02607" EndPoint="0.5,-0.0260735">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF00B40E" Offset="0.0186047"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.437209"/>
+            <GradientStop Color="#FF7DFF87" Offset="0.502326"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.562791"/>
+            <GradientStop Color="#FF00B40E" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushAirPipeFlange_Down" StartPoint="1.02607,0.5" EndPoint="-0.0260735,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF0000FF" Offset="0.0186047"/>
+            <GradientStop Color="#FF313DFC" Offset="0.437209"/>
+            <GradientStop Color="#FF627BF9" Offset="0.502326"/>
+            <GradientStop Color="#FF313DFC" Offset="0.562791"/>
+            <GradientStop Color="#FF0000FF" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushExhaustPipeFlange_Down" StartPoint="1.02607,0.5" EndPoint="-0.0260735,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFE0D900" Offset="0.0186047"/>
+            <GradientStop Color="#FFE6E940" Offset="0.437209"/>
+            <GradientStop Color="#FFECF981" Offset="0.502326"/>
+            <GradientStop Color="#FFE6E940" Offset="0.562791"/>
+            <GradientStop Color="#FFE0D900" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushMasutPipeFlange_Down" StartPoint="1.02607,0.5" EndPoint="-0.0260735,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFFF0000" Offset="0.0186047"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.437209"/>
+            <GradientStop Color="#FFFB7979" Offset="0.502326"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.562791"/>
+            <GradientStop Color="#FFFF0000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushSteamPipeFlange_Down" StartPoint="1.02607,0.5" EndPoint="-0.0260735,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF000000" Offset="0.0186047"/>
+            <GradientStop Color="#FF313131" Offset="0.437209"/>
+            <GradientStop Color="#FF626262" Offset="0.502326"/>
+            <GradientStop Color="#FF313131" Offset="0.562791"/>
+            <GradientStop Color="#FF000000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushWaterPipeFlange_Down" StartPoint="1.02607,0.5" EndPoint="-0.0260735,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF00B40E" Offset="0.0186047"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.437209"/>
+            <GradientStop Color="#FF7DFF87" Offset="0.502326"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.562791"/>
+            <GradientStop Color="#FF00B40E" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushAirPipe_Down" StartPoint="3.25087,0.5" EndPoint="-2.25087,0.5">       
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF0000FF" Offset="0.0186047"/>
+            <GradientStop Color="#FF313DFC" Offset="0.437209"/>
+            <GradientStop Color="#FF627BF9" Offset="0.502326"/>
+            <GradientStop Color="#FF313DFC" Offset="0.562791"/>
+            <GradientStop Color="#FF0000FF" Offset="1"/>
+        </LinearGradientBrush.GradientStops>     
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushExhaustPipe_Down" StartPoint="3.25087,0.5" EndPoint="-2.25087,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFE0D900" Offset="0.0186047"/>
+            <GradientStop Color="#FFE6E940" Offset="0.437209"/>
+            <GradientStop Color="#FFECF981" Offset="0.502326"/>
+            <GradientStop Color="#FFE6E940" Offset="0.562791"/>
+            <GradientStop Color="#FFE0D900" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushMasutPipe_Down" StartPoint="3.25087,0.5" EndPoint="-2.25087,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFFF0000" Offset="0.0186047"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.437209"/>
+            <GradientStop Color="#FFFB7979" Offset="0.502326"/>
+            <GradientStop Color="#FFFD3C3C" Offset="0.562791"/>
+            <GradientStop Color="#FFFF0000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushSteamPipe_Down" StartPoint="3.25087,0.5" EndPoint="-2.25087,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF000000" Offset="0.0186047"/>
+            <GradientStop Color="#FF313131" Offset="0.437209"/>
+            <GradientStop Color="#FF626262" Offset="0.502326"/>
+            <GradientStop Color="#FF313131" Offset="0.562791"/>
+            <GradientStop Color="#FF000000" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushWaterPipe_Down" StartPoint="3.25087,0.5" EndPoint="-2.25087,0.5">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FF00B40E" Offset="0.0186047"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.437209"/>
+            <GradientStop Color="#FF7DFF87" Offset="0.502326"/>
+            <GradientStop Color="#FF3ED94A" Offset="0.562791"/>
+            <GradientStop Color="#FF00B40E" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+</ResourceDictionary>

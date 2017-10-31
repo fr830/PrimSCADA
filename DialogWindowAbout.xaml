@@ -1,0 +1,51 @@
+﻿<Window x:Class="SCADA.DialogWindowAbout"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SCADA"
+        mc:Ignorable="d"
+        Title="О программе PrimSCADA" Height="300" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" WindowStartupLocation="CenterScreen" FontSize="14" Loaded="Window_Loaded_1">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="PrimSCADA" FontWeight="Bold" FontStyle="Italic" FontSize="18" Padding="0" Margin="10,0,0,0">
+            <TextBlock.Effect>
+                <DropShadowEffect BlurRadius="7"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock x:Name="TextBlockVersion" Grid.Row="1" Margin="10,0,0,0" >
+            Версия
+        </TextBlock>
+        <TextBlock Grid.Row="2" FontSize="12" Margin="10,0,0,0">
+            2015 PrimSCADA Все права защищены
+        </TextBlock>
+        <TextBlock Grid.Row="4" Margin="10,0,0,0" >
+            <Hyperlink NavigateUri="mailto:admin@primscada.com"  RequestNavigate="Hyperlink_MailTo">
+            	<Hyperlink.ContextMenu>
+            		<ContextMenu>
+            			<MenuItem Header="Копировать" Click="MenuItem_CopyMailAbout"/></ContextMenu>
+            	</Hyperlink.ContextMenu>admin@primscada.com</Hyperlink>
+        </TextBlock>
+        <TextBlock Grid.Row="5" Margin="10,0,0,0" >
+            <Hyperlink NavigateUri="www.primscada.com"  RequestNavigate="Hyperlink_Site">
+            	<Hyperlink.ContextMenu>
+            		<ContextMenu>
+            			<MenuItem Header="Копировать" Click="MenuItem_CopySiteAbout"/></ContextMenu>
+            	</Hyperlink.ContextMenu>www.primscada.com</Hyperlink>
+        </TextBlock>
+        <TextBlock Grid.Row="3" Margin="10,0,0,0">
+            Разработчик: Паклин Антон Анатольевич
+        </TextBlock>
+        <Button x:Name="button" Content="OK" Grid.Row="7" IsDefault="True" Click="button_Click" HorizontalAlignment="Right" VerticalContentAlignment="Center" Margin="0,0,5,5" MinWidth="75" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>

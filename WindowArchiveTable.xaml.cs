@@ -1,22 +1,12 @@
-﻿using Npgsql;
+﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 using SUT.PrintEngine.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SCADA
 {
@@ -184,7 +174,7 @@ namespace SCADA
 
                                 rowNext = DataTable.Rows[countR + 1];
                                 DateTime dt1 = (DateTime)row[row.ItemArray.Length - 1];
-                                DateTime dt2 = (DateTime)rowNext[row.ItemArray.Length - 1]; ;
+                                DateTime dt2 = (DateTime)rowNext[row.ItemArray.Length - 1]; 
                                 if (dt1.Year == dt2.Year && dt1.Month == dt2.Month && dt1.Day == dt2.Day && dt1.Hour == dt2.Hour && dt1.Minute == dt2.Minute && dt1.Second == dt2.Second)
                                 {
                                     while (true)
@@ -304,7 +294,7 @@ namespace SCADA
 
             foreach (DataGridColumn column in DGTable.Columns)
             {
-                columnWidths.Add(((DataGridLength)column.Width).DesiredValue);
+                columnWidths.Add((column.Width).DesiredValue);
             }
 
             var ht = new HeaderTemplate();

@@ -1,4 +1,8 @@
-﻿using System;
+﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -869,7 +873,7 @@ namespace SCADA
                     mainWindow.CoordinateObjectX.IsReadOnly = false;
                     mainWindow.CoordinateObjectY.IsReadOnly = false;
 
-                    ControlOnCanvas controlOnCanvas = hitResultsList[0] as ControlOnCanvas;
+                    ControlOnCanvas controlOnCanvas = hitResultsList[0];
 
                     if (controlOnCanvas.controlOnCanvasSer.Transform == 0)
                     {

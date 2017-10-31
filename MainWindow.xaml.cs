@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11160,19 +11162,19 @@ namespace SCADA
 
             IsStop = true;
             
-            foreach (TcpClient client in CollectionTCPEthernetThread)
+            foreach (EthernetThread client in CollectionTCPEthernetThread)
             {
                 if (client != null)
                 {
-                    client.Close();
+                    client.TcpClient.Close();
                 }
             }
 
-            foreach (UdpClient client in CollectionUDPEthernetThread)
+            foreach (EthernetThread client in CollectionUDPEthernetThread)
             {
                 if (client != null)
                 {
-                    client.Close();
+                    client.UdpClient.Close();
                 }
             }
 

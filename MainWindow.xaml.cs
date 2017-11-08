@@ -7109,23 +7109,23 @@ namespace SCADA
 
                             if (app.ConfigProgramBin.UseDatabase)
                             {
-                                Thread threadDataBase = new Thread(ConnectDataBase);
+                                Thread threadDataBase = new Thread(ConnectedDataBase);
                                 threadDataBase.Start(Ethernet);
                             }
                         }
-                        else
+                        else if (ethernetControl.EthernetSer.EthernetProtocol == "UDP")
                         {
                             EthernetThread Ethernet = new EthernetThread();
                             Ethernet.EthernetSer = ethernetControl.EthernetSer;
 
                             CollectionUDPEthernetThread.Add(Ethernet);
 
-                            Thread threadConnect = new Thread(ConnectingUDP);
+                            Thread threadConnect = new Thread(ConnectedUDP);
                             threadConnect.Start(Ethernet);
 
                             if (app.ConfigProgramBin.UseDatabase)
                             {
-                                Thread threadDataBase = new Thread(ConnectDataBase);
+                                Thread threadDataBase = new Thread(ConnectedDataBase);
                                 threadDataBase.Start(Ethernet);
                             }
                         }
@@ -8527,7 +8527,7 @@ namespace SCADA
             }           
         }
 
-        private void ConnectDataBase(object obj)
+        private void ConnectedDataBase(object obj)
         {
             EthernetThread ethernetSendTread = (EthernetThread)obj;
 
@@ -10331,7 +10331,6 @@ namespace SCADA
                 }
             }
         }
-
         private void ConnectedUDP(object obj)
         {
             EthernetThread ethernetSendTread = (EthernetThread)obj;
@@ -11164,7 +11163,7 @@ namespace SCADA
             
             foreach (EthernetThread client in CollectionTCPEthernetThread)
             {
-                if (client != null)
+                if (client.TcpClient != null)
                 {
                     client.TcpClient.Close();
                 }
@@ -11172,7 +11171,7 @@ namespace SCADA
 
             foreach (EthernetThread client in CollectionUDPEthernetThread)
             {
-                if (client != null)
+                if (client.UdpClient != null)
                 {
                     client.UdpClient.Close();
                 }
@@ -11189,12 +11188,12 @@ namespace SCADA
                 }
             }
 
-            foreach (Npgsql.NpgsqlConnection SqlCon in CollectionSQLThread)
+            foreach (SQLThread SqlCon in CollectionSQLThread)
             {
-                if (SqlCon != null)
+                if (SqlCon.SQL != null)
                 {
-                    SqlCon.Close();
-                    SqlCon.Dispose();
+                    SqlCon.SQL.Close();
+                    SqlCon.SQL.Dispose();
                 }
             }
 

@@ -6109,7 +6109,7 @@ namespace SCADA
         private void CheckDigits(object sender, TextCompositionEventArgs e)
         {
             TextBox tb = (TextBox)sender;
-
+            
             if (tb == CoordinateObjectX)
             {
                 string pattern = @"^\d{1,8}(?:\.\d{0,2})?$";
@@ -7385,9 +7385,7 @@ namespace SCADA
                                             {
                                                 data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
-
-                                            modbusSendTread.DatabaseConnect = true;
-
+                                            
                                             if (data != null)
                                             {
                                                 temp = data[0];
@@ -7418,13 +7416,17 @@ namespace SCADA
 
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToSingle(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                             
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                         else
                                                         {
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToSingle(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                                
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                     }
                                                     else if (item.Formula.IndexOf("CSF") != -1)
@@ -7443,20 +7445,26 @@ namespace SCADA
 
                                                                 modbusSendTread.RWLock.EnterWriteLock();
                                                                 item.Value = BitConverter.ToInt16(buffer, 2) / collectionDigital[0];
-                                                                modbusSendTread.RWLock.ExitWriteLock();                                                             
+                                                                modbusSendTread.RWLock.ExitWriteLock();
+
+                                                                modbusSendTread.DatabaseConnect = true;
                                                             }
                                                             else
                                                             {
                                                                 modbusSendTread.RWLock.EnterWriteLock();
                                                                 item.Value = BitConverter.ToInt16(buffer, 2);
-                                                                modbusSendTread.RWLock.ExitWriteLock();                                                                    
+                                                                modbusSendTread.RWLock.ExitWriteLock();
+
+                                                                modbusSendTread.DatabaseConnect = true;
                                                             }
                                                         }
                                                         else
                                                         {
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToInt16(buffer, 2);
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                                
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                     }
                                                 }
@@ -7464,7 +7472,9 @@ namespace SCADA
                                                 {
                                                     modbusSendTread.RWLock.EnterWriteLock();
                                                     item.Value = BitConverter.ToSingle(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();                                                      
+                                                    modbusSendTread.RWLock.ExitWriteLock();
+
+                                                    modbusSendTread.DatabaseConnect = true;
                                                 }
                                             }
                                         }
@@ -7478,8 +7488,6 @@ namespace SCADA
                                             {
                                                 data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
                                             }
-
-                                            modbusSendTread.DatabaseConnect = true;
 
                                             if (data != null)
                                             {
@@ -7504,27 +7512,35 @@ namespace SCADA
 
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToInt16(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                            
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                         else
                                                         {
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToInt16(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                                
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                     }
                                                     else
                                                     {
                                                         modbusSendTread.RWLock.EnterWriteLock();
                                                         item.Value = BitConverter.ToInt16(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();                                                           
+                                                        modbusSendTread.RWLock.ExitWriteLock();
+
+                                                        modbusSendTread.DatabaseConnect = true;
                                                     }
                                                 }
                                                 else
                                                 {
                                                     modbusSendTread.RWLock.EnterWriteLock();
                                                     item.Value = BitConverter.ToInt16(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();                                                       
+                                                    modbusSendTread.RWLock.ExitWriteLock();
+
+                                                    modbusSendTread.DatabaseConnect = true;
                                                 }
                                             }
                                         }
@@ -7538,8 +7554,6 @@ namespace SCADA
                                             {
                                                 data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
                                             }
-
-                                            modbusSendTread.DatabaseConnect = true;
 
                                             if (data != null)
                                             {
@@ -7564,27 +7578,35 @@ namespace SCADA
 
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToUInt16(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                              
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                         else
                                                         {
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToUInt16(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                               
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                     }
                                                     else
                                                     {
                                                         modbusSendTread.RWLock.EnterWriteLock();
                                                         item.Value = BitConverter.ToUInt16(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();                                                           
+                                                        modbusSendTread.RWLock.ExitWriteLock();
+
+                                                        modbusSendTread.DatabaseConnect = true;
                                                     }
                                                 }
                                                 else
                                                 {
                                                     modbusSendTread.RWLock.EnterWriteLock();
                                                     item.Value = BitConverter.ToUInt16(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();                                                        
+                                                    modbusSendTread.RWLock.ExitWriteLock();
+
+                                                    modbusSendTread.DatabaseConnect = true;
                                                 }
                                             }
                                         }
@@ -7598,8 +7620,6 @@ namespace SCADA
                                             {
                                                 data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
-
-                                            modbusSendTread.DatabaseConnect = true;
 
                                             if (data != null)
                                             {
@@ -7631,27 +7651,35 @@ namespace SCADA
 
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToInt32(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                               
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                         else
                                                         {
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToInt32(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                               
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                     }
                                                     else
                                                     {
                                                         modbusSendTread.RWLock.EnterWriteLock();
                                                         item.Value = BitConverter.ToInt32(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();                                                           
+                                                        modbusSendTread.RWLock.ExitWriteLock();
+
+                                                        modbusSendTread.DatabaseConnect = true;
                                                     }
                                                 }
                                                 else
                                                 {
                                                     modbusSendTread.RWLock.EnterWriteLock();
                                                     item.Value = BitConverter.ToInt32(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();                                                        
+                                                    modbusSendTread.RWLock.ExitWriteLock();
+
+                                                    modbusSendTread.DatabaseConnect = true;
                                                 }
                                             }
                                         }
@@ -7665,8 +7693,6 @@ namespace SCADA
                                             {
                                                 data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
-
-                                            modbusSendTread.DatabaseConnect = true;
 
                                             if (data != null)
                                             {
@@ -7698,27 +7724,35 @@ namespace SCADA
 
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToUInt32(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                              
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                         else
                                                         {
                                                             modbusSendTread.RWLock.EnterWriteLock();
                                                             item.Value = BitConverter.ToUInt32(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();                                                                
+                                                            modbusSendTread.RWLock.ExitWriteLock();
+
+                                                            modbusSendTread.DatabaseConnect = true;
                                                         }
                                                     }
                                                     else
                                                     {
                                                         modbusSendTread.RWLock.EnterWriteLock();
                                                         item.Value = BitConverter.ToUInt32(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();                                                           
+                                                        modbusSendTread.RWLock.ExitWriteLock();
+
+                                                        modbusSendTread.DatabaseConnect = true;
                                                     }
                                                 }
                                                 else
                                                 {
                                                     modbusSendTread.RWLock.EnterWriteLock();
                                                     item.Value = BitConverter.ToUInt32(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();                                               
+                                                    modbusSendTread.RWLock.ExitWriteLock();
+
+                                                    modbusSendTread.DatabaseConnect = true;
                                                 }
                                             }
                                         }                                                                            
@@ -7780,10 +7814,12 @@ namespace SCADA
             List<ModbusThread> collectionModbusSendTread = (List<ModbusThread>)obj;
 
             Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
+            SQLThread SQLThread = new SQLThread();
 
             try
             {
                 object value = null;
+                object prevValue = null;
 
                 Npgsql.NpgsqlParameter parametrDateTime = new Npgsql.NpgsqlParameter();
                 parametrDateTime.ParameterName = "Time";
@@ -7841,25 +7877,25 @@ namespace SCADA
                 cmd.Parameters.Add(parametrDateTime);
                 cmd.Connection = SqlConn;
 
-                CollectionSQLThread.Add(SqlConn);
+                SQLThread.SQL = SqlConn;
+                SQLThread.IsWork = true;
+
+                CollectionSQLThread.Add(SQLThread);
 
                 while (true)
                 {
-                    foreach (ModbusThread modbusSendTread in collectionModbusSendTread)
+                    foreach (ModbusThread modbusSendThread in collectionModbusSendTread)
                     {
                         Thread.Sleep(StaticValues.TimeSleep);
 
                         if (IsStop)
-                        {
-                            SqlConn.Close();
-                            SqlConn.Dispose();
-
+                        {                                                      
                             return;
                         }
 
-                        if (modbusSendTread.DatabaseConnect)
+                        if (modbusSendThread.DatabaseConnect)
                         {
-                            foreach (StopwatchItemModbus timer in modbusSendTread.CollectionTimer)
+                            foreach (StopwatchItemModbus timer in modbusSendThread.CollectionTimer)
                             {
                                 timer.Start();
 
@@ -7871,11 +7907,11 @@ namespace SCADA
 
                                         if (timer.EmergencyTimerUp.ElapsedMilliseconds >= (timer.ItemModbus.PeriodEmergencySaveDB * 1000))
                                         {
-                                            modbusSendTread.RWLock.EnterReadLock();
+                                            modbusSendThread.RWLock.EnterReadLock();
                                             value = timer.ItemModbus.Value;
-                                            modbusSendTread.RWLock.ExitReadLock();
+                                            prevValue = timer.PrevValue;
+                                            modbusSendThread.RWLock.ExitReadLock();
 
-                                            timer.Reset();
                                             timer.EmergencyTimerUp.Reset();
 
                                             if (value is float)
@@ -7886,27 +7922,27 @@ namespace SCADA
                                                     {                                                    
                                                         if (timer.ItemModbus.TypeValue == "int")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "uint")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "short")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "byte")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "bool")
                                                         {
@@ -7921,7 +7957,7 @@ namespace SCADA
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "float")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
                                                         }
                                                     }                                                    
                                                 }                                               
@@ -7932,27 +7968,27 @@ namespace SCADA
                                                 {                                                    
                                                     if (timer.ItemModbus.TypeValue == "int")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "uint")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "short")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "ushort")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "byte")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "sbyte")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "bool")
                                                     {
@@ -7967,7 +8003,7 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "float")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
                                                     }
                                                 }                                               
                                             }
@@ -7980,47 +8016,46 @@ namespace SCADA
 
                                         if (timer.EmergencyTimerDown.ElapsedMilliseconds >= (timer.ItemModbus.PeriodEmergencySaveDB * 1000))
                                         {
-                                            modbusSendTread.RWLock.EnterReadLock();
+                                            modbusSendThread.RWLock.EnterReadLock();
+                                            value = timer.ItemModbus.Value;
+                                            modbusSendThread.RWLock.ExitReadLock();                                           
 
-                                            if (timer.ItemModbus.Value is float)
+                                            if (value is float)
                                             {
-                                                if (!float.IsInfinity((float)timer.ItemModbus.Value) && !float.IsNaN((float)timer.ItemModbus.Value))
+                                                if (!float.IsInfinity((float)value) && !float.IsNaN((float)value))
                                                 {
-                                                    if (Convert.ToSingle(timer.ItemModbus.Value) < Convert.ToSingle(timer.ItemModbus.EmergencyDown))
+                                                    if (Convert.ToSingle(value) < Convert.ToSingle(timer.ItemModbus.EmergencyDown))
                                                     {
-                                                        modbusSendTread.RWLock.ExitReadLock();
-
-                                                        timer.Reset();
                                                         timer.EmergencyTimerDown.Reset();
 
                                                         if (timer.ItemModbus.TypeValue == "int")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "uint")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "short")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "byte")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "bool")
                                                         {
                                                             parametrValue.ParameterName = "Value";
-                                                            parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                                                            parametrValue.NpgsqlValue = value;
                                                             parametrValue.NpgsqlDbType = NpgsqlDbType.Boolean;
 
                                                             parametrDateTime.NpgsqlValue = DateTime.Now;
@@ -8030,56 +8065,46 @@ namespace SCADA
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "float")
                                                         {
-                                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendTread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
                                                         }
                                                     }
-                                                    else
-                                                    {
-                                                        modbusSendTread.RWLock.ExitReadLock();
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    modbusSendTread.RWLock.ExitReadLock();
-                                                }
+                                                    
+                                                }                                               
                                             }
                                             else
                                             {
-                                                if (Convert.ToDecimal(timer.ItemModbus.Value) < Convert.ToDecimal(timer.ItemModbus.EmergencyDown))
-                                                {
-                                                    modbusSendTread.RWLock.ExitReadLock();
-
-                                                    timer.Reset();
+                                                if (Convert.ToDecimal(value) < Convert.ToDecimal(timer.ItemModbus.EmergencyDown))
+                                                {                                                   
                                                     timer.EmergencyTimerDown.Reset();
 
                                                     if (timer.ItemModbus.TypeValue == "int")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "uint")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "short")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "ushort")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "byte")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "sbyte")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "bool")
                                                     {
                                                         parametrValue.ParameterName = "Value";
-                                                        parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                                                        parametrValue.NpgsqlValue = value;
                                                         parametrValue.NpgsqlDbType = NpgsqlDbType.Boolean;
 
                                                         parametrDateTime.NpgsqlValue = DateTime.Now;
@@ -8089,13 +8114,9 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "float")
                                                     {
-                                                        FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendTread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    modbusSendTread.RWLock.ExitReadLock();
-                                                }
+                                                }                                               
                                             }
                                         }                                       
                                     }                                   
@@ -8107,34 +8128,38 @@ namespace SCADA
                                     {
                                         timer.Reset();
 
+                                        modbusSendThread.RWLock.EnterReadLock();
+                                        value = timer.ItemModbus.Value;
+                                        modbusSendThread.RWLock.ExitReadLock();
+
                                         if (timer.ItemModbus.TypeValue == "int")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "uint")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "short")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "byte")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "bool")
                                         {
                                             parametrValue.ParameterName = "Value";
-                                            parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                                            parametrValue.NpgsqlValue = value;
                                             parametrValue.NpgsqlDbType = NpgsqlDbType.Boolean;
 
                                             parametrDateTime.NpgsqlValue = DateTime.Now;
@@ -8144,7 +8169,7 @@ namespace SCADA
                                         }
                                         else if (timer.ItemModbus.TypeValue == "float")
                                         {
-                                            FormulaModbus(timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendTread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
                                         }
                                     }
                                 }
@@ -8194,42 +8219,30 @@ namespace SCADA
                 }
             }
             finally
-            {
-                foreach (ModbusThread modbusSendTread in collectionModbusSendTread)
-                {
-                    if (modbusSendTread.RWLock.IsReadLockHeld)
-                    {
-                        modbusSendTread.RWLock.ExitReadLock();
-                    }
-                }
-
+            {               
                 SqlConn.Close();
                 SqlConn.Dispose();
+
+                SQLThread.IsWork = false;
             }
         }
 
-        private void FormulaModbus(StopwatchItemModbus timer, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType, ModbusThread mst)
+        private void FormulaModbus(object PrevValue, object Value, StopwatchItemModbus timer, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType, ModbusThread mst)
         {
-            mst.RWLock.EnterReadLock();
-
-            if (timer.ItemModbus.Value is float)
+            if (Value is float)
             {
-                if (float.IsNaN((float)timer.ItemModbus.Value) || float.IsInfinity((float)timer.ItemModbus.Value))
+                if (float.IsNaN((float)Value) || float.IsInfinity((float)Value))
                 {
-                    mst.RWLock.ExitReadLock();
                     return;
                 }
             }
-            else if (timer.ItemModbus.Value is double)
+            else if (Value is double)
             {
-                if (double.IsNaN((double)timer.ItemModbus.Value) || double.IsInfinity((double)timer.ItemModbus.Value))
+                if (double.IsNaN((double)Value) || double.IsInfinity((double)Value))
                 {
-                    mst.RWLock.ExitReadLock();
                     return;
                 }
             }
-
-            mst.RWLock.ExitReadLock();
 
             if (timer.ItemModbus.Formula.Length > 0)
             {
@@ -8253,15 +8266,10 @@ namespace SCADA
 
                             collectionDigital.Add(decimal.Parse(tt, CultureInfo.InvariantCulture));
 
-                            mst.RWLock.EnterReadLock();
-
-                            if (Convert.ToDecimal(timer.ItemModbus.Value) > collectionDigital[0])
+                            if (Convert.ToDecimal(Value) > collectionDigital[0])
                             {
-                                mst.RWLock.ExitReadLock();
                                 return;
                             }
-
-                            mst.RWLock.ExitReadLock();
                         }
                     }
                 }
@@ -8284,35 +8292,29 @@ namespace SCADA
 
                         collectionDigital.Add(decimal.Parse(tt, CultureInfo.InvariantCulture));
 
-                        if (timer.PrevValue != null)
+                        if (PrevValue != null)
                         {
-                            mst.RWLock.EnterReadLock();
-
-                            if (timer.PrevValue is float)
+                            if (PrevValue is float)
                             {
-                                if (float.IsNaN((float)timer.PrevValue) || float.IsInfinity((float)timer.PrevValue))
+                                if (float.IsNaN((float)PrevValue) || float.IsInfinity((float)PrevValue))
                                 {
-                                    mst.RWLock.ExitReadLock();
                                     return;
                                 }
                             }
-                            else if (timer.PrevValue is double)
+                            else if (PrevValue is double)
                             {
-                                if (double.IsNaN((double)timer.PrevValue) || double.IsInfinity((double)timer.PrevValue))
+                                if (double.IsNaN((double)PrevValue) || double.IsInfinity((double)PrevValue))
                                 {
-                                    mst.RWLock.ExitReadLock();
                                     return;
                                 }
                             }                                                            
 
-                            if (Math.Abs((Convert.ToDecimal(timer.ItemModbus.Value) - Convert.ToDecimal(timer.PrevValue))) >= collectionDigital[0])
+                            if (Math.Abs((Convert.ToDecimal(Value) - Convert.ToDecimal(PrevValue))) >= collectionDigital[0])
                             {
-                                parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                                parametrValue.NpgsqlValue = Value;
                                 parametrValue.NpgsqlDbType = dbType;
 
-                                timer.PrevValue = timer.ItemModbus.Value;
-
-                                mst.RWLock.ExitReadLock();
+                                PrevValue = Value;
 
                                 parametrDateTime.NpgsqlValue = DateTime.Now;
 
@@ -8323,22 +8325,16 @@ namespace SCADA
                             }
                             else
                             {
-                                mst.RWLock.ExitReadLock();
-
                                 return;
                             }                                                             
                         }                                          
                     }
                     else
                     {
-                        mst.RWLock.EnterReadLock();
-
-                        parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                        parametrValue.NpgsqlValue = Value;
                         parametrValue.NpgsqlDbType = dbType;
 
-                        timer.PrevValue = timer.ItemModbus.Value;
-
-                        mst.RWLock.ExitReadLock();
+                        PrevValue = Value;
 
                         parametrDateTime.NpgsqlValue = DateTime.Now;
 
@@ -8350,12 +8346,8 @@ namespace SCADA
                 }
                 else
                 {
-                    mst.RWLock.EnterReadLock();
-
-                    parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                    parametrValue.NpgsqlValue = Value;
                     parametrValue.NpgsqlDbType = dbType;
-
-                    mst.RWLock.ExitReadLock();
 
                     parametrDateTime.NpgsqlValue = DateTime.Now;
 
@@ -8367,12 +8359,8 @@ namespace SCADA
             }
             else
             {
-                mst.RWLock.EnterReadLock();
-
-                parametrValue.NpgsqlValue = timer.ItemModbus.Value;
+                parametrValue.NpgsqlValue = Value;
                 parametrValue.NpgsqlDbType = dbType;
-
-                mst.RWLock.ExitReadLock();
 
                 parametrDateTime.NpgsqlValue = DateTime.Now;
 

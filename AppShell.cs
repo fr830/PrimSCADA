@@ -48,22 +48,22 @@ class SingleInstanceAppShell : WindowsFormsApplicationBase
             {
                 if (((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetThread != null)
                 {
-                    foreach (TcpClient client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetThread)
+                    foreach (EthernetThread client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetThread)
                     {
-                        if (client != null)
+                        if (client.TcpClient != null)
                         {
-                            client.Close();
+                            client.TcpClient.Close();
                         }
                     }
                 }
 
                 if (((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetThread != null)
                 {
-                    foreach (UdpClient client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetThread)
+                    foreach (EthernetThread client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetThread)
                     {
-                        if (client != null)
+                        if (client.UdpClient != null)
                         {
-                            client.Close();
+                            client.UdpClient.Close();
                         }
                     }
                 }
@@ -81,12 +81,12 @@ class SingleInstanceAppShell : WindowsFormsApplicationBase
 
                 if (((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLThread != null)
                 {
-                    foreach (NpgsqlConnection connection in ((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLThread)
+                    foreach (SQLThread connection in ((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLThread)
                     {
-                        if (connection != null)
+                        if (connection.SQL != null)
                         {
-                            connection.Close();
-                            connection.Dispose();
+                            connection.SQL.Close();
+                            connection.SQL.Dispose();
                         }
                     }
                 }

@@ -235,22 +235,22 @@ namespace SCADA
             {
                 if(((MainWindow)this.MainWindow).CollectionTCPEthernetThread != null)
                 {
-                    foreach (TcpClient client in ((MainWindow)this.MainWindow).CollectionTCPEthernetThread)
+                    foreach (EthernetThread client in ((MainWindow)this.MainWindow).CollectionTCPEthernetThread)
                     {
-                        if (client != null)
+                        if (client.TcpClient != null)
                         {
-                            client.Close();                        
+                            client.TcpClient.Close();                        
                         }
                     }
                 }
 
                 if (((MainWindow)this.MainWindow).CollectionUDPEthernetThread != null)
                 {
-                    foreach (UdpClient client in ((MainWindow)this.MainWindow).CollectionUDPEthernetThread)
+                    foreach (EthernetThread client in ((MainWindow)this.MainWindow).CollectionUDPEthernetThread)
                     {
-                        if (client != null)
+                        if (client.UdpClient != null)
                         {
-                            client.Close();
+                            client.UdpClient.Close();
                         }
                     }
                 }
@@ -268,12 +268,12 @@ namespace SCADA
 
                 if (((MainWindow)this.MainWindow).CollectionSQLThread != null)
                 {
-                    foreach (NpgsqlConnection connection in ((MainWindow)this.MainWindow).CollectionSQLThread)
+                    foreach (SQLThread connection in ((MainWindow)this.MainWindow).CollectionSQLThread)
                     {
-                        if (connection != null)
+                        if (connection.SQL != null)
                         {
-                            connection.Close();
-                            connection.Dispose();
+                            connection.SQL.Close();
+                            connection.SQL.Dispose();
                         }
                     }
                 }

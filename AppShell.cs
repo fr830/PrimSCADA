@@ -46,9 +46,9 @@ class SingleInstanceAppShell : WindowsFormsApplicationBase
         {
             if (((MainWindow)appShell.AppWPF.MainWindow != null))
             {
-                if (((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetThread != null)
+                if (((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetObject != null)
                 {
-                    foreach (EthernetThread client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetThread)
+                    foreach (EthernetObject client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionTCPEthernetObject)
                     {
                         if (client.TcpClient != null)
                         {
@@ -57,9 +57,9 @@ class SingleInstanceAppShell : WindowsFormsApplicationBase
                     }
                 }
 
-                if (((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetThread != null)
+                if (((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetObject != null)
                 {
-                    foreach (EthernetThread client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetThread)
+                    foreach (EthernetObject client in ((MainWindow)appShell.AppWPF.MainWindow).CollectionUDPEthernetObject)
                     {
                         if (client.UdpClient != null)
                         {
@@ -79,9 +79,9 @@ class SingleInstanceAppShell : WindowsFormsApplicationBase
                     }
                 }
 
-                if (((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLThread != null)
+                if (((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLObject != null)
                 {
-                    foreach (SQLThread connection in ((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLThread)
+                    foreach (SQLObject connection in ((MainWindow)appShell.AppWPF.MainWindow).CollectionSQLObject)
                     {
                         if (connection.SQL != null)
                         {

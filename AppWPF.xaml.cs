@@ -233,9 +233,9 @@ namespace SCADA
         {
             if(((MainWindow)this.MainWindow != null))
             {
-                if(((MainWindow)this.MainWindow).CollectionTCPEthernetThread != null)
+                if(((MainWindow)this.MainWindow).CollectionTCPEthernetObject != null)
                 {
-                    foreach (EthernetThread client in ((MainWindow)this.MainWindow).CollectionTCPEthernetThread)
+                    foreach (EthernetObject client in ((MainWindow)this.MainWindow).CollectionTCPEthernetObject)
                     {
                         if (client.TcpClient != null)
                         {
@@ -244,9 +244,9 @@ namespace SCADA
                     }
                 }
 
-                if (((MainWindow)this.MainWindow).CollectionUDPEthernetThread != null)
+                if (((MainWindow)this.MainWindow).CollectionUDPEthernetObject != null)
                 {
-                    foreach (EthernetThread client in ((MainWindow)this.MainWindow).CollectionUDPEthernetThread)
+                    foreach (EthernetObject client in ((MainWindow)this.MainWindow).CollectionUDPEthernetObject)
                     {
                         if (client.UdpClient != null)
                         {
@@ -266,9 +266,9 @@ namespace SCADA
                     }
                 }
 
-                if (((MainWindow)this.MainWindow).CollectionSQLThread != null)
+                if (((MainWindow)this.MainWindow).CollectionSQLObject != null)
                 {
-                    foreach (SQLThread connection in ((MainWindow)this.MainWindow).CollectionSQLThread)
+                    foreach (SQLObject connection in ((MainWindow)this.MainWindow).CollectionSQLObject)
                     {
                         if (connection.SQL != null)
                         {

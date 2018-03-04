@@ -155,13 +155,13 @@ namespace SCADA
     {
         public double Version = 0.3;
 
-        public List<EthernetThread> CollectionTCPEthernetThread = new List<EthernetThread>();
+        public List<EthernetObject> CollectionTCPEthernetObject = new List<EthernetObject>();
 
-        public List<EthernetThread> CollectionUDPEthernetThread = new List<EthernetThread>();
+        public List<EthernetObject> CollectionUDPEthernetObject = new List<EthernetObject>();
 
         public List<SerialPort> CollectionSerialPortThread = new List<SerialPort>();
 
-        public List<SQLThread> CollectionSQLThread = new List<SQLThread>();
+        public List<SQLObject> CollectionSQLObject = new List<SQLObject>();
 
         public ObservableCollection<string> CollectionMessage = new ObservableCollection<string>();
 
@@ -6833,9 +6833,9 @@ namespace SCADA
                 e.Handled = true;
             }
 
-            bool isTCPThreadNotExit = false;
-            bool isUDPThreadNotExit = false;
-            bool isModbusThreadNotExit = false;
+            bool isTCPObjectNotClose = false;
+            bool isUDPObjectNotClose = false;
+            bool isModbusObjectNotClose = false;
             bool isConnectDB = false;
 
             string tcpClientNotClose = null;
@@ -6843,46 +6843,46 @@ namespace SCADA
             string serialPortNotClose = null;
             string sqlConnectionNotClose = null;            
 
-            foreach (EthernetThread TCPThread in CollectionTCPEthernetThread)
+            foreach (EthernetObject TCPObject in CollectionTCPEthernetObject)
             {
-                if (TCPThread != null)
+                if (TCPObject != null)
                 {
-                    if (TCPThread.IsWork)
+                    if (TCPObject.TcpClient.Connected)
                     {
-                        tcpClientNotClose = TCPThread.TcpClient.Client.RemoteEndPoint.ToString();
+                        tcpClientNotClose = TCPObject.TcpClient.Client.RemoteEndPoint.ToString();
 
-                        isTCPThreadNotExit = true;                                            
+                        isTCPObjectNotClose = true;                                            
                     }
                 }                
             }
 
-            foreach (EthernetThread UDPThread in CollectionUDPEthernetThread)
+            foreach (EthernetObject UDPObject in CollectionUDPEthernetObject)
             {
-                if (UDPThread != null)
+                if (UDPObject != null)
                 {
-                    if (UDPThread.IsWork)
+                    if (UDPObject.IsWork)
                     {
-                        udpClientNotClose = UDPThread.UdpClient.Client.RemoteEndPoint.ToString();
+                        udpClientNotClose = UDPObject.UdpClient.Client.RemoteEndPoint.ToString();
 
-                        isUDPThreadNotExit = true;
+                        isUDPObjectNotClose = true;
                     }
                 }
             }
 
-            foreach (SerialPortThread serialPortThread in CollectionSerialPortThread)
+            foreach (SerialPortObject serialPortObject in CollectionSerialPortThread)
             {
-                if (serialPortThread != null)
+                if (serialPortObject != null)
                 {
-                    if (serialPortThread.IsWork)
+                    if (serialPortObject.IsWork)
                     {
-                        isModbusThreadNotExit = true;
+                        isModbusObjectNotClose = true;
 
-                        serialPortNotClose = serialPortThread.PortName;
+                        serialPortNotClose = serialPortObject.PortName;
                     }
                 }
             }
 
-            foreach (SQLThread SqlCon in CollectionSQLThread)
+            foreach (SQLObject SqlCon in CollectionSQLObject)
             {
                 if (SqlCon.SQL != null)
                 {
@@ -6895,7 +6895,7 @@ namespace SCADA
                 }                            
             }
 
-            if (isTCPThreadNotExit)
+            if (isTCPObjectNotClose)
             {
                 if (CollectionMessage.Count > 300)
                 {
@@ -6911,23 +6911,23 @@ namespace SCADA
                 return;
             }
 
-            if (isUDPThreadNotExit)
+            if (isUDPObjectNotClose)
             {
                 if (CollectionMessage.Count > 300)
                 {
                     CollectionMessage.RemoveAt(0);
 
-                    CollectionMessage.Insert(298, "Сообщение " + " : " + "Поток " + isUDPThreadNotExit + " еще не завершил выполнение, повторите запуск через несколько секунд" + " " + DateTime.Now);
+                    CollectionMessage.Insert(298, "Сообщение " + " : " + "Поток " + isUDPObjectNotClose + " еще не завершил выполнение, повторите запуск через несколько секунд" + " " + DateTime.Now);
                 }
                 else
                 {
-                    CollectionMessage.Add("Сообщение " + " : " + "Поток " + isUDPThreadNotExit + " еще не завершил выполнение, повторите запуск через несколько секунд" + " " + DateTime.Now);
+                    CollectionMessage.Add("Сообщение " + " : " + "Поток " + isUDPObjectNotClose + " еще не завершил выполнение, повторите запуск через несколько секунд" + " " + DateTime.Now);
                 }
 
                 return;
             }
 
-            if (isModbusThreadNotExit)
+            if (isModbusObjectNotClose)
             {
                 if (CollectionMessage.Count > 300)
                 {
@@ -6961,10 +6961,10 @@ namespace SCADA
 
             IsStop = false;
 
-            CollectionTCPEthernetThread.Clear();
-            CollectionUDPEthernetThread.Clear();
+            CollectionTCPEthernetObject.Clear();
+            CollectionUDPEthernetObject.Clear();
             CollectionSerialPortThread.Clear();
-            CollectionSQLThread.Clear();
+            CollectionSQLObject.Clear();
 
             AppWPF app = (AppWPF)Application.Current;
 
@@ -7079,7 +7079,6 @@ namespace SCADA
             //    }               
             //}      
 
-
             try
             {                
                 foreach (EthernetControl ethernetControl in collectionEthernet)
@@ -7099,10 +7098,10 @@ namespace SCADA
                                 CollectionMessage.Add("Сообщение " + " : " + " подключение к " + ethernetControl.EthernetSer.IPAddressServer[0] + "." + ethernetControl.EthernetSer.IPAddressServer[1] + "." + ethernetControl.EthernetSer.IPAddressServer[2] + "." + ethernetControl.EthernetSer.IPAddressServer[3] + " Порт " + ethernetControl.EthernetSer.PortServer + " " + DateTime.Now);
                             }
 
-                            EthernetThread Ethernet = new EthernetThread();
+                            EthernetObject Ethernet = new EthernetObject();
                             Ethernet.EthernetSer = ethernetControl.EthernetSer;
 
-                            CollectionTCPEthernetThread.Add(Ethernet);
+                            CollectionTCPEthernetObject.Add(Ethernet);
 
                             Thread threadConnect = new Thread(ConnectedTCP);
                             threadConnect.Start(Ethernet);
@@ -7115,10 +7114,10 @@ namespace SCADA
                         }
                         else if (ethernetControl.EthernetSer.EthernetProtocol == "UDP")
                         {
-                            EthernetThread Ethernet = new EthernetThread();
+                            EthernetObject Ethernet = new EthernetObject();
                             Ethernet.EthernetSer = ethernetControl.EthernetSer;
 
-                            CollectionUDPEthernetThread.Add(Ethernet);
+                            CollectionUDPEthernetObject.Add(Ethernet);
 
                             Thread threadConnect = new Thread(ConnectedUDP);
                             threadConnect.Start(Ethernet);
@@ -7148,7 +7147,7 @@ namespace SCADA
                         //    EthernetOperation.EthernetOperational = eo;
                         //    EthernetOperation.TcpClient = new TcpClient();
 
-                        //    CollectionTCPEthernetThread.Add(EthernetOperation);
+                        //    CollectionTCPEthernetObject.Add(EthernetOperation);
 
                         //    Thread threadConnectOperational = new Thread(ConnectingEthernetOperational);
                         //    threadConnectOperational.Start(EthernetOperation);
@@ -7166,9 +7165,9 @@ namespace SCADA
                 {
                     if (!IsStop)
                     {
-                        List<ModbusThread> collectionModbusThread = new List<ModbusThread>();
+                        List<ModbusObject> collectionModbusThread = new List<ModbusObject>();
 
-                        SerialPortThread SerialPort = new SerialPortThread();                                               
+                        SerialPortObject SerialPort = new SerialPortObject();                                               
                         SerialPort.PortName = comSer.ComPort;
                         SerialPort.BaudRate = comSer.BaudRate;
                         SerialPort.DataBits = comSer.DataBits;
@@ -7241,7 +7240,7 @@ namespace SCADA
                                 
                                 modbus.Transport.Retries = 2;
 
-                                ModbusThread ModbusSend = new ModbusThread();
+                                ModbusObject ModbusSend = new ModbusObject();
                                 ModbusSend.SerialPort = SerialPort;
                                 ModbusSend.ModbusSerialMaster = modbus;
                                 ModbusSend.ModbusControl = modbusControl;
@@ -7328,13 +7327,13 @@ namespace SCADA
 
         private void ConnectingModbus(object obj)
         {
-            List<ModbusThread> collectionModbusThread = (List<ModbusThread>)obj;
+            List<ModbusObject> collectionModbusObject = (List<ModbusObject>)obj;
 
             try
             {
                 while (!IsStop)
                 {
-                    foreach (ModbusThread modbusSendTread in collectionModbusThread)
+                    foreach (ModbusObject modbusSendObject in collectionModbusObject)
                     {
                         Thread.Sleep(StaticValues.TimeSleep);
 
@@ -7343,30 +7342,30 @@ namespace SCADA
                             return;
                         }
 
-                        if (modbusSendTread.IsReconnect)
+                        if (modbusSendObject.IsReconnect)
                         {
-                            modbusSendTread.TimerReconnect.Start();
+                            modbusSendObject.TimerReconnect.Start();
 
-                            if (modbusSendTread.TimerReconnect.ElapsedMilliseconds >= 60 * 1000)
+                            if (modbusSendObject.TimerReconnect.ElapsedMilliseconds >= 60 * 1000)
                             {
-                                modbusSendTread.IsReconnect = false;
+                                modbusSendObject.IsReconnect = false;
 
-                                modbusSendTread.TimerReconnect.Reset();
+                                modbusSendObject.TimerReconnect.Reset();
                             }                            
                         }
                         else
                         {
-                            modbusSendTread.TimerPeriod.Start();
+                            modbusSendObject.TimerPeriod.Start();
 
-                            if (modbusSendTread.TimerPeriod.ElapsedMilliseconds >= modbusSendTread.ModbusControl.ModbusSer.Time * 1000)
+                            if (modbusSendObject.TimerPeriod.ElapsedMilliseconds >= modbusSendObject.ModbusControl.ModbusSer.Time * 1000)
                             {
-                                modbusSendTread.TimerPeriod.Reset();
+                                modbusSendObject.TimerPeriod.Reset();
 
                                 ushort[] data;
                                 byte[] buffer = new byte[8];
                                 ushort temp;
 
-                                foreach (ItemModbus item in modbusSendTread.ModbusControl.ModbusSer.CollectionItemModbus)
+                                foreach (ItemModbus item in modbusSendObject.ModbusControl.ModbusSer.CollectionItemModbus)
                                 {
                                     if (IsStop)
                                     {
@@ -7379,11 +7378,11 @@ namespace SCADA
                                         {
                                             if (item.Function == 3)
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadHoldingRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadHoldingRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
                                             else
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadInputRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
                                             
                                             if (data != null)
@@ -7414,19 +7413,17 @@ namespace SCADA
 
                                                             collectionDigital.Add(float.Parse(item.Formula.Substring(1, countDigital - 1)));
 
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToSingle(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock(modbusSendObject.LockValue)
+                                                            {                                                               
+                                                                item.Value = BitConverter.ToSingle(buffer, 0) / collectionDigital[0];                                                               
+                                                            }                                                            
                                                         }
                                                         else
                                                         {
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToSingle(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToSingle(buffer, 0);
+                                                            }                                                                                                                        
                                                         }
                                                     }
                                                     else if (item.Formula.IndexOf("CSF") != -1)
@@ -7443,38 +7440,34 @@ namespace SCADA
 
                                                                 collectionDigital.Add(float.Parse(item.Formula.Substring(4, countDigital - 4)));
 
-                                                                modbusSendTread.RWLock.EnterWriteLock();
-                                                                item.Value = BitConverter.ToInt16(buffer, 2) / collectionDigital[0];
-                                                                modbusSendTread.RWLock.ExitWriteLock();
-
-                                                                modbusSendTread.DatabaseConnect = true;
+                                                                lock (modbusSendObject.LockValue)
+                                                                {
+                                                                    item.Value = BitConverter.ToInt16(buffer, 2) / collectionDigital[0];
+                                                                }                                                                                                                                  
                                                             }
                                                             else
                                                             {
-                                                                modbusSendTread.RWLock.EnterWriteLock();
-                                                                item.Value = BitConverter.ToInt16(buffer, 2);
-                                                                modbusSendTread.RWLock.ExitWriteLock();
-
-                                                                modbusSendTread.DatabaseConnect = true;
+                                                                lock (modbusSendObject.LockValue)
+                                                                {
+                                                                    item.Value = BitConverter.ToInt16(buffer, 2);
+                                                                }                                                                                                                                  
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToInt16(buffer, 2);
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToInt16(buffer, 2);
+                                                            }                                                                                                                          
                                                         }
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    modbusSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToSingle(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();
-
-                                                    modbusSendTread.DatabaseConnect = true;
+                                                    lock (modbusSendObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToSingle(buffer, 0);
+                                                    }                                                                                                            
                                                 }
                                             }
                                         }
@@ -7482,11 +7475,11 @@ namespace SCADA
                                         {
                                             if (item.Function == 3)
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadHoldingRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadHoldingRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
                                             }
                                             else
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadInputRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
                                             }
 
                                             if (data != null)
@@ -7510,37 +7503,33 @@ namespace SCADA
 
                                                             collectionDigital.Add(short.Parse(item.Formula.Substring(1, countDigital - 1)));
 
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToInt16(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToInt16(buffer, 0) / collectionDigital[0];
+                                                            }                                                                                                                          
                                                         }
                                                         else
                                                         {
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToInt16(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToInt16(buffer, 0);
+                                                            }                                                                                                                          
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        modbusSendTread.RWLock.EnterWriteLock();
-                                                        item.Value = BitConverter.ToInt16(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();
-
-                                                        modbusSendTread.DatabaseConnect = true;
+                                                        lock (modbusSendObject.LockValue)
+                                                        {
+                                                            item.Value = BitConverter.ToInt16(buffer, 0);
+                                                        }                                                                                                                  
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    modbusSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToInt16(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();
-
-                                                    modbusSendTread.DatabaseConnect = true;
+                                                    lock (modbusSendObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt16(buffer, 0);
+                                                    }                                                                                                          
                                                 }
                                             }
                                         }
@@ -7548,11 +7537,11 @@ namespace SCADA
                                         {
                                             if (item.Function == 3)
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadHoldingRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadHoldingRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
                                             }
                                             else
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadInputRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 1);
                                             }
 
                                             if (data != null)
@@ -7576,37 +7565,33 @@ namespace SCADA
 
                                                             collectionDigital.Add(ushort.Parse(item.Formula.Substring(1, countDigital - 1)));
 
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToUInt16(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToUInt16(buffer, 0) / collectionDigital[0];
+                                                            }                                                                                                                         
                                                         }
                                                         else
                                                         {
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToUInt16(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToUInt16(buffer, 0);
+                                                            }                                                                                                                          
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        modbusSendTread.RWLock.EnterWriteLock();
-                                                        item.Value = BitConverter.ToUInt16(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();
-
-                                                        modbusSendTread.DatabaseConnect = true;
+                                                        lock (modbusSendObject.LockValue)
+                                                        {
+                                                            item.Value = BitConverter.ToUInt16(buffer, 0);
+                                                        }                                                                                                                  
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    modbusSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToUInt16(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();
-
-                                                    modbusSendTread.DatabaseConnect = true;
+                                                    lock (modbusSendObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt16(buffer, 0);
+                                                    }                                                                                                           
                                                 }
                                             }
                                         }
@@ -7614,11 +7599,11 @@ namespace SCADA
                                         {
                                             if (item.Function == 3)
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadHoldingRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadHoldingRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
                                             else
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadInputRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
 
                                             if (data != null)
@@ -7649,37 +7634,33 @@ namespace SCADA
 
                                                             collectionDigital.Add(int.Parse(item.Formula.Substring(1, countDigital - 1)));
 
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToInt32(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToInt32(buffer, 0) / collectionDigital[0];
+                                                            }                                                                                                                         
                                                         }
                                                         else
                                                         {
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToInt32(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToInt32(buffer, 0);
+                                                            }                                                                                                                         
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        modbusSendTread.RWLock.EnterWriteLock();
-                                                        item.Value = BitConverter.ToInt32(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();
-
-                                                        modbusSendTread.DatabaseConnect = true;
+                                                        lock (modbusSendObject.LockValue)
+                                                        {
+                                                            item.Value = BitConverter.ToInt32(buffer, 0);
+                                                        }                                                                                                                 
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    modbusSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToInt32(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();
-
-                                                    modbusSendTread.DatabaseConnect = true;
+                                                    lock (modbusSendObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt32(buffer, 0);
+                                                    }                                                                                                           
                                                 }
                                             }
                                         }
@@ -7687,11 +7668,11 @@ namespace SCADA
                                         {
                                             if (item.Function == 3)
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadHoldingRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadHoldingRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
                                             else
                                             {
-                                                data = modbusSendTread.ModbusSerialMaster.ReadInputRegisters(modbusSendTread.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
+                                                data = modbusSendObject.ModbusSerialMaster.ReadInputRegisters(modbusSendObject.ModbusControl.ModbusSer.SlaveAddress, item.Address, 2);
                                             }
 
                                             if (data != null)
@@ -7722,50 +7703,49 @@ namespace SCADA
 
                                                             collectionDigital.Add(uint.Parse(item.Formula.Substring(1, countDigital - 1)));
 
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToUInt32(buffer, 0) / collectionDigital[0];
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToUInt32(buffer, 0) / collectionDigital[0];
+                                                            }                                                                                                                         
                                                         }
                                                         else
                                                         {
-                                                            modbusSendTread.RWLock.EnterWriteLock();
-                                                            item.Value = BitConverter.ToUInt32(buffer, 0);
-                                                            modbusSendTread.RWLock.ExitWriteLock();
-
-                                                            modbusSendTread.DatabaseConnect = true;
+                                                            lock (modbusSendObject.LockValue)
+                                                            {
+                                                                item.Value = BitConverter.ToUInt32(buffer, 0);
+                                                            }
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        modbusSendTread.RWLock.EnterWriteLock();
-                                                        item.Value = BitConverter.ToUInt32(buffer, 0);
-                                                        modbusSendTread.RWLock.ExitWriteLock();
-
-                                                        modbusSendTread.DatabaseConnect = true;
+                                                        lock (modbusSendObject.LockValue)
+                                                        {
+                                                            item.Value = BitConverter.ToUInt32(buffer, 0);
+                                                        }                                                                                                                    
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    modbusSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToUInt32(buffer, 0);
-                                                    modbusSendTread.RWLock.ExitWriteLock();
-
-                                                    modbusSendTread.DatabaseConnect = true;
+                                                    lock (modbusSendObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt32(buffer, 0);
+                                                    }                                                                                                         
                                                 }
                                             }
-                                        }                                                                            
-                                    }
-                                    catch
-                                    {
-                                        if (modbusSendTread.RWLock.IsWriteLockHeld)
-                                        {
-                                            modbusSendTread.RWLock.ExitWriteLock();
                                         }
 
-                                        modbusSendTread.IsReconnect = true;
-                                        modbusSendTread.DatabaseConnect = false;
+                                        lock (modbusSendObject.LockValue)
+                                        {
+                                            modbusSendObject.IsAvailableData = true;
+                                        }
+                                    }
+                                    catch
+                                    {                                        
+                                        modbusSendObject.IsReconnect = true;
+                                        lock (modbusSendObject.LockValue)
+                                        {
+                                            modbusSendObject.IsAvailableData = false;
+                                        }
                                         break;
                                     }
                                 }
@@ -7782,39 +7762,45 @@ namespace SCADA
                     {
                         CollectionMessage.RemoveAt(0);
 
-                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Опрос " + collectionModbusThread[0].ModbusControl.ModbusSer.ComPort + "Остановлен из-за ошибки " + ex.Message + " " + DateTime.Now);
+                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Опрос " + collectionModbusObject[0].ModbusControl.ModbusSer.ComPort + "Остановлен из-за ошибки " + ex.Message + " " + DateTime.Now);
                     }
                     else
                     {
-                        CollectionMessage.Add("Сообщение " + " : " + "Опрос " + collectionModbusThread[0].ModbusControl.ModbusSer.ComPort + "Остановлен из-за ошибки " + ex.Message + " " + DateTime.Now);
+                        CollectionMessage.Add("Сообщение " + " : " + "Опрос " + collectionModbusObject[0].ModbusControl.ModbusSer.ComPort + "Остановлен из-за ошибки " + ex.Message + " " + DateTime.Now);
                     }
                 }
             }
             finally
             {
-                foreach (ModbusThread mst in collectionModbusThread)
+                foreach (ModbusObject modbusObject in collectionModbusObject)
                 {
-                    mst.DatabaseConnect = false;
+                    modbusObject.TimerPeriod.Reset();
+                    modbusObject.TimerReconnect.Reset();
 
-                    if (mst.SerialPort != null)
+                    modbusObject.IsReconnect = false;
+
+                    lock (modbusObject.LockAvailableData)
                     {
-                        mst.SerialPort.Close();
+                        modbusObject.IsAvailableData = false;
                     }
-                   
-                    if (mst.RWLock.IsWriteLockHeld)
+
+                    lock(modbusObject.LockSerialPort)
                     {
-                        mst.RWLock.ExitWriteLock();
-                    }                  
+                        if (modbusObject.SerialPort != null)
+                        {
+                            modbusObject.SerialPort.Close();
+                        }
+                    }                                                                  
                 }
             }
         }
                
         private void ConnectDataBaseModbus(object obj)
         {
-            List<ModbusThread> collectionModbusSendTread = (List<ModbusThread>)obj;
+            List<ModbusObject> collectionModbusObject = (List<ModbusObject>)obj;
 
             Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
-            SQLThread SQLThread = new SQLThread();
+            SQLObject SQLObject = new SQLObject();
 
             try
             {
@@ -7829,11 +7815,11 @@ namespace SCADA
                 parametrValue.ParameterName = "Value";
                 parametrValue.NpgsqlDbType = NpgsqlDbType.Real;
 
-                foreach (ModbusThread modbusSendTread in collectionModbusSendTread)
+                foreach (ModbusObject modbusObject in collectionModbusObject)
                 {
-                    modbusSendTread.CollectionTimer.Clear();
+                    modbusObject.CollectionTimer.Clear();
 
-                    foreach (ItemModbus itemModbus in modbusSendTread.ModbusControl.ModbusSer.CollectionItemModbus)
+                    foreach (ItemModbus itemModbus in modbusObject.ModbusControl.ModbusSer.CollectionItemModbus)
                     {
                         if (itemModbus.IsSaveDatabase || itemModbus.IsEmergencySaveDB)
                         {
@@ -7842,7 +7828,7 @@ namespace SCADA
                             timer.EmergencyTimerUp = new Stopwatch();
                             timer.EmergencyTimerDown = new Stopwatch();
 
-                            modbusSendTread.CollectionTimer.Add(timer);
+                            modbusObject.CollectionTimer.Add(timer);
                         }
                     }
                 }
@@ -7877,14 +7863,16 @@ namespace SCADA
                 cmd.Parameters.Add(parametrDateTime);
                 cmd.Connection = SqlConn;
 
-                SQLThread.SQL = SqlConn;
-                SQLThread.IsWork = true;
+                SQLObject.SQL = SqlConn;
+                SQLObject.IsWork = true;
 
-                CollectionSQLThread.Add(SQLThread);
+                CollectionSQLObject.Add(SQLObject);
+
+                bool isAvailableData;
 
                 while (true)
                 {
-                    foreach (ModbusThread modbusSendThread in collectionModbusSendTread)
+                    foreach (ModbusObject modbusObject in collectionModbusObject)
                     {
                         Thread.Sleep(StaticValues.TimeSleep);
 
@@ -7893,9 +7881,14 @@ namespace SCADA
                             return;
                         }
 
-                        if (modbusSendThread.DatabaseConnect)
+                        lock(modbusObject.LockAvailableData)
                         {
-                            foreach (StopwatchItemModbus timer in modbusSendThread.CollectionTimer)
+                            isAvailableData = modbusObject.IsAvailableData;
+                        }
+
+                        if (isAvailableData)
+                        {
+                            foreach (StopwatchItemModbus timer in modbusObject.CollectionTimer)
                             {
                                 timer.Start();
 
@@ -7907,10 +7900,11 @@ namespace SCADA
 
                                         if (timer.EmergencyTimerUp.ElapsedMilliseconds >= (timer.ItemModbus.PeriodEmergencySaveDB * 1000))
                                         {
-                                            modbusSendThread.RWLock.EnterReadLock();
-                                            value = timer.ItemModbus.Value;
-                                            prevValue = timer.PrevValue;
-                                            modbusSendThread.RWLock.ExitReadLock();
+                                            lock(modbusObject.LockValue)
+                                            {
+                                                value = timer.ItemModbus.Value;
+                                                prevValue = timer.PrevValue;
+                                            }                                          
 
                                             timer.EmergencyTimerUp.Reset();
 
@@ -7922,27 +7916,27 @@ namespace SCADA
                                                     {                                                    
                                                         if (timer.ItemModbus.TypeValue == "int")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "uint")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "short")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "byte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "bool")
                                                         {
@@ -7957,7 +7951,7 @@ namespace SCADA
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "float")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                         }
                                                     }                                                    
                                                 }                                               
@@ -7968,27 +7962,27 @@ namespace SCADA
                                                 {                                                    
                                                     if (timer.ItemModbus.TypeValue == "int")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "uint")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "short")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "ushort")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "byte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "sbyte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "bool")
                                                     {
@@ -8003,7 +7997,7 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "float")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                     }
                                                 }                                               
                                             }
@@ -8016,9 +8010,11 @@ namespace SCADA
 
                                         if (timer.EmergencyTimerDown.ElapsedMilliseconds >= (timer.ItemModbus.PeriodEmergencySaveDB * 1000))
                                         {
-                                            modbusSendThread.RWLock.EnterReadLock();
-                                            value = timer.ItemModbus.Value;
-                                            modbusSendThread.RWLock.ExitReadLock();                                           
+                                            lock (modbusObject.LockValue)
+                                            {
+                                                value = timer.ItemModbus.Value;
+                                                prevValue = timer.PrevValue;
+                                            }                                         
 
                                             if (value is float)
                                             {
@@ -8030,27 +8026,27 @@ namespace SCADA
 
                                                         if (timer.ItemModbus.TypeValue == "int")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "uint")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "short")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "byte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "bool")
                                                         {
@@ -8065,7 +8061,7 @@ namespace SCADA
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "float")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
+                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                         }
                                                     }
                                                     
@@ -8079,27 +8075,27 @@ namespace SCADA
 
                                                     if (timer.ItemModbus.TypeValue == "int")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "uint")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "short")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "ushort")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "byte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "sbyte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "bool")
                                                     {
@@ -8114,7 +8110,7 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "float")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
+                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                     }
                                                 }                                               
                                             }
@@ -8128,33 +8124,33 @@ namespace SCADA
                                     {
                                         timer.Reset();
 
-                                        modbusSendThread.RWLock.EnterReadLock();
+                                        modbusObject.RWLock.EnterReadLock();
                                         value = timer.ItemModbus.Value;
-                                        modbusSendThread.RWLock.ExitReadLock();
+                                        modbusObject.RWLock.ExitReadLock();
 
                                         if (timer.ItemModbus.TypeValue == "int")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "uint")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "short")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "byte")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "bool")
                                         {
@@ -8169,7 +8165,7 @@ namespace SCADA
                                         }
                                         else if (timer.ItemModbus.TypeValue == "float")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusSendThread);
+                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                         }
                                     }
                                 }
@@ -8192,11 +8188,11 @@ namespace SCADA
                             {
                                 CollectionMessage.RemoveAt(0);
 
-                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД: " + collectionModbusSendTread[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
+                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД: " + collectionModbusObject[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
                             }
                             else
                             {
-                                CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД: " + collectionModbusSendTread[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
+                                CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД: " + collectionModbusObject[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
                             }
                         }));
                     }
@@ -8209,11 +8205,11 @@ namespace SCADA
                         {
                             CollectionMessage.RemoveAt(0);
 
-                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД: " + collectionModbusSendTread[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
+                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД: " + collectionModbusObject[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
                         }
                         else
                         {
-                            CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД: " + collectionModbusSendTread[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
+                            CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД: " + collectionModbusObject[0].ModbusControl.ModbusSer.ComPort + " " + DateTime.Now);
                         }
                     }));
                 }
@@ -8223,11 +8219,11 @@ namespace SCADA
                 SqlConn.Close();
                 SqlConn.Dispose();
 
-                SQLThread.IsWork = false;
+                SQLObject.IsWork = false;
             }
         }
 
-        private void FormulaModbus(object PrevValue, object Value, StopwatchItemModbus timer, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType, ModbusThread mst)
+        private void FormulaModbus(object PrevValue, object Value, StopwatchItemModbus timer, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType, ModbusObject mst)
         {
             if (Value is float)
             {
@@ -8517,7 +8513,7 @@ namespace SCADA
 
         private void ConnectedDataBase(object obj)
         {
-            EthernetThread ethernetSendTread = (EthernetThread)obj;
+            EthernetObject ethernetSendTread = (EthernetObject)obj;
 
             Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
 
@@ -8591,7 +8587,7 @@ namespace SCADA
                 cmd.Parameters.Add(parametrDateTime);
                 cmd.Connection = SqlConn;
 
-                CollectionSQLThread.Add(SqlConn);
+                CollectionSQLObject.Add(SqlConn);
 
                 while (true)
                 {
@@ -9288,7 +9284,7 @@ namespace SCADA
 
         private void ConnectDataBaseEthernetOperational(object obj)
         {
-            EthernetThread ethernetSendTread = (EthernetThread)obj;
+            EthernetObject ethernetSendTread = (EthernetObject)obj;
 
             Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
 
@@ -9356,7 +9352,7 @@ namespace SCADA
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand();
                 cmd.Connection = SqlConn;
 
-                CollectionSQLThread.Add(SqlConn);
+                CollectionSQLObject.Add(SqlConn);
 
                 while (true)
                 {
@@ -9763,22 +9759,22 @@ namespace SCADA
 
         private void ConnectedTCP(object obj)
         {
-            EthernetThread ethernetSendTread = (EthernetThread)obj;
+            EthernetObject ethernetObject = (EthernetObject)obj;
 
             try
             {
                 bool IsStatusSend;                     
 
-                string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
+                string IPAddressServer = ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] + "." + ethernetObject.EthernetSer.IPAddressServer[3];
 
                 Stopwatch timeCheckExit = new Stopwatch();          
                 Stopwatch timePeriod = new Stopwatch();
                 Stopwatch timeRecconect = new Stopwatch();
 
-                IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
+                IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetObject.EthernetSer.IPAddressClient), ethernetObject.EthernetSer.PortClient);
 
-                byte[] bRead = new byte[ethernetSendTread.EthernetSer.BufferSizeRec];
-                byte[] bWrite = new byte[ethernetSendTread.EthernetSer.BufferSizeSend];
+                byte[] bRead = new byte[ethernetObject.EthernetSer.BufferSizeRec];
+                byte[] bWrite = new byte[ethernetObject.EthernetSer.BufferSizeSend];
 
                 int[] aDecimal = new int[3];
 
@@ -9792,7 +9788,7 @@ namespace SCADA
                     {
                         try
                         {
-                            if (ethernetSendTread.IsReconnect)
+                            if (ethernetObject.IsReconnect)
                             {
                                 IsStatusSend = true;
 
@@ -9808,15 +9804,15 @@ namespace SCADA
                                             {
                                                 CollectionMessage.RemoveAt(0);
 
-                                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-                                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения через 60 секунды. " + DateTime.Now);
+                                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения через 60 секунды. " + DateTime.Now);
                                             }
                                             else
                                             {
-                                                CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-                                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения через 60 секунды. " + DateTime.Now);
+                                                CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения через 60 секунды. " + DateTime.Now);
                                             }
                                         }));
                                     }
@@ -9832,7 +9828,7 @@ namespace SCADA
 
                                     if (timeCheckExit.ElapsedMilliseconds >= (60000))
                                     {
-                                        ethernetSendTread.IsReconnect = false;
+                                        ethernetObject.IsReconnect = false;
                                         timeCheckExit.Reset();
                                         break;
                                     }
@@ -9840,23 +9836,23 @@ namespace SCADA
                             }
                             else
                             {
-                                ethernetSendTread.TcpClient = new TcpClient(localPoint);
-                                ethernetSendTread.TcpClient.ReceiveTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-                                ethernetSendTread.TcpClient.SendTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-                                ethernetSendTread.TcpClient.BeginConnect(IPAddress.Parse(IPAddressServer), ethernetSendTread.EthernetSer.PortServer, null, null);
+                                ethernetObject.TcpClient = new TcpClient(localPoint);
+                                ethernetObject.TcpClient.ReceiveTimeout = ethernetObject.EthernetSer.Time * 2000;
+                                ethernetObject.TcpClient.SendTimeout = ethernetObject.EthernetSer.Time * 2000;
+                                ethernetObject.TcpClient.BeginConnect(IPAddress.Parse(IPAddressServer), ethernetObject.EthernetSer.PortServer, null, null);
 
                                 while (true)
                                 {
                                     timeRecconect.Start();
 
-                                    if ((ethernetSendTread.EthernetSer.Time * 2000) <= timeRecconect.ElapsedMilliseconds)
+                                    if ((ethernetObject.EthernetSer.Time * 2000) <= timeRecconect.ElapsedMilliseconds)
                                     {
-                                        ethernetSendTread.DatabaseConnect = false;
+                                        ethernetObject.DatabaseConnect = false;
 
                                         throw new Exception("Не удалось подключится к серверу.");
                                     }
 
-                                    if (ethernetSendTread.TcpClient.Connected)
+                                    if (ethernetObject.TcpClient.Connected)
                                     {
                                         timeRecconect.Reset();
                                         break;
@@ -9884,19 +9880,19 @@ namespace SCADA
                                     }
                                 }));
 
-                                stream = ethernetSendTread.TcpClient.GetStream();
+                                stream = ethernetObject.TcpClient.GetStream();
 
                                 while (true)
                                 {
                                     timePeriod.Start();
 
-                                    if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
+                                    if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
                                     {
-                                        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+                                        foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
                                         {
                                             if (item.TypeValue == "float")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9906,15 +9902,17 @@ namespace SCADA
                                                     bWrite[item.Range0 + 3] = formulaBuff[3];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToSingle(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock(ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToSingle(bWrite, item.Range0);
+                                                }                                                                                              
                                             }
                                             else if (item.TypeValue == "double")
                                             {
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToDouble(formula(item, ethernetSendTread.EthernetSer.Time), 0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToDouble(formula(item, ethernetObject.EthernetSer.Time), 0);
+                                                }
                                             }
                                             else if (item.TypeValue == "decimal")
                                             {
@@ -9922,39 +9920,42 @@ namespace SCADA
                                                 aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
                                                 aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = new Decimal(aDecimal);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = new Decimal(aDecimal);
+                                                }
                                             }
                                             else if (item.TypeValue == "byte")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
                                                     bWrite[item.Range0] = formulaBuff[0];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = bWrite[item.Range0];
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = bWrite[item.Range0];
+                                                }
                                             }
                                             else if (item.TypeValue == "sbyte")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
                                                     bWrite[item.Range0] = formulaBuff[0];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = (sbyte)bRead[item.Range0];
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = (sbyte)bRead[item.Range0];
+                                                }                                                   
                                             }
                                             else if (item.TypeValue == "short")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9962,13 +9963,14 @@ namespace SCADA
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToInt16(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt16(bWrite, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "ushort")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9976,13 +9978,14 @@ namespace SCADA
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
+                                                }                                                    
                                             }
                                             else if (item.TypeValue == "int")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9992,13 +9995,14 @@ namespace SCADA
                                                     bWrite[item.Range0 + 3] = formulaBuff[3];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToInt32(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt32(bWrite, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "uint")
                                             {
-                                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -10008,39 +10012,45 @@ namespace SCADA
                                                     bWrite[item.Range0 + 3] = formulaBuff[3];
                                                 }
 
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "long")
                                             {
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToInt64(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt64(bWrite, item.Range0);
+                                                }                                                    
                                             }
                                             else if (item.TypeValue == "ulong")
                                             {
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "bool")
                                             {
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "char")
                                             {
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToChar(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToChar(bWrite, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "string")
                                             {
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToString(bWrite, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToString(bWrite, item.Range0);
+                                                }
                                             }
                                         }
 
@@ -10054,13 +10064,13 @@ namespace SCADA
                                             return;
                                         }
 
-                                        if (ethernetSendTread.TcpClient.Available == ethernetSendTread.EthernetSer.BufferSizeRec)
+                                        if (ethernetObject.TcpClient.Available == ethernetObject.EthernetSer.BufferSizeRec)
                                         {
                                             timeRecconect.Reset();
 
                                             stream.Read(bRead, 0, bRead.Length);
 
-                                            foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+                                            foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetRec)
                                             {
                                                 if (item.TypeValue == "float")
                                                 {
@@ -10069,9 +10079,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToSingle(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToSingle(bRead, item.Range0);
+                                                    }                                                     
                                                 }
                                                 else if (item.TypeValue == "double")
                                                 {
@@ -10080,9 +10091,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToDouble(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToDouble(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "decimal")
                                                 {
@@ -10095,9 +10107,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = new Decimal(aDecimal);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = new Decimal(aDecimal);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "byte")
                                                 {
@@ -10106,9 +10119,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = bRead[item.Range0];
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = bRead[item.Range0];
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "sbyte")
                                                 {
@@ -10117,9 +10131,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = (sbyte)bRead[item.Range0];
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = (sbyte)bRead[item.Range0];
+                                                    }                                                        
                                                 }
                                                 else if (item.TypeValue == "short")
                                                 {
@@ -10128,9 +10143,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToInt16(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt16(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "ushort")
                                                 {
@@ -10139,9 +10155,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToUInt16(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt16(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "int")
                                                 {
@@ -10150,9 +10167,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToInt32(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt32(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "uint")
                                                 {
@@ -10161,9 +10179,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToUInt32(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt32(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "long")
                                                 {
@@ -10172,9 +10191,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToInt64(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt64(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "ulong")
                                                 {
@@ -10183,9 +10203,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToUInt64(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt64(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "bool")
                                                 {
@@ -10194,9 +10215,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToBoolean(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToBoolean(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "char")
                                                 {
@@ -10205,9 +10227,10 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToChar(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToChar(bRead, item.Range0);
+                                                    }
                                                 }
                                                 else if (item.TypeValue == "string")
                                                 {
@@ -10216,13 +10239,14 @@ namespace SCADA
 
                                                     }
 
-                                                    ethernetSendTread.RWLock.EnterWriteLock();
-                                                    item.Value = BitConverter.ToString(bRead, item.Range0);
-                                                    ethernetSendTread.RWLock.ExitWriteLock();
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToString(bRead, item.Range0);
+                                                    }
                                                 }
                                             }
 
-                                            ethernetSendTread.DatabaseConnect = true;
+                                            ethernetObject.DatabaseConnect = true;
 
                                             break;
                                         }
@@ -10237,7 +10261,7 @@ namespace SCADA
                                             return;
                                         }
 
-                                        if ((ethernetSendTread.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
+                                        if ((ethernetObject.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
                                         {
                                             timePeriod.Reset();
                                             break;
@@ -10269,9 +10293,9 @@ namespace SCADA
                         }
                         finally
                         {
-                            if (ethernetSendTread.TcpClient != null)
+                            if (ethernetObject.TcpClient != null)
                             {
-                                ethernetSendTread.TcpClient.Close();
+                                ethernetObject.TcpClient.Close();
                             }
 
                             if (stream != null)
@@ -10279,9 +10303,9 @@ namespace SCADA
                                 stream.Close();
                             }
 
-                            ethernetSendTread.DatabaseConnect = false;
+                            ethernetObject.IsAvailableData = false;
 
-                            ethernetSendTread.IsReconnect = true;
+                            ethernetObject.IsReconnect = true;
                         }
                     }
                 }
@@ -10294,34 +10318,34 @@ namespace SCADA
                     {
                         CollectionMessage.RemoveAt(0);
 
-                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Аварийный выход из потока " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-                                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + ex.Message + " " + DateTime.Now);
+                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Аварийный выход из потока " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ex.Message + " " + DateTime.Now);
                     }
                     else
                     {
-                        CollectionMessage.Add("Сообщение " + " : " + "Аварийный выход из потока " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-                                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + ex.Message + " " + DateTime.Now);
+                        CollectionMessage.Add("Сообщение " + " : " + "Аварийный выход из потока " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ex.Message + " " + DateTime.Now);
                     }
                 }));
             }
             finally
             {
-                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+                foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
                 {
                     item.ItemModbus = null;
                 }                             
 
-                if (ethernetSendTread.RWLock.IsWriteLockHeld)
+                if (ethernetObject.RWLock.IsWriteLockHeld)
                 {
-                    ethernetSendTread.RWLock.ExitWriteLock();
+                    ethernetObject.RWLock.ExitWriteLock();
                 }
             }
         }
         private void ConnectedUDP(object obj)
         {
-            EthernetThread ethernetSendTread = (EthernetThread)obj;
+            EthernetObject ethernetSendTread = (EthernetObject)obj;
 
             try
             {
@@ -10824,7 +10848,7 @@ namespace SCADA
 
         private void ConnectedEthernetOperational(object obj)
         {
-            EthernetThread ethernetSendTread = (EthernetThread)obj;
+            EthernetObject ethernetSendTread = (EthernetObject)obj;
 
             string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
 
@@ -11149,7 +11173,7 @@ namespace SCADA
 
             IsStop = true;
             
-            foreach (EthernetThread client in CollectionTCPEthernetThread)
+            foreach (EthernetObject client in CollectionTCPEthernetObject)
             {
                 if (client.TcpClient != null)
                 {
@@ -11157,7 +11181,7 @@ namespace SCADA
                 }
             }
 
-            foreach (EthernetThread client in CollectionUDPEthernetThread)
+            foreach (EthernetObject client in CollectionUDPEthernetObject)
             {
                 if (client.UdpClient != null)
                 {
@@ -11176,7 +11200,7 @@ namespace SCADA
                 }
             }
 
-            foreach (SQLThread SqlCon in CollectionSQLThread)
+            foreach (SQLObject SqlCon in CollectionSQLObject)
             {
                 if (SqlCon.SQL != null)
                 {
@@ -11405,49 +11429,55 @@ namespace SCADA
         }
     }
 
-    public class EthernetThread
-    {
-        public volatile bool IsWork;
-        public ReaderWriterLockSlim RWLock = new ReaderWriterLockSlim();
-        public EthernetSer EthernetSer;
-        public volatile bool IsReconnect;
+    public class EthernetObject
+    {        
+        public object LockValue = new object();
+        public object LockBool = new object();
+        public EthernetSer EthernetSer;       
         public TcpClient TcpClient;
         public UdpClient UdpClient;
-        public volatile bool DatabaseConnect;
-    }
-
-    public class EthernetOperationalThread
-    {
-        public ReaderWriterLockSlim RWLock = new ReaderWriterLockSlim();
-        public EthernetSer EthernetSer;
-        public EthernetOperational EthernetOperational;
         public bool IsReconnect;
+        public bool IsAvailableData;
+        public bool IsWork;
+    }
+
+    public class EthernetOperationalObject
+    {
+        public object LockValue = new object();
+        public object LockBool = new object();
+        public EthernetSer EthernetSer;
+        public EthernetOperational EthernetOperational;      
         public TcpClient TcpClient;
-        public bool DatabaseConnect;
+        public bool IsReconnect;
+        public bool IsAvailableData;
+        public bool IsWork;
     }
 
-    public class SerialPortThread : SerialPort
+    public class SerialPortObject : SerialPort
     {
-        public volatile bool IsWork;
+        public bool IsWork;
     }
 
-    public class SQLThread
+    public class SQLObject
     {
-        public volatile bool IsWork;
+        public bool IsWork;
         public Npgsql.NpgsqlConnection SQL;
     }
 
-    public class ModbusThread
+    public class ModbusObject
     {
-        public ReaderWriterLockSlim RWLock =new ReaderWriterLockSlim();
+        public object LockValue = new object();
+        public object LockAvailableData = new object();
+        public object LockSerialPort = new object();
         public Stopwatch TimerReconnect = new Stopwatch();
         public Stopwatch TimerPeriod = new Stopwatch();
         public ModbusControl ModbusControl;
-        public volatile bool IsReconnect;
         public SerialPort SerialPort;
         public ModbusSerialMaster ModbusSerialMaster;
-        public volatile bool DatabaseConnect;
         public List<StopwatchItemModbus> CollectionTimer = new List<StopwatchItemModbus>();
+        public bool IsWork;
+        public bool IsAvailableData;
+        public bool IsReconnect;
     }
 
     public class StopwatchItemNet : Stopwatch

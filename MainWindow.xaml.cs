@@ -7108,7 +7108,7 @@ namespace SCADA
 
                             if (app.ConfigProgramBin.UseDatabase)
                             {
-                                Thread threadDataBase = new Thread(ConnectedDataBase);
+                                Thread threadDataBase = new Thread(ConnectedDataBaseEthernet);
                                 threadDataBase.Start(Ethernet);
                             }
                         }
@@ -7124,7 +7124,7 @@ namespace SCADA
 
                             if (app.ConfigProgramBin.UseDatabase)
                             {
-                                Thread threadDataBase = new Thread(ConnectedDataBase);
+                                Thread threadDataBase = new Thread(ConnectedDataBaseEthernet);
                                 threadDataBase.Start(Ethernet);
                             }
                         }
@@ -7297,9 +7297,9 @@ namespace SCADA
 
         int Digital(ItemModbus Item, int countDigital)
         {
-            if ((countDigital - Item.Formula.Length) != 0)
+            if ((countDigital - Item.FormulaText.Length) != 0)
             {
-                if (char.IsDigit(Item.Formula, countDigital) || Item.Formula[countDigital] == '.' || Item.Formula[countDigital] == ',')
+                if (char.IsDigit(Item.FormulaText, countDigital) || Item.FormulaText[countDigital] == '.' || Item.FormulaText[countDigital] == ',')
                 {
                     countDigital++;
 
@@ -7397,21 +7397,21 @@ namespace SCADA
                                                 buffer[2] = BitConverter.GetBytes(data[1])[0];
                                                 buffer[3] = BitConverter.GetBytes(data[1])[1];
 
-                                                if (item.Formula.Length != 0)
+                                                if (item.FormulaText.Length != 0)
                                                 {
                                                     List<float> collectionDigital = new List<float>();
 
                                                     int countDigital = 0;
 
-                                                    if (item.Formula[0] == '/')
+                                                    if (item.FormulaText[0] == '/')
                                                     {
                                                         countDigital++;
 
-                                                        if ((countDigital - item.Formula.Length) != 0)
+                                                        if ((countDigital - item.FormulaText.Length) != 0)
                                                         {
                                                             countDigital = Digital(item, countDigital);
 
-                                                            collectionDigital.Add(float.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                            collectionDigital.Add(float.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                             lock(modbusSendObject.LockValue)
                                                             {                                                               
@@ -7426,19 +7426,19 @@ namespace SCADA
                                                             }                                                                                                                        
                                                         }
                                                     }
-                                                    else if (item.Formula.IndexOf("CSF") != -1)
+                                                    else if (item.FormulaText.IndexOf("CSF") != -1)
                                                     {
-                                                        if (item.Formula[3] == '/')
+                                                        if (item.FormulaText[3] == '/')
                                                         {
                                                             countDigital = 3;
 
                                                             countDigital++;
 
-                                                            if ((countDigital - item.Formula.Length) != 0)
+                                                            if ((countDigital - item.FormulaText.Length) != 0)
                                                             {
                                                                 countDigital = Digital(item, countDigital);
 
-                                                                collectionDigital.Add(float.Parse(item.Formula.Substring(4, countDigital - 4)));
+                                                                collectionDigital.Add(float.Parse(item.FormulaText.Substring(4, countDigital - 4)));
 
                                                                 lock (modbusSendObject.LockValue)
                                                                 {
@@ -7487,21 +7487,21 @@ namespace SCADA
                                                 buffer[0] = BitConverter.GetBytes(data[0])[0];
                                                 buffer[1] = BitConverter.GetBytes(data[0])[1];
 
-                                                if (item.Formula.Length != 0)
+                                                if (item.FormulaText.Length != 0)
                                                 {
                                                     List<short> collectionDigital = new List<short>();
 
                                                     int countDigital = 0;
 
-                                                    if (item.Formula[0] == '/')
+                                                    if (item.FormulaText[0] == '/')
                                                     {
                                                         countDigital++;
 
-                                                        if ((countDigital - item.Formula.Length) != 0)
+                                                        if ((countDigital - item.FormulaText.Length) != 0)
                                                         {
                                                             countDigital = Digital(item, countDigital);
 
-                                                            collectionDigital.Add(short.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                            collectionDigital.Add(short.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                             lock (modbusSendObject.LockValue)
                                                             {
@@ -7549,21 +7549,21 @@ namespace SCADA
                                                 buffer[0] = BitConverter.GetBytes(data[0])[0];
                                                 buffer[1] = BitConverter.GetBytes(data[0])[1];
 
-                                                if (item.Formula.Length != 0)
+                                                if (item.FormulaText.Length != 0)
                                                 {
                                                     List<ushort> collectionDigital = new List<ushort>();
 
                                                     int countDigital = 0;
 
-                                                    if (item.Formula[0] == '/')
+                                                    if (item.FormulaText[0] == '/')
                                                     {
                                                         countDigital++;
 
-                                                        if ((countDigital - item.Formula.Length) != 0)
+                                                        if ((countDigital - item.FormulaText.Length) != 0)
                                                         {
                                                             countDigital = Digital(item, countDigital);
 
-                                                            collectionDigital.Add(ushort.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                            collectionDigital.Add(ushort.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                             lock (modbusSendObject.LockValue)
                                                             {
@@ -7618,21 +7618,21 @@ namespace SCADA
                                                 buffer[2] = BitConverter.GetBytes(data[1])[0];
                                                 buffer[3] = BitConverter.GetBytes(data[1])[1];
 
-                                                if (item.Formula.Length != 0)
+                                                if (item.FormulaText.Length != 0)
                                                 {
                                                     List<int> collectionDigital = new List<int>();
 
                                                     int countDigital = 0;
 
-                                                    if (item.Formula[0] == '/')
+                                                    if (item.FormulaText[0] == '/')
                                                     {
                                                         countDigital++;
 
-                                                        if ((countDigital - item.Formula.Length) != 0)
+                                                        if ((countDigital - item.FormulaText.Length) != 0)
                                                         {
                                                             countDigital = Digital(item, countDigital);
 
-                                                            collectionDigital.Add(int.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                            collectionDigital.Add(int.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                             lock (modbusSendObject.LockValue)
                                                             {
@@ -7687,21 +7687,21 @@ namespace SCADA
                                                 buffer[2] = BitConverter.GetBytes(data[1])[0];
                                                 buffer[3] = BitConverter.GetBytes(data[1])[1];
 
-                                                if (item.Formula.Length != 0)
+                                                if (item.FormulaText.Length != 0)
                                                 {
                                                     List<uint> collectionDigital = new List<uint>();
 
                                                     int countDigital = 0;
 
-                                                    if (item.Formula[0] == '/')
+                                                    if (item.FormulaText[0] == '/')
                                                     {
                                                         countDigital++;
 
-                                                        if ((countDigital - item.Formula.Length) != 0)
+                                                        if ((countDigital - item.FormulaText.Length) != 0)
                                                         {
                                                             countDigital = Digital(item, countDigital);
 
-                                                            collectionDigital.Add(uint.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                            collectionDigital.Add(uint.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                             lock (modbusSendObject.LockValue)
                                                             {
@@ -7916,27 +7916,27 @@ namespace SCADA
                                                     {                                                    
                                                         if (timer.ItemModbus.TypeValue == "int")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "uint")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "short")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "byte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "bool")
                                                         {
@@ -7951,7 +7951,7 @@ namespace SCADA
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "float")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                         }
                                                     }                                                    
                                                 }                                               
@@ -7962,27 +7962,27 @@ namespace SCADA
                                                 {                                                    
                                                     if (timer.ItemModbus.TypeValue == "int")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "uint")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "short")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "ushort")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "byte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "sbyte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "bool")
                                                     {
@@ -7997,7 +7997,7 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "float")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                     }
                                                 }                                               
                                             }
@@ -8026,27 +8026,27 @@ namespace SCADA
 
                                                         if (timer.ItemModbus.TypeValue == "int")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "uint")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "short")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "byte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "bool")
                                                         {
@@ -8061,7 +8061,7 @@ namespace SCADA
                                                         }
                                                         else if (timer.ItemModbus.TypeValue == "float")
                                                         {
-                                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
+                                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                         }
                                                     }
                                                     
@@ -8075,27 +8075,27 @@ namespace SCADA
 
                                                     if (timer.ItemModbus.TypeValue == "int")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "uint")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "short")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "ushort")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "byte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "sbyte")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "bool")
                                                     {
@@ -8110,7 +8110,7 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemModbus.TypeValue == "float")
                                                     {
-                                                        FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
+                                                        FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                                     }
                                                 }                                               
                                             }
@@ -8124,33 +8124,35 @@ namespace SCADA
                                     {
                                         timer.Reset();
 
-                                        modbusObject.RWLock.EnterReadLock();
-                                        value = timer.ItemModbus.Value;
-                                        modbusObject.RWLock.ExitReadLock();
+                                        lock (modbusObject.LockValue)
+                                        {
+                                            value = timer.ItemModbus.Value;
+                                            prevValue = timer.PrevValue;
+                                        }
 
                                         if (timer.ItemModbus.TypeValue == "int")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "uint")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "short")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "ushort")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "byte")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "sbyte")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint, modbusObject);
                                         }
                                         else if (timer.ItemModbus.TypeValue == "bool")
                                         {
@@ -8165,7 +8167,7 @@ namespace SCADA
                                         }
                                         else if (timer.ItemModbus.TypeValue == "float")
                                         {
-                                            FormulaModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
+                                            FormulaSaveDatabaseModbus(prevValue, value, timer, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real, modbusObject);
                                         }
                                     }
                                 }
@@ -8223,7 +8225,7 @@ namespace SCADA
             }
         }
 
-        private void FormulaModbus(object PrevValue, object Value, StopwatchItemModbus timer, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType, ModbusObject mst)
+        private void FormulaSaveDatabaseModbus(object PrevValue, object Value, StopwatchItemModbus timer, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType, ModbusObject mst)
         {
             if (Value is float)
             {
@@ -8240,9 +8242,9 @@ namespace SCADA
                 }
             }
 
-            if (timer.ItemModbus.Formula.Length > 0)
+            if (timer.ItemModbus.FormulaText.Length > 0)
             {
-                int i2 = timer.ItemModbus.Formula.LastIndexOf("NDB");
+                int i2 = timer.ItemModbus.FormulaText.LastIndexOf("NDB");
 
                 if (i2 != -1)
                 {
@@ -8251,13 +8253,13 @@ namespace SCADA
                     int firstDigital = i2 + 3;
                     int endDigital = 0;
 
-                    if (char.IsDigit(timer.ItemModbus.Formula, firstDigital))
+                    if (char.IsDigit(timer.ItemModbus.FormulaText, firstDigital))
                     {
-                        if ((firstDigital - timer.ItemModbus.Formula.Length) != 0)
+                        if ((firstDigital - timer.ItemModbus.FormulaText.Length) != 0)
                         {
                             endDigital = Digital(timer.ItemModbus, firstDigital);
                             int diff = endDigital - firstDigital;
-                            string tt = timer.ItemModbus.Formula.Substring(firstDigital, diff);
+                            string tt = timer.ItemModbus.FormulaText.Substring(firstDigital, diff);
                             tt = tt.Replace(',', '.');
 
                             collectionDigital.Add(decimal.Parse(tt, CultureInfo.InvariantCulture));
@@ -8270,7 +8272,7 @@ namespace SCADA
                     }
                 }
 
-                int i = timer.ItemModbus.Formula.LastIndexOf("SDB");
+                int i = timer.ItemModbus.FormulaText.LastIndexOf("SDB");
 
                 if (i != -1)
                 {
@@ -8279,11 +8281,11 @@ namespace SCADA
                     int firstDigital = i + 3;
                     int endDigital = 0;
 
-                    if (char.IsDigit(timer.ItemModbus.Formula, firstDigital))
+                    if (char.IsDigit(timer.ItemModbus.FormulaText, firstDigital))
                     {                       
                         endDigital = Digital(timer.ItemModbus, firstDigital);
                         int diff = endDigital - firstDigital;
-                        string tt = timer.ItemModbus.Formula.Substring(firstDigital, diff);
+                        string tt = timer.ItemModbus.FormulaText.Substring(firstDigital, diff);
                         tt = tt.Replace(',', '.');
 
                         collectionDigital.Add(decimal.Parse(tt, CultureInfo.InvariantCulture));
@@ -8365,7 +8367,7 @@ namespace SCADA
             }
         }
 
-        private void Formula(StopwatchItemNet timer, object value, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType)
+        private void FormulaSaveDatabaseEthernet(object PrevValue, StopwatchItemNet timer, object value, Npgsql.NpgsqlParameter parametrValue, Npgsql.NpgsqlParameter parametrDateTime, Npgsql.NpgsqlCommand cmd, NpgsqlDbType dbType)
         {           
             if (value is float)
             {
@@ -8427,9 +8429,9 @@ namespace SCADA
 
                         collectionDigital.Add(decimal.Parse(tt, NumberStyles.Any, CultureInfo.InvariantCulture));
 
-                        if (timer.PrevValue != null)
+                        if (PrevValue != null)
                         {
-                            if (timer.PrevValue is float)
+                            if (PrevValue is float)
                             {
                                 if (float.IsNaN((float)timer.PrevValue) || float.IsInfinity((float)timer.PrevValue))
                                 {
@@ -8511,9 +8513,9 @@ namespace SCADA
             }           
         }
 
-        private void ConnectedDataBase(object obj)
+        private void ConnectedDataBaseEthernet(object obj)
         {
-            EthernetObject ethernetSendTread = (EthernetObject)obj;
+            EthernetObject ethernetObject = (EthernetObject)obj;
 
             Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
 
@@ -8531,7 +8533,7 @@ namespace SCADA
                 parametrValue.ParameterName = "Value";
                 parametrValue.NpgsqlDbType = NpgsqlDbType.Real;
 
-                foreach (ItemNet itemNet in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+                foreach (ItemNet itemNet in ethernetObject.EthernetSer.CollectionItemNetRec)
                 {
                     if (itemNet.IsSaveDatabase || itemNet.IsEmergencySaveDB)
                     {
@@ -8544,7 +8546,7 @@ namespace SCADA
                     }
                 }
 
-                foreach (ItemNet itemNet in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+                foreach (ItemNet itemNet in ethernetObject.EthernetSer.CollectionItemNetSend)
                 {
                     if (itemNet.IsSaveDatabase || itemNet.IsEmergencySaveDB)
                     {
@@ -8589,6 +8591,8 @@ namespace SCADA
 
                 CollectionSQLObject.Add(SqlConn);
 
+                bool isAvailableData;
+
                 while (true)
                 {
                     if (IsStop)
@@ -8599,7 +8603,12 @@ namespace SCADA
                         return;
                     }
 
-                    if (ethernetSendTread.DatabaseConnect)
+                    lock(ethernetObject.LockBool)
+                    {
+                        isAvailableData = ethernetObject.IsAvailableData;
+                    }
+
+                    if (isAvailableData)
                     {
                         foreach (StopwatchItemNet timer in collectionTimer)
                         {
@@ -8615,11 +8624,11 @@ namespace SCADA
 
                                     if (timer.EmergencyTimerUp.ElapsedMilliseconds >= (timer.ItemNet.PeriodEmergencySaveDB * 1000))
                                     {
-                                        ethernetSendTread.RWLock.EnterReadLock();
-                                        value = timer.ItemNet.Value;
-                                        ethernetSendTread.RWLock.ExitReadLock();
-
-                                        timer.Reset();
+                                        lock(ethernetObject.LockValue)
+                                        {
+                                            value = timer.ItemNet.Value;
+                                        }
+                                        
                                         timer.EmergencyTimerUp.Reset();
 
                                         if (value is float)
@@ -8630,35 +8639,35 @@ namespace SCADA
                                                 {                                                                                                        
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -8672,15 +8681,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -8713,35 +8722,35 @@ namespace SCADA
                                                 {                                                    
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -8755,15 +8764,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -8794,35 +8803,35 @@ namespace SCADA
                                             {                                                                                               
                                                 if (timer.ItemNet.TypeValue == "long")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ulong")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "int")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "uint")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "short")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ushort")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "byte")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "sbyte")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "bool")
                                                 {
@@ -8836,15 +8845,15 @@ namespace SCADA
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "decimal")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "float")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "double")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "char")
                                                 {
@@ -8877,9 +8886,12 @@ namespace SCADA
 
                                     if (timer.EmergencyTimerDown.ElapsedMilliseconds >= (timer.ItemNet.PeriodEmergencySaveDB * 1000))
                                     {
-                                        ethernetSendTread.RWLock.EnterReadLock();
-                                        value = timer.ItemNet.Value;
-                                        ethernetSendTread.RWLock.ExitReadLock();
+                                        timer.EmergencyTimerDown.Reset();
+
+                                        lock (ethernetObject.LockValue)
+                                        {
+                                            value = timer.ItemNet.Value;
+                                        }
 
                                         if (timer.ItemNet.Value is float)
                                         {
@@ -8889,35 +8901,35 @@ namespace SCADA
                                                 {                                                 
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -8931,15 +8943,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -8972,35 +8984,35 @@ namespace SCADA
                                                 {                                                   
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -9014,15 +9026,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -9053,35 +9065,35 @@ namespace SCADA
                                             {                                                                                              
                                                 if (timer.ItemNet.TypeValue == "long")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ulong")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "int")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "uint")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "short")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ushort")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "byte")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "sbyte")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "bool")
                                                 {
@@ -9095,15 +9107,15 @@ namespace SCADA
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "decimal")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "float")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "double")
                                                 {
-                                                    Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "char")
                                                 {
@@ -9135,43 +9147,43 @@ namespace SCADA
                             {
                                 if (timer.ElapsedMilliseconds >= (timer.ItemNet.PeridTimeSaveDB * 1000))
                                 {
-                                    ethernetSendTread.RWLock.EnterReadLock();
+                                    ethernetObject.RWLock.EnterReadLock();
                                     value = timer.ItemNet.Value;
-                                    ethernetSendTread.RWLock.ExitReadLock();
+                                    ethernetObject.RWLock.ExitReadLock();
 
                                     timer.Reset();
 
                                     if (timer.ItemNet.TypeValue == "long")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                     }
                                     else if (timer.ItemNet.TypeValue == "ulong")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "int")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                     }
                                     else if (timer.ItemNet.TypeValue == "uint")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "short")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "ushort")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                     }
                                     else if (timer.ItemNet.TypeValue == "byte")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "bool")
                                     {
@@ -9185,15 +9197,15 @@ namespace SCADA
                                     }
                                     else if (timer.ItemNet.TypeValue == "decimal")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                     }
                                     else if (timer.ItemNet.TypeValue == "float")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                     }
                                     else if (timer.ItemNet.TypeValue == "double")
                                     {
-                                        Formula(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                     }
                                     else if (timer.ItemNet.TypeValue == "char")
                                     {
@@ -9236,15 +9248,15 @@ namespace SCADA
                             {
                                 CollectionMessage.RemoveAt(0);
 
-                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                                   + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1]
+                                   + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
                             }
                             else
                             {
-                                CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                                   + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+                                CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1]
+                                   + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
                             }
                         }));
                     }
@@ -9257,15 +9269,15 @@ namespace SCADA
                         {
                             CollectionMessage.RemoveAt(0);
 
-                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                               + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                            "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1]
+                               + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                            "." + ethernetObject.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
                         }
                         else
                         {
-                            CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                               + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                            "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+                            CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1]
+                               + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                            "." + ethernetObject.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
                         }
                     }));
                 }
@@ -9275,9 +9287,9 @@ namespace SCADA
                 SqlConn.Close();
                 SqlConn.Dispose();
 
-                if (ethernetSendTread.RWLock.IsReadLockHeld)
+                if (ethernetObject.RWLock.IsReadLockHeld)
                 {
-                    ethernetSendTread.RWLock.ExitReadLock();
+                    ethernetObject.RWLock.ExitReadLock();
                 }
             }
         }
@@ -9632,7 +9644,7 @@ namespace SCADA
             }
         } 
 
-        byte[] formula(ItemNet item, int periodTime)
+        byte[] Formula(ItemNet item, int periodTime)
         {
             string modbusID;
             string itemModbusID;
@@ -9892,7 +9904,7 @@ namespace SCADA
                                         {
                                             if (item.TypeValue == "float")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9911,7 +9923,7 @@ namespace SCADA
                                             {
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToDouble(formula(item, ethernetObject.EthernetSer.Time), 0);
+                                                    item.Value = BitConverter.ToDouble(Formula(item, ethernetObject.EthernetSer.Time), 0);
                                                 }
                                             }
                                             else if (item.TypeValue == "decimal")
@@ -9927,7 +9939,7 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "byte")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9941,7 +9953,7 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "sbyte")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9955,7 +9967,7 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "short")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9970,7 +9982,7 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "ushort")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9985,7 +9997,7 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "int")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -10002,7 +10014,7 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "uint")
                                             {
-                                                formulaBuff = formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -10430,7 +10442,7 @@ namespace SCADA
                                     {
                                         if (item.TypeValue == "float")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10447,7 +10459,7 @@ namespace SCADA
                                         else if (item.TypeValue == "double")
                                         {
                                             ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToDouble(formula(item, ethernetSendTread.EthernetSer.Time), 0);
+                                            item.Value = BitConverter.ToDouble(Formula(item, ethernetSendTread.EthernetSer.Time), 0);
                                             ethernetSendTread.RWLock.ExitWriteLock();
                                         }
                                         else if (item.TypeValue == "decimal")
@@ -10462,7 +10474,7 @@ namespace SCADA
                                         }
                                         else if (item.TypeValue == "byte")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10475,7 +10487,7 @@ namespace SCADA
                                         }
                                         else if (item.TypeValue == "sbyte")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10488,7 +10500,7 @@ namespace SCADA
                                         }
                                         else if (item.TypeValue == "short")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10502,7 +10514,7 @@ namespace SCADA
                                         }
                                         else if (item.TypeValue == "ushort")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10516,7 +10528,7 @@ namespace SCADA
                                         }
                                         else if (item.TypeValue == "int")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10532,7 +10544,7 @@ namespace SCADA
                                         }
                                         else if (item.TypeValue == "uint")
                                         {
-                                            formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
 
                                             if (formulaBuff != null)
                                             {
@@ -10846,326 +10858,326 @@ namespace SCADA
             }                     
         }
 
-        private void ConnectedEthernetOperational(object obj)
-        {
-            EthernetObject ethernetSendTread = (EthernetObject)obj;
+        //private void ConnectedEthernetOperational(object obj)
+        //{
+        //    EthernetObject ethernetSendTread = (EthernetObject)obj;
 
-            string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
+        //    string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
 
-            if (!IsStop)
-            {
-                try
-                {
-                    bool IsLink = false;
+        //    if (!IsStop)
+        //    {
+        //        try
+        //        {
+        //            bool IsLink = false;
 
-                    IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
+        //            IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
 
-                    ethernetSendTread.TcpClient = new TcpClient(localPoint);
-                    ethernetSendTread.TcpClient.ReceiveTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-                    ethernetSendTread.TcpClient.SendTimeout = 5000;
+        //            ethernetSendTread.TcpClient = new TcpClient(localPoint);
+        //            ethernetSendTread.TcpClient.ReceiveTimeout = ethernetSendTread.EthernetSer.Time * 2000;
+        //            ethernetSendTread.TcpClient.SendTimeout = 5000;
 
-                    byte[] bRead = new byte[ethernetSendTread.EthernetSer.BufferSizeRec + 1];
-                    byte[] bWrite = new byte[ethernetSendTread.EthernetSer.BufferSizeSend + 1];
+        //            byte[] bRead = new byte[ethernetSendTread.EthernetSer.BufferSizeRec + 1];
+        //            byte[] bWrite = new byte[ethernetSendTread.EthernetSer.BufferSizeSend + 1];
 
-                    ethernetSendTread.TcpClient.Connect(IPAddress.Parse(IPAddressServer), ethernetSendTread.EthernetSer.PortServer);
+        //            ethernetSendTread.TcpClient.Connect(IPAddress.Parse(IPAddressServer), ethernetSendTread.EthernetSer.PortServer);
 
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                    {
-                        if (CollectionMessage.Count > 300)
-                        {
-                            CollectionMessage.RemoveAt(0);
+        //            this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        //            {
+        //                if (CollectionMessage.Count > 300)
+        //                {
+        //                    CollectionMessage.RemoveAt(0);
 
-                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
-                        }
-                        else
-                        {
-                            CollectionMessage.Add("Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
-                        }  
-                    }));
+        //                    CollectionMessage.Insert(298, "Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
+        //                }
+        //                else
+        //                {
+        //                    CollectionMessage.Add("Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
+        //                }  
+        //            }));
 
-                    NetworkStream stream = ethernetSendTread.TcpClient.GetStream();
+        //            NetworkStream stream = ethernetSendTread.TcpClient.GetStream();
 
-                    int[] aDecimal = new int[3];
+        //            int[] aDecimal = new int[3];
 
-                    Stopwatch timeCheckExit = new Stopwatch();
-                    Stopwatch timeRecconect = new Stopwatch();
+        //            Stopwatch timeCheckExit = new Stopwatch();
+        //            Stopwatch timeRecconect = new Stopwatch();
 
-                    byte[] formulaBuff;
+        //            byte[] formulaBuff;
 
-                    int link = 0;
-                    bool linkDetected = false;
+        //            int link = 0;
+        //            bool linkDetected = false;
 
-                    foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-                    {
-                        if (item.Text.IndexOf("IsLink") != -1)
-                        {
-                            link = item.Range0;
-                        }
-                    }
+        //            foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+        //            {
+        //                if (item.Text.IndexOf("IsLink") != -1)
+        //                {
+        //                    link = item.Range0;
+        //                }
+        //            }
 
-                    while (true)
-                    {
-                        stream.Read(bRead, 0, bRead.Length);
+        //            while (true)
+        //            {
+        //                stream.Read(bRead, 0, bRead.Length);
 
-                        if (linkDetected)
-                        {
-                            IsLink = BitConverter.ToBoolean(bRead, link);
+        //                if (linkDetected)
+        //                {
+        //                    IsLink = BitConverter.ToBoolean(bRead, link);
 
-                            if (IsLink)
-                            {
-                                timeRecconect.Restart();
-                                ethernetSendTread.DatabaseConnect = true;
-                            }
-                            else
-                            {
-                                ethernetSendTread.DatabaseConnect = false;
+        //                    if (IsLink)
+        //                    {
+        //                        timeRecconect.Restart();
+        //                        ethernetSendTread.DatabaseConnect = true;
+        //                    }
+        //                    else
+        //                    {
+        //                        ethernetSendTread.DatabaseConnect = false;
 
-                                timeRecconect.Start();
+        //                        timeRecconect.Start();
 
-                                if (timeRecconect.ElapsedMilliseconds >= ((ethernetSendTread.EthernetSer.Time * 1000) * 3))
-                                {
-                                    throw new Exception("Нет приема новых данных, разрываем соединение и переподключаемся.");
-                                }
-                            }
-                        }
+        //                        if (timeRecconect.ElapsedMilliseconds >= ((ethernetSendTread.EthernetSer.Time * 1000) * 3))
+        //                        {
+        //                            throw new Exception("Нет приема новых данных, разрываем соединение и переподключаемся.");
+        //                        }
+        //                    }
+        //                }
 
-                        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-                        {
-                            if (item.TypeValue == "float")
-                            {
-                                item.Value = BitConverter.ToSingle(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "double")
-                            {
-                                item.Value = BitConverter.ToDouble(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "decimal")
-                            {
-                                aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-                                aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-                                aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+        //                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+        //                {
+        //                    if (item.TypeValue == "float")
+        //                    {
+        //                        item.Value = BitConverter.ToSingle(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "double")
+        //                    {
+        //                        item.Value = BitConverter.ToDouble(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "decimal")
+        //                    {
+        //                        aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+        //                        aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+        //                        aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
 
-                                item.Value = new Decimal(aDecimal);
-                            }
-                            else if (item.TypeValue == "byte")
-                            {
-                                item.Value = bRead[item.Range0];
-                            }
-                            else if (item.TypeValue == "sbyte")
-                            {
-                                item.Value = (sbyte)bRead[item.Range0];
-                            }
-                            else if (item.TypeValue == "short")
-                            {
-                                item.Value = BitConverter.ToInt16(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "ushort")
-                            {
-                                item.Value = BitConverter.ToUInt16(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "int")
-                            {
-                                item.Value = BitConverter.ToInt32(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "uint")
-                            {
-                                item.Value = BitConverter.ToUInt32(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "long")
-                            {
-                                item.Value = BitConverter.ToInt64(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "ulong")
-                            {
-                                item.Value = BitConverter.ToUInt64(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "bool")
-                            {
-                                formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = new Decimal(aDecimal);
+        //                    }
+        //                    else if (item.TypeValue == "byte")
+        //                    {
+        //                        item.Value = bRead[item.Range0];
+        //                    }
+        //                    else if (item.TypeValue == "sbyte")
+        //                    {
+        //                        item.Value = (sbyte)bRead[item.Range0];
+        //                    }
+        //                    else if (item.TypeValue == "short")
+        //                    {
+        //                        item.Value = BitConverter.ToInt16(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "ushort")
+        //                    {
+        //                        item.Value = BitConverter.ToUInt16(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "int")
+        //                    {
+        //                        item.Value = BitConverter.ToInt32(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "uint")
+        //                    {
+        //                        item.Value = BitConverter.ToUInt32(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "long")
+        //                    {
+        //                        item.Value = BitConverter.ToInt64(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "ulong")
+        //                    {
+        //                        item.Value = BitConverter.ToUInt64(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "bool")
+        //                    {
+        //                        formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                item.Value = BitConverter.ToBoolean(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "char")
-                            {
-                                item.Value = BitConverter.ToChar(bRead, item.Range0);
-                            }
-                            else if (item.TypeValue == "string")
-                            {
-                                item.Value = BitConverter.ToString(bRead, item.Range0);
-                            }
-                        }
+        //                        item.Value = BitConverter.ToBoolean(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "char")
+        //                    {
+        //                        item.Value = BitConverter.ToChar(bRead, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "string")
+        //                    {
+        //                        item.Value = BitConverter.ToString(bRead, item.Range0);
+        //                    }
+        //                }
 
-                        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-                        {
-                            if (item.TypeValue == "float")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+        //                {
+        //                    if (item.TypeValue == "float")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                    bWrite[item.Range0 + 2] = formulaBuff[2];
-                                    bWrite[item.Range0 + 3] = formulaBuff[3];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                            bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                            bWrite[item.Range0 + 2] = formulaBuff[2];
+        //                            bWrite[item.Range0 + 3] = formulaBuff[3];
+        //                        }
 
-                                item.Value = BitConverter.ToSingle(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "double")
-                            {
-                                item.Value = BitConverter.ToDouble(formula(item, ethernetSendTread.EthernetSer.Time), 0);
-                            }
-                            else if (item.TypeValue == "decimal")
-                            {
-                                aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-                                aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-                                aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+        //                        item.Value = BitConverter.ToSingle(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "double")
+        //                    {
+        //                        item.Value = BitConverter.ToDouble(formula(item, ethernetSendTread.EthernetSer.Time), 0);
+        //                    }
+        //                    else if (item.TypeValue == "decimal")
+        //                    {
+        //                        aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+        //                        aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+        //                        aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
 
-                                item.Value = new Decimal(aDecimal);
-                            }
-                            else if (item.TypeValue == "byte")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = new Decimal(aDecimal);
+        //                    }
+        //                    else if (item.TypeValue == "byte")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                        }
 
-                                item.Value = bWrite[item.Range0];
-                            }
-                            else if (item.TypeValue == "sbyte")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = bWrite[item.Range0];
+        //                    }
+        //                    else if (item.TypeValue == "sbyte")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                        }
 
-                                item.Value = (sbyte)bRead[item.Range0];
-                            }
-                            else if (item.TypeValue == "short")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = (sbyte)bRead[item.Range0];
+        //                    }
+        //                    else if (item.TypeValue == "short")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                            bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                        }
 
-                                item.Value = BitConverter.ToInt16(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "ushort")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = BitConverter.ToInt16(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "ushort")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                            bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                        }
 
-                                item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "int")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "int")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                    bWrite[item.Range0 + 2] = formulaBuff[2];
-                                    bWrite[item.Range0 + 3] = formulaBuff[3];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                            bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                            bWrite[item.Range0 + 2] = formulaBuff[2];
+        //                            bWrite[item.Range0 + 3] = formulaBuff[3];
+        //                        }
 
-                                item.Value = BitConverter.ToInt32(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "uint")
-                            {
-                                formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
+        //                        item.Value = BitConverter.ToInt32(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "uint")
+        //                    {
+        //                        formulaBuff = formula(item, ethernetSendTread.EthernetSer.Time);
 
-                                if (formulaBuff == null)
-                                {
-                                    bWrite[item.Range0] = formulaBuff[0];
-                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                    bWrite[item.Range0 + 2] = formulaBuff[2];
-                                    bWrite[item.Range0 + 3] = formulaBuff[3];
-                                }
+        //                        if (formulaBuff == null)
+        //                        {
+        //                            bWrite[item.Range0] = formulaBuff[0];
+        //                            bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                            bWrite[item.Range0 + 2] = formulaBuff[2];
+        //                            bWrite[item.Range0 + 3] = formulaBuff[3];
+        //                        }
 
-                                item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "long")
-                            {
-                                item.Value = BitConverter.ToInt64(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "ulong")
-                            {
-                                item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "bool")
-                            {
-                                item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "char")
-                            {
-                                item.Value = BitConverter.ToChar(bWrite, item.Range0);
-                            }
-                            else if (item.TypeValue == "string")
-                            {
-                                item.Value = BitConverter.ToString(bWrite, item.Range0);
-                            }
-                        }
+        //                        item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "long")
+        //                    {
+        //                        item.Value = BitConverter.ToInt64(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "ulong")
+        //                    {
+        //                        item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "bool")
+        //                    {
+        //                        item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "char")
+        //                    {
+        //                        item.Value = BitConverter.ToChar(bWrite, item.Range0);
+        //                    }
+        //                    else if (item.TypeValue == "string")
+        //                    {
+        //                        item.Value = BitConverter.ToString(bWrite, item.Range0);
+        //                    }
+        //                }
 
-                        stream.Write(bWrite, 0, bWrite.Length);
+        //                stream.Write(bWrite, 0, bWrite.Length);
 
-                        IsLink = false;
+        //                IsLink = false;
 
-                        while (true)
-                        {
-                            Thread.Sleep(20);
+        //                while (true)
+        //                {
+        //                    Thread.Sleep(20);
 
-                            if (IsStop)
-                            {
-                                return;
-                            }
+        //                    if (IsStop)
+        //                    {
+        //                        return;
+        //                    }
 
-                            timeCheckExit.Start();
+        //                    timeCheckExit.Start();
 
-                            if ((ethernetSendTread.EthernetSer.Time * 1000) >= timeCheckExit.ElapsedMilliseconds)
-                            {
-                                timeCheckExit.Reset();
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch (SystemException ex)
-                {
-                    if (!IsStop)
-                    {
-                        ethernetSendTread.IsReconnect = true;
+        //                    if ((ethernetSendTread.EthernetSer.Time * 1000) >= timeCheckExit.ElapsedMilliseconds)
+        //                    {
+        //                        timeCheckExit.Reset();
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch (SystemException ex)
+        //        {
+        //            if (!IsStop)
+        //            {
+        //                ethernetSendTread.IsReconnect = true;
 
-                        //this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                        //{
-                        //    CountLineTextMessage++;
-                        //    WindowErrorMessages.LBMessageError.Text += "\n" + "Сообщение " + CountLineTextMessage.ToString() + " : " + "Ошибка в опросе IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now;
-                        //}));
-                    }
-                }
-                finally
-                {
-                    ethernetSendTread.DatabaseConnect = false;
+        //                //this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        //                //{
+        //                //    CountLineTextMessage++;
+        //                //    WindowErrorMessages.LBMessageError.Text += "\n" + "Сообщение " + CountLineTextMessage.ToString() + " : " + "Ошибка в опросе IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now;
+        //                //}));
+        //            }
+        //        }
+        //        finally
+        //        {
+        //            ethernetSendTread.DatabaseConnect = false;
 
-                    if (ethernetSendTread.TcpClient != null)
-                    {
-                        ethernetSendTread.TcpClient.Close();
-                    }
-                }
-            }
-        }
+        //            if (ethernetSendTread.TcpClient != null)
+        //            {
+        //                ethernetSendTread.TcpClient.Close();
+        //            }
+        //        }
+        //    }
+        //}
 
         private void BStopProject_Click(object sender, RoutedEventArgs e)
         {            

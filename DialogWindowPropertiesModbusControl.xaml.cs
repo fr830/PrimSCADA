@@ -275,9 +275,9 @@ namespace SCADA
                         isSave = true;
                     }
 
-                    if (ModbusControl.ModbusSer.CollectionItemModbus[count].Formula != itemNew.Formula)
+                    if (ModbusControl.ModbusSer.CollectionItemModbus[count].FormulaText != itemNew.FormulaText)
                     {
-                        ModbusControl.ModbusSer.CollectionItemModbus[count].Formula = itemNew.Formula;
+                        ModbusControl.ModbusSer.CollectionItemModbus[count].FormulaText = itemNew.FormulaText;
                         isSave = true;
                     }
 

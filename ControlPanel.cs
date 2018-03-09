@@ -486,9 +486,9 @@ namespace SCADA
     { }
 
     [Serializable]
-    public class ItemModbus : INotifyPropertyChanged
+    public class Item : INotifyPropertyChanged
     {
-        [field: NonSerializedAttribute()]
+        [field: NonSerialized()]
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -499,46 +499,8 @@ namespace SCADA
             }
         }
 
-        public string TypeValue { get; set; }
-        public string Description { get; set; }
-        public bool IsSaveDatabase { get; set; }
-        public string TableName { get; set; }
-        public int PeridTimeSaveDB { get; set; }
-        public ushort Address { get; set; }
-        public string Formula { get; set; }
-        public string Text { get; set; }
-        public object EmergencyUp { get; set; }
-        public object EmergencyDown { get; set; }
-        public bool IsEmergencySaveDB { get; set; }
-        public int PeriodEmergencySaveDB { get; set; }
-        public bool IsEmergencyUp { get; set; }
-        public bool IsEmergencyDown { get; set; }
-        public int Function { get; set; }
-
-        public string ID { get; set; }
-
-        public bool IsEmergencyUpDG
-        {
-            get { return IsEmergencyUp; }
-            set
-            {
-                IsEmergencyUp = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEmergencyUpDG"));
-            }
-        }
-
-        public bool IsEmergencyDownDG
-        {
-            get { return IsEmergencyDown; }
-            set
-            {
-                IsEmergencyDown = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEmergencyDownDG"));
-            }
-        }
-
         [field: NonSerializedAttribute()]
-        private volatile object valueItem;
+        private object valueItem;
         public object Value
         {
             get { return valueItem; }
@@ -561,6 +523,66 @@ namespace SCADA
             }
         }
 
+        public bool IsEmergencyUpDG
+        {
+            get { return IsEmergencyUp; }
+            set
+            {
+                IsEmergencyUp = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("IsEmergencyUpDG"));
+            }
+        }
+
+        public bool IsEmergencyDownDG
+        {
+            get { return IsEmergencyDown; }
+            set
+            {
+                IsEmergencyDown = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("IsEmergencyDownDG"));
+            }
+        }
+
+        public string TypeValue { get; set; }
+        public string Description { get; set; }
+        public bool IsSaveDatabase { get; set; }
+        public string TableName { get; set; }
+        public int PeridTimeSaveDB { get; set; }
+        public string FormulaText { get; set; }
+        public string Text { get; set; }
+        public bool IsEmergencySaveDB { get; set; }
+        public int PeriodEmergencySaveDB { get; set; }
+        public bool IsEmergencyUp { get; set; }
+        public bool IsEmergencyDown { get; set; }
+        public object EmergencyUp { get; set; }
+        public object EmergencyDown { get; set; }
+        public string ID { get; set; }
+
+        public Item()
+        {
+            TypeValue = "float";
+            Value = "###";
+            Description = "Описание " + ((AppWPF)Application.Current).GenerateTextName.Next();
+            IsSaveDatabase = false;
+            TableName = "";
+            PeridTimeSaveDB = 120;
+            FormulaText = "";
+            Text = "";
+            EmergencyUp = 0;
+            EmergencyDown = 0;
+            PeriodEmergencySaveDB = 60;
+            ID = ((AppWPF)Application.Current).GenerateID();
+        }
+    }
+
+    [Serializable]
+    public class ItemModbus : Item
+    {                                      
+        public ushort Address { get; set; }                      
+                    
+        [field: NonSerializedAttribute()]
+        private object valueItem;
+              
         public static bool operator ==(ItemModbus op1, ItemModbus op2)
         {
             if ((object)op1 == null)
@@ -608,7 +630,7 @@ namespace SCADA
             // Return true if the fields match:
             if (ID == itemModbus.ID && Description == itemModbus.Description && Function == itemModbus.Function && TypeValue == itemModbus.TypeValue && IsSaveDatabase == itemModbus.IsSaveDatabase
                  && TableName == itemModbus.TableName && PeridTimeSaveDB == itemModbus.PeridTimeSaveDB && Address == itemModbus.Address
-                && Formula == itemModbus.Formula && Text == itemModbus.Text && Convert.ToSingle(EmergencyUp, CultureInfo.InvariantCulture) == Convert.ToSingle(itemModbus.EmergencyUp, CultureInfo.InvariantCulture)
+                && FormulaText == itemModbus.FormulaText && Text == itemModbus.Text && Convert.ToSingle(EmergencyUp, CultureInfo.InvariantCulture) == Convert.ToSingle(itemModbus.EmergencyUp, CultureInfo.InvariantCulture)
                 && Convert.ToSingle(EmergencyDown, CultureInfo.InvariantCulture) == Convert.ToSingle(itemModbus.EmergencyDown, CultureInfo.InvariantCulture) && IsEmergencyUp == itemModbus.IsEmergencyUp && IsEmergencyDown == itemModbus.IsEmergencyDown
                 && IsEmergencySaveDB == itemModbus.IsEmergencySaveDB && PeriodEmergencySaveDB == itemModbus.PeriodEmergencySaveDB)
             {
@@ -631,7 +653,7 @@ namespace SCADA
             // Return true if the fields match:
             if (ID == itemModbus.ID && Description == itemModbus.Description && Function == itemModbus.Function && TypeValue == itemModbus.TypeValue && IsSaveDatabase == itemModbus.IsSaveDatabase
                  && TableName == itemModbus.TableName && PeridTimeSaveDB == itemModbus.PeridTimeSaveDB && Address == itemModbus.Address
-                && Formula == itemModbus.Formula && Text == itemModbus.Text && Convert.ToSingle(EmergencyUp, CultureInfo.InvariantCulture) == Convert.ToSingle(itemModbus.EmergencyUp, CultureInfo.InvariantCulture)
+                && FormulaText == itemModbus.FormulaText && Text == itemModbus.Text && Convert.ToSingle(EmergencyUp, CultureInfo.InvariantCulture) == Convert.ToSingle(itemModbus.EmergencyUp, CultureInfo.InvariantCulture)
                 && Convert.ToSingle(EmergencyDown, CultureInfo.InvariantCulture) == Convert.ToSingle(itemModbus.EmergencyDown, CultureInfo.InvariantCulture) && IsEmergencyUp == itemModbus.IsEmergencyUp && IsEmergencyDown == itemModbus.IsEmergencyDown
                 && IsEmergencySaveDB == itemModbus.IsEmergencySaveDB && PeriodEmergencySaveDB == itemModbus.PeriodEmergencySaveDB)
             {
@@ -652,7 +674,7 @@ namespace SCADA
             IsSaveDatabase = false;
             TableName = "";
             PeridTimeSaveDB = 120;
-            Formula = "";
+            FormulaText = "";
             Text = "";
             EmergencyUp = 0;
             EmergencyDown = 0;
@@ -662,81 +684,14 @@ namespace SCADA
     }
 
     [Serializable]
-    public class ItemNet : INotifyPropertyChanged
-    {
-        [field: NonSerializedAttribute()] 
-        public event PropertyChangedEventHandler PropertyChanged;
-        
-        public void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, e);
-            }
-        }
-
-        public string TypeValue { get; set; }
+    public class ItemNet : Item
+    {       
         public int Range0 { get; set; }
         public int Range1 { get; set; }
-        public string Description { get; set; }
-        public bool IsSaveDatabase { get; set; }
-        public string TableName { get; set; }
-        public int PeridTimeSaveDB { get; set; }
-        public string Formula { get; set; }
-        public string Text { get; set; }
-        public bool IsEmergencySaveDB { get; set; }
-        public int PeriodEmergencySaveDB { get; set; }
-        public bool IsEmergencyUp { get; set; }
-        public bool IsEmergencyDown { get; set; }
-        public object EmergencyUp { get; set; }
-        public object EmergencyDown { get; set; }
-
-        public string ID { get; set; }
 
         [field: NonSerializedAttribute()]
         public ItemModbus ItemModbus;
-        
-        [field: NonSerializedAttribute()]
-        private volatile object valueItem;
-        public object Value
-        {
-            get { return valueItem; }
-            set { 
-                valueItem = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Value"));    
-            }
-        }
-
-        [field: NonSerializedAttribute()] 
-        private bool isBinding;
-        public bool IsBinding
-        {
-            get { return isBinding; }
-            set { isBinding = value;
-            OnPropertyChanged(new PropertyChangedEventArgs("IsBinding"));
-            }
-        }
-
-        public bool IsEmergencyUpDG
-        {
-            get { return IsEmergencyUp; }
-            set
-            {
-                IsEmergencyUp = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEmergencyUpDG"));
-            }
-        }
-
-        public bool IsEmergencyDownDG
-        {
-            get { return IsEmergencyDown; }
-            set
-            {
-                IsEmergencyDown = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEmergencyDownDG"));
-            }
-        }
-
+                   
         public static bool operator == (ItemNet op1, ItemNet op2)
         {
             if ((object)op1 == null)
@@ -783,7 +738,7 @@ namespace SCADA
 
             // Return true if the fields match:
             if (ID == itemNet.ID && Description == itemNet.Description && Range0 == itemNet.Range0 && Range1 == itemNet.Range1 && TypeValue == itemNet.TypeValue && IsSaveDatabase == itemNet.IsSaveDatabase
-                 && TableName == itemNet.TableName && PeridTimeSaveDB == itemNet.PeridTimeSaveDB && Formula == itemNet.Formula && Text == itemNet.Text && Convert.ToSingle(EmergencyUp, CultureInfo.InvariantCulture) == Convert.ToSingle(itemNet.EmergencyUp, CultureInfo.InvariantCulture)
+                 && TableName == itemNet.TableName && PeridTimeSaveDB == itemNet.PeridTimeSaveDB && FormulaText == itemNet.FormulaText && Text == itemNet.Text && Convert.ToSingle(EmergencyUp, CultureInfo.InvariantCulture) == Convert.ToSingle(itemNet.EmergencyUp, CultureInfo.InvariantCulture)
                 && Convert.ToSingle(EmergencyDown, CultureInfo.InvariantCulture) == Convert.ToSingle(itemNet.EmergencyDown, CultureInfo.InvariantCulture) && IsEmergencyUp == itemNet.IsEmergencyUp && IsEmergencyDown == itemNet.IsEmergencyDown
                 && IsEmergencySaveDB == itemNet.IsEmergencySaveDB && PeriodEmergencySaveDB == itemNet.PeriodEmergencySaveDB)
             {
@@ -805,7 +760,7 @@ namespace SCADA
 
             // Return true if the fields match:
             if (ID == itemNet.ID && Description == itemNet.Description && Range0 == itemNet.Range0 && Range1 == itemNet.Range1 && TypeValue == itemNet.TypeValue && IsSaveDatabase == itemNet.IsSaveDatabase
-                 && TableName == itemNet.TableName && PeridTimeSaveDB == itemNet.PeridTimeSaveDB && Formula == itemNet.Formula && Text == itemNet.Text && Convert.ToDecimal(EmergencyUp) == Convert.ToDecimal(itemNet.EmergencyUp)
+                 && TableName == itemNet.TableName && PeridTimeSaveDB == itemNet.PeridTimeSaveDB && FormulaText == itemNet.FormulaText && Text == itemNet.Text && Convert.ToDecimal(EmergencyUp) == Convert.ToDecimal(itemNet.EmergencyUp)
                 && Convert.ToDecimal(EmergencyDown) == Convert.ToDecimal(itemNet.EmergencyDown) && IsEmergencyUp == itemNet.IsEmergencyUp && IsEmergencyDown == itemNet.IsEmergencyDown
                 && IsEmergencySaveDB == itemNet.IsEmergencySaveDB && PeriodEmergencySaveDB == itemNet.PeriodEmergencySaveDB)
             {
@@ -820,19 +775,132 @@ namespace SCADA
         public ItemNet()
         {
             Range0 = 0;
-            Range1 = 3;
-            TypeValue = "float";
-            Value = "###";
-            Description = "Описание " + ((AppWPF)Application.Current).GenerateTextName.Next();
-            IsSaveDatabase = false;
-            TableName = "";
-            PeridTimeSaveDB = 120;
-            Formula = "";
-            Text = "";
-            EmergencyUp = 0;
-            EmergencyDown = 0;
-            PeriodEmergencySaveDB = 60;
-            ID = ((AppWPF)Application.Current).GenerateID(); 
+            Range1 = 3;           
+        }
+
+        public byte[] Formula(int PeriodTime)
+        {
+            string modbusID;
+            string itemModbusID;
+
+            byte[] bWrite;
+
+            if (ItemModbus != null)
+            {
+                if (ItemModbus.TypeValue == "float")
+                {
+                    bWrite = BitConverter.GetBytes((float)ItemModbus.Value);
+
+                    return bWrite;
+                }
+                else if (ItemModbus.TypeValue == "int")
+                {
+                    bWrite = BitConverter.GetBytes((int)ItemModbus.Value);
+
+                    return bWrite;
+                }
+                else if (ItemModbus.TypeValue == "uint")
+                {
+                    bWrite = bWrite = BitConverter.GetBytes((uint)ItemModbus.Value);
+
+                    return bWrite;
+                }
+                else if (ItemModbus.TypeValue == "short")
+                {
+                    bWrite = BitConverter.GetBytes((short)ItemModbus.Value);
+
+                    return bWrite;
+                }
+                else if (ItemModbus.TypeValue == "ushort")
+                {
+                    bWrite = BitConverter.GetBytes((ushort)ItemModbus.Value);
+
+                    return bWrite;
+                }
+                else if (ItemModbus.TypeValue == "byte")
+                {
+                    bWrite = BitConverter.GetBytes((byte)ItemModbus.Value);
+
+                    return bWrite;
+                }
+                else if (ItemModbus.TypeValue == "sbyte")
+                {
+                    bWrite = BitConverter.GetBytes((sbyte)ItemModbus.Value);
+
+                    return bWrite;
+                }
+            }
+            else if (FormulaText.IndexOf("ItemModbusID") != -1)
+            {
+                int modbusIDIndex = Text.IndexOf("ItemModbusID");
+
+                modbusID = Text.Substring(modbusIDIndex, 32);
+
+                itemModbusID = Text.Substring(modbusIDIndex + 33, 32);
+
+                foreach (ModbusSer mb in ((AppWPF)Application.Current).CollectionModbusSers)
+                {
+                    if (mb.ID == modbusID)
+                    {
+                        foreach (ItemModbus im in mb.CollectionItemModbus)
+                        {
+                            if (im.ID == itemModbusID)
+                            {
+                                ItemModbus = im;
+
+                                if (im.TypeValue == "float")
+                                {
+                                    bWrite = BitConverter.GetBytes((float)im.Value);
+
+                                    return bWrite;
+                                }
+                                else if (im.TypeValue == "int")
+                                {
+                                    bWrite = BitConverter.GetBytes((int)im.Value);
+
+                                    return bWrite;
+                                }
+                                else if (im.TypeValue == "uint")
+                                {
+                                    bWrite = bWrite = BitConverter.GetBytes((uint)im.Value);
+
+                                    return bWrite;
+                                }
+                                else if (im.TypeValue == "short")
+                                {
+                                    bWrite = BitConverter.GetBytes((short)im.Value);
+
+                                    return bWrite;
+                                }
+                                else if (im.TypeValue == "ushort")
+                                {
+                                    bWrite = BitConverter.GetBytes((ushort)im.Value);
+
+                                    return bWrite;
+                                }
+                                else if (im.TypeValue == "byte")
+                                {
+                                    bWrite = BitConverter.GetBytes((byte)im.Value);
+
+                                    return bWrite;
+                                }
+                                else if (im.TypeValue == "sbyte")
+                                {
+                                    bWrite = BitConverter.GetBytes((sbyte)im.Value);
+
+                                    return bWrite;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (FormulaText.IndexOf("Period") != -1)
+            {
+                return bWrite = BitConverter.GetBytes(PeriodTime);
+            }
+
+            return null;
         }
     }
 

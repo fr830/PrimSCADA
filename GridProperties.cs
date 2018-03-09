@@ -1381,9 +1381,9 @@ namespace SCADA
 
         int Digital(ItemModbus Item, int countDigital)
         {
-            if ((countDigital - Item.Formula.Length) != 0)
+            if ((countDigital - Item.FormulaText.Length) != 0)
             {
-                if (char.IsDigit(Item.Formula, countDigital))
+                if (char.IsDigit(Item.FormulaText, countDigital))
                 {
                     countDigital++;
 
@@ -1528,21 +1528,21 @@ namespace SCADA
                                         buffer[2] = BitConverter.GetBytes(data[1])[0];
                                         buffer[3] = BitConverter.GetBytes(data[1])[1];
 
-                                        if (item.Formula.Length != 0)
+                                        if (item.FormulaText.Length != 0)
                                         {
                                             List<float> collectionDigital = new List<float>();
 
                                             int countDigital = 0;
                                             
-                                            if (item.Formula[0] == '/')
+                                            if (item.FormulaText[0] == '/')
                                             {
                                                 countDigital++;
 
-                                                if ((countDigital - item.Formula.Length) != 0)
+                                                if ((countDigital - item.FormulaText.Length) != 0)
                                                 {
                                                     countDigital = Digital(item, countDigital);
 
-                                                    collectionDigital.Add(float.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                    collectionDigital.Add(float.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                     item.Value = BitConverter.ToSingle(buffer, 0) / collectionDigital[0];
                                                 }
@@ -1551,19 +1551,19 @@ namespace SCADA
                                                     item.Value = BitConverter.ToSingle(buffer, 0);
                                                 }
                                             }
-                                            else if (item.Formula.IndexOf("CSF") != -1)
+                                            else if (item.FormulaText.IndexOf("CSF") != -1)
                                             {
-                                                if (item.Formula[3] == '/')
+                                                if (item.FormulaText[3] == '/')
                                                 {
                                                     countDigital = 3;
 
                                                     countDigital++;
 
-                                                    if ((countDigital - item.Formula.Length) != 0)
+                                                    if ((countDigital - item.FormulaText.Length) != 0)
                                                     {
                                                         countDigital = Digital(item, countDigital);
 
-                                                        collectionDigital.Add(float.Parse(item.Formula.Substring(4, countDigital - 4)));
+                                                        collectionDigital.Add(float.Parse(item.FormulaText.Substring(4, countDigital - 4)));
 
                                                         item.Value = BitConverter.ToInt16(buffer, 2) / collectionDigital[0];
                                                     }
@@ -1650,21 +1650,21 @@ namespace SCADA
                                     buffer[2] = BitConverter.GetBytes(data[1])[0];
                                     buffer[3] = BitConverter.GetBytes(data[1])[1];
 
-                                    if (item.Formula.Length != 0)
+                                    if (item.FormulaText.Length != 0)
                                     {
                                         List<int> collectionDigital = new List<int>();
 
                                         int countDigital = 0;
                                         
-                                        if (item.Formula[0] == '/')
+                                        if (item.FormulaText[0] == '/')
                                         {
                                             countDigital++;
 
-                                            if ((countDigital - item.Formula.Length) != 0)
+                                            if ((countDigital - item.FormulaText.Length) != 0)
                                             {
                                                 countDigital = Digital(item, countDigital);
 
-                                                collectionDigital.Add(int.Parse(item.Formula.Substring(1, countDigital - 1)));
+                                                collectionDigital.Add(int.Parse(item.FormulaText.Substring(1, countDigital - 1)));
 
                                                 item.Value = BitConverter.ToInt32(buffer, 0) / collectionDigital[0];
                                             }

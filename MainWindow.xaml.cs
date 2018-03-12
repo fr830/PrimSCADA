@@ -7312,9 +7312,9 @@ namespace SCADA
 
         int DigitalItemNet(ItemNet Item, int countDigital)
         {
-            if ((countDigital - Item.Formula.Length) != 0)
+            if ((countDigital - Item.FormulaText.Length) != 0)
             {
-                if (char.IsDigit(Item.Formula, countDigital) || Item.Formula[countDigital] == '.' || Item.Formula[countDigital] == ',')
+                if (char.IsDigit(Item.FormulaText, countDigital) || Item.FormulaText[countDigital] == '.' || Item.FormulaText[countDigital] == ',')
                 {
                     countDigital++;
 
@@ -8384,9 +8384,9 @@ namespace SCADA
                 }
             }
 
-            if (timer.ItemNet.Formula.Length > 0)
+            if (timer.ItemNet.FormulaText.Length > 0)
             {
-                int i2 = timer.ItemNet.Formula.LastIndexOf("NDB");
+                int i2 = timer.ItemNet.FormulaText.LastIndexOf("NDB");
 
                 if (i2 != -1)
                 {
@@ -8395,11 +8395,11 @@ namespace SCADA
                     int firstDigital = i2 + 3;
                     int endDigital = 0;
 
-                    if (char.IsDigit(timer.ItemNet.Formula, firstDigital))
+                    if (char.IsDigit(timer.ItemNet.FormulaText, firstDigital))
                     {
                         endDigital = DigitalItemNet(timer.ItemNet, firstDigital);
                         int diff = endDigital - firstDigital;
-                        string tt = timer.ItemNet.Formula.Substring(firstDigital, diff);
+                        string tt = timer.ItemNet.FormulaText.Substring(firstDigital, diff);
                         tt = tt.Replace(',', '.');
 
                         collectionDigital.Add(decimal.Parse(tt, NumberStyles.Any, CultureInfo.InvariantCulture));
@@ -8411,7 +8411,7 @@ namespace SCADA
                     }
                 }
 
-                int i = timer.ItemNet.Formula.LastIndexOf("SDB");
+                int i = timer.ItemNet.FormulaText.LastIndexOf("SDB");
 
                 if (i != -1)
                 {
@@ -8420,11 +8420,11 @@ namespace SCADA
                     int firstDigital = i + 3;
                     int endDigital = 0;
 
-                    if (char.IsDigit(timer.ItemNet.Formula, firstDigital))
+                    if (char.IsDigit(timer.ItemNet.FormulaText, firstDigital))
                     {
                         endDigital = DigitalItemNet(timer.ItemNet, firstDigital);
                         int diff = endDigital - firstDigital;
-                        string tt = timer.ItemNet.Formula.Substring(firstDigital, diff);
+                        string tt = timer.ItemNet.FormulaText.Substring(firstDigital, diff);
                         tt = tt.Replace(',', '.');
 
                         collectionDigital.Add(decimal.Parse(tt, NumberStyles.Any, CultureInfo.InvariantCulture));
@@ -8522,6 +8522,7 @@ namespace SCADA
             try
             {
                 object value = null;
+                object prevValue = null;
 
                 List<StopwatchItemNet> collectionTimer = new List<StopwatchItemNet>();
                               
@@ -8627,6 +8628,7 @@ namespace SCADA
                                         lock(ethernetObject.LockValue)
                                         {
                                             value = timer.ItemNet.Value;
+                                            prevValue = value;
                                         }
                                         
                                         timer.EmergencyTimerUp.Reset();
@@ -8639,35 +8641,35 @@ namespace SCADA
                                                 {                                                                                                        
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -8681,15 +8683,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -8722,35 +8724,35 @@ namespace SCADA
                                                 {                                                    
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -8764,15 +8766,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -8803,35 +8805,35 @@ namespace SCADA
                                             {                                                                                               
                                                 if (timer.ItemNet.TypeValue == "long")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ulong")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "int")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "uint")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "short")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ushort")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "byte")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "sbyte")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "bool")
                                                 {
@@ -8845,15 +8847,15 @@ namespace SCADA
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "decimal")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "float")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "double")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "char")
                                                 {
@@ -8891,6 +8893,7 @@ namespace SCADA
                                         lock (ethernetObject.LockValue)
                                         {
                                             value = timer.ItemNet.Value;
+                                            prevValue = value;
                                         }
 
                                         if (timer.ItemNet.Value is float)
@@ -8901,35 +8904,35 @@ namespace SCADA
                                                 {                                                 
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -8943,15 +8946,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -8984,35 +8987,35 @@ namespace SCADA
                                                 {                                                   
                                                     if (timer.ItemNet.TypeValue == "long")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ulong")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "int")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "uint")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "short")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "ushort")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "byte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "bool")
                                                     {
@@ -9026,15 +9029,15 @@ namespace SCADA
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "decimal")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "float")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "double")
                                                     {
-                                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                     }
                                                     else if (timer.ItemNet.TypeValue == "char")
                                                     {
@@ -9065,35 +9068,35 @@ namespace SCADA
                                             {                                                                                              
                                                 if (timer.ItemNet.TypeValue == "long")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ulong")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "int")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "uint")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "short")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "ushort")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "byte")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "sbyte")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "bool")
                                                 {
@@ -9107,15 +9110,15 @@ namespace SCADA
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "decimal")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "float")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "double")
                                                 {
-                                                    FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                                    FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                                 }
                                                 else if (timer.ItemNet.TypeValue == "char")
                                                 {
@@ -9147,43 +9150,45 @@ namespace SCADA
                             {
                                 if (timer.ElapsedMilliseconds >= (timer.ItemNet.PeridTimeSaveDB * 1000))
                                 {
-                                    ethernetObject.RWLock.EnterReadLock();
-                                    value = timer.ItemNet.Value;
-                                    ethernetObject.RWLock.ExitReadLock();
+                                    lock(ethernetObject.LockValue)
+                                    {
+                                        value = timer.ItemNet.Value;
+                                        prevValue = value;
+                                    }
 
                                     timer.Reset();
 
                                     if (timer.ItemNet.TypeValue == "long")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                     }
                                     else if (timer.ItemNet.TypeValue == "ulong")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "int")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                     }
                                     else if (timer.ItemNet.TypeValue == "uint")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Bigint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "short")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "ushort")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Integer);
                                     }
                                     else if (timer.ItemNet.TypeValue == "byte")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "sbyte")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Smallint);
                                     }
                                     else if (timer.ItemNet.TypeValue == "bool")
                                     {
@@ -9197,15 +9202,15 @@ namespace SCADA
                                     }
                                     else if (timer.ItemNet.TypeValue == "decimal")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Numeric);
                                     }
                                     else if (timer.ItemNet.TypeValue == "float")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Real);
                                     }
                                     else if (timer.ItemNet.TypeValue == "double")
                                     {
-                                        FormulaSaveDatabaseEthernet(timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
+                                        FormulaSaveDatabaseEthernet(prevValue, timer, value, parametrValue, parametrDateTime, cmd, NpgsqlDbType.Double);
                                     }
                                     else if (timer.ItemNet.TypeValue == "char")
                                     {
@@ -9286,488 +9291,358 @@ namespace SCADA
             {
                 SqlConn.Close();
                 SqlConn.Dispose();
-
-                if (ethernetObject.RWLock.IsReadLockHeld)
-                {
-                    ethernetObject.RWLock.ExitReadLock();
-                }
             }
         }
 
-        private void ConnectDataBaseEthernetOperational(object obj)
-        {
-            EthernetObject ethernetSendTread = (EthernetObject)obj;
+        //private void ConnectDataBaseEthernetOperational(object obj)
+        //{
+        //    EthernetObject ethernetSendTread = (EthernetObject)obj;
 
-            Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
+        //    Npgsql.NpgsqlConnection SqlConn = new Npgsql.NpgsqlConnection();
 
-            try
-            {
-                List<StopwatchItemNet> collectionTimer = new List<StopwatchItemNet>();
+        //    try
+        //    {
+        //        List<StopwatchItemNet> collectionTimer = new List<StopwatchItemNet>();
 
-                Npgsql.NpgsqlCommand insert = new Npgsql.NpgsqlCommand();
+        //        Npgsql.NpgsqlCommand insert = new Npgsql.NpgsqlCommand();
                
-                Npgsql.NpgsqlParameter parametrDateTime = new Npgsql.NpgsqlParameter();
-                parametrDateTime.ParameterName = "@Time";
-                parametrDateTime.DbType = DbType.DateTime;
-
-                foreach (ItemNet itemNet in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-                {
-                    if (itemNet.IsSaveDatabase)
-                    {
-                        StopwatchItemNet timer = new StopwatchItemNet();
-                        timer.ItemNet = itemNet;
-                        timer.EmergencyTimerUp = new Stopwatch();
-                        timer.EmergencyTimerDown = new Stopwatch();
-
-                        collectionTimer.Add(timer);
-                    }
-                }
-
-                foreach (ItemNet itemNet in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-                {
-                    if (itemNet.IsSaveDatabase)
-                    {
-                        StopwatchItemNet timer = new StopwatchItemNet();
-                        timer.ItemNet = itemNet;
-                        timer.EmergencyTimerUp = new Stopwatch();
-                        timer.EmergencyTimerDown = new Stopwatch();
-
-                        collectionTimer.Add(timer);
-                    }
-                }
-
-                AppWPF app = (AppWPF)Application.Current;
-
-                //SqlConnectionStringBuilder Sqlbuilder = new SqlConnectionStringBuilder();
-                //Sqlbuilder.DataSource = app.ConfigProgramBin.SQLServerName;
-                //Sqlbuilder.InitialCatalog = app.ConfigProgramBin.SQLDatabaseName;
-
-                //if (((AppWPF)Application.Current).ConfigProgramBin.SQLSecuritySSPI)
-                //{
-                //    Sqlbuilder.IntegratedSecurity = true;
-                //}
-                //else
-                //{
-                //    Sqlbuilder.UserID = app.ConfigProgramBin.SQLUserName;
-                //    Sqlbuilder.Password = app.ConfigProgramBin.SQLPassword;
-                //}
-
-                string connstring = String.Format("Server={0};Port={1};" +
-                    "User Id={2};Password={3};Database={4};",
-                    app.ConfigProgramBin.SQLServerName, 5432, app.ConfigProgramBin.SQLUserName,
-                    app.ConfigProgramBin.SQLPassword, app.ConfigProgramBin.SQLDatabaseName);
-
-                SqlConn.ConnectionString = connstring;
-
-                SqlConn.Open();
-
-                Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand();
-                cmd.Connection = SqlConn;
-
-                CollectionSQLObject.Add(SqlConn);
-
-                while (true)
-                {
-                    if (IsStop)
-                    {
-                        SqlConn.Close();
-                        SqlConn.Dispose();
-
-                        return;
-                    }
-
-                    if (ethernetSendTread.DatabaseConnect)
-                    {
-                        foreach (StopwatchItemNet timer in collectionTimer)
-                        {
-                            timer.Start();
-
-                            if (timer.ElapsedMilliseconds >= 100)
-                            {
-                                timer.Reset();
-
-                                //if (timer.ItemNet.TypeValue == "long")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Int64;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "ulong")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.UInt64;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "int")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Int32;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "uint")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.UInt32;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "short")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Int16;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "ushort")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.UInt16;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "byte")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Byte;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "sbyte")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.SByte;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "bool")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Boolean;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "decimal")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Decimal;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "float")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Single;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "double")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.Double;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "char")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.StringFixedLength;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                                //else if (timer.ItemNet.TypeValue == "string")
-                                //{
-                                //    timer.ParametrValue.ParameterName = "@Value";
-                                //    timer.ParametrValue.Value = timer.ItemNet.Value;
-                                //    timer.ParametrValue.DbType = DbType.String;
-
-                                //    parametrDateTime.Value = DateTime.Now;
-
-                                //    cmd.Parameters.Clear();
-                                //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
-                                //    cmd.Parameters.Add(timer.ParametrValue);
-                                //    cmd.Parameters.Add(parametrDateTime);
-                                //    cmd.ExecuteNonQuery();
-                                //}
-                            }
-                        }
-                    }
-
-                    Thread.Sleep(20);
-                }
-            }
-            catch (SystemException ex)
-            {
-                if (ex is SqlException)
-                {
-                    SqlException sqlex = ex as SqlException;
-
-                    foreach (SqlError er in sqlex.Errors)
-                    {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                        {
-                            if (CollectionMessage.Count > 300)
-                            {
-                                CollectionMessage.RemoveAt(0);
-
-                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                                   + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-                            }
-                            else
-                            {
-                                CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                                   + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-                            }
-                        }));
-                    }
-                }
-                else
-                {
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                    {
-                        if (CollectionMessage.Count > 300)
-                        {
-                            CollectionMessage.RemoveAt(0);
-
-                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                               + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                            "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-                        }
-                        else
-                        {
-                            CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
-                               + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                            "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-                        }
-                    }));
-                }
-            }
-            finally
-            {
-                SqlConn.Close();
-                SqlConn.Dispose();
-            }
-        } 
-
-        byte[] Formula(ItemNet item, int periodTime)
-        {
-            string modbusID;
-            string itemModbusID;
-
-            byte[] bWrite;
-
-            if (item.ItemModbus != null)
-            {
-                if (item.ItemModbus.TypeValue == "float")
-                {
-                    bWrite = BitConverter.GetBytes((float)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-                else if (item.ItemModbus.TypeValue == "int")
-                {
-                    bWrite = BitConverter.GetBytes((int)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-                else if (item.ItemModbus.TypeValue == "uint")
-                {
-                    bWrite = bWrite = BitConverter.GetBytes((uint)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-                else if (item.ItemModbus.TypeValue == "short")
-                {
-                    bWrite = BitConverter.GetBytes((short)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-                else if (item.ItemModbus.TypeValue == "ushort")
-                {
-                    bWrite = BitConverter.GetBytes((ushort)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-                else if (item.ItemModbus.TypeValue == "byte")
-                {
-                    bWrite = BitConverter.GetBytes((byte)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-                else if (item.ItemModbus.TypeValue == "sbyte")
-                {
-                    bWrite = BitConverter.GetBytes((sbyte)item.ItemModbus.Value);
-
-                    return bWrite;
-                }
-            }
-            else if (item.Formula.IndexOf("ItemModbusID") != -1)
-            {
-                int modbusIDIndex = item.Text.IndexOf("ItemModbusID");
-
-                modbusID = item.Text.Substring(modbusIDIndex, 32);
-
-                itemModbusID = item.Text.Substring(modbusIDIndex + 33, 32);
-
-                foreach (ModbusSer mb in ((AppWPF)Application.Current).CollectionModbusSers)
-                {
-                    if (mb.ID == modbusID)
-                    {
-                        foreach (ItemModbus im in mb.CollectionItemModbus)
-                        {
-                            if (im.ID == itemModbusID)
-                            {
-                                item.ItemModbus = im;
-
-                                if (im.TypeValue == "float")
-                                {
-                                    bWrite = BitConverter.GetBytes((float)im.Value);
-
-                                    return bWrite;
-                                }
-                                else if (im.TypeValue == "int")
-                                {
-                                    bWrite = BitConverter.GetBytes((int)im.Value);
-
-                                    return bWrite;
-                                }
-                                else if (im.TypeValue == "uint")
-                                {
-                                    bWrite = bWrite = BitConverter.GetBytes((uint)im.Value);
-
-                                    return bWrite;
-                                }
-                                else if (im.TypeValue == "short")
-                                {
-                                    bWrite = BitConverter.GetBytes((short)im.Value);
-
-                                    return bWrite;
-                                }
-                                else if (im.TypeValue == "ushort")
-                                {
-                                    bWrite = BitConverter.GetBytes((ushort)im.Value);
-
-                                    return bWrite;
-                                }
-                                else if (im.TypeValue == "byte")
-                                {
-                                    bWrite = BitConverter.GetBytes((byte)im.Value);
-
-                                    return bWrite;
-                                }
-                                else if (im.TypeValue == "sbyte")
-                                {
-                                    bWrite = BitConverter.GetBytes((sbyte)im.Value);
-
-                                    return bWrite;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else if (item.Formula.IndexOf("Period") != -1)
-            {
-                return bWrite = BitConverter.GetBytes(periodTime);
-            }
-
-            return null;
-        }
+        //        Npgsql.NpgsqlParameter parametrDateTime = new Npgsql.NpgsqlParameter();
+        //        parametrDateTime.ParameterName = "@Time";
+        //        parametrDateTime.DbType = DbType.DateTime;
+
+        //        foreach (ItemNet itemNet in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+        //        {
+        //            if (itemNet.IsSaveDatabase)
+        //            {
+        //                StopwatchItemNet timer = new StopwatchItemNet();
+        //                timer.ItemNet = itemNet;
+        //                timer.EmergencyTimerUp = new Stopwatch();
+        //                timer.EmergencyTimerDown = new Stopwatch();
+
+        //                collectionTimer.Add(timer);
+        //            }
+        //        }
+
+        //        foreach (ItemNet itemNet in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+        //        {
+        //            if (itemNet.IsSaveDatabase)
+        //            {
+        //                StopwatchItemNet timer = new StopwatchItemNet();
+        //                timer.ItemNet = itemNet;
+        //                timer.EmergencyTimerUp = new Stopwatch();
+        //                timer.EmergencyTimerDown = new Stopwatch();
+
+        //                collectionTimer.Add(timer);
+        //            }
+        //        }
+
+        //        AppWPF app = (AppWPF)Application.Current;
+
+        //        //SqlConnectionStringBuilder Sqlbuilder = new SqlConnectionStringBuilder();
+        //        //Sqlbuilder.DataSource = app.ConfigProgramBin.SQLServerName;
+        //        //Sqlbuilder.InitialCatalog = app.ConfigProgramBin.SQLDatabaseName;
+
+        //        //if (((AppWPF)Application.Current).ConfigProgramBin.SQLSecuritySSPI)
+        //        //{
+        //        //    Sqlbuilder.IntegratedSecurity = true;
+        //        //}
+        //        //else
+        //        //{
+        //        //    Sqlbuilder.UserID = app.ConfigProgramBin.SQLUserName;
+        //        //    Sqlbuilder.Password = app.ConfigProgramBin.SQLPassword;
+        //        //}
+
+        //        string connstring = String.Format("Server={0};Port={1};" +
+        //            "User Id={2};Password={3};Database={4};",
+        //            app.ConfigProgramBin.SQLServerName, 5432, app.ConfigProgramBin.SQLUserName,
+        //            app.ConfigProgramBin.SQLPassword, app.ConfigProgramBin.SQLDatabaseName);
+
+        //        SqlConn.ConnectionString = connstring;
+
+        //        SqlConn.Open();
+
+        //        Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand();
+        //        cmd.Connection = SqlConn;
+
+        //        CollectionSQLObject.Add(SqlConn);
+
+        //        while (true)
+        //        {
+        //            if (IsStop)
+        //            {
+        //                SqlConn.Close();
+        //                SqlConn.Dispose();
+
+        //                return;
+        //            }
+
+        //            if (ethernetSendTread.DatabaseConnect)
+        //            {
+        //                foreach (StopwatchItemNet timer in collectionTimer)
+        //                {
+        //                    timer.Start();
+
+        //                    if (timer.ElapsedMilliseconds >= 100)
+        //                    {
+        //                        timer.Reset();
+
+        //                        //if (timer.ItemNet.TypeValue == "long")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Int64;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "ulong")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.UInt64;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "int")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Int32;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "uint")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.UInt32;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "short")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Int16;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "ushort")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.UInt16;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "byte")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Byte;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "sbyte")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.SByte;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "bool")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Boolean;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "decimal")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Decimal;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "float")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Single;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "double")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.Double;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "char")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.StringFixedLength;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                        //else if (timer.ItemNet.TypeValue == "string")
+        //                        //{
+        //                        //    timer.ParametrValue.ParameterName = "@Value";
+        //                        //    timer.ParametrValue.Value = timer.ItemNet.Value;
+        //                        //    timer.ParametrValue.DbType = DbType.String;
+
+        //                        //    parametrDateTime.Value = DateTime.Now;
+
+        //                        //    cmd.Parameters.Clear();
+        //                        //    cmd.CommandText = "Insert into " + timer.ItemNet.TableName + "(Value,Time) Values (@Value,@Time)";
+        //                        //    cmd.Parameters.Add(timer.ParametrValue);
+        //                        //    cmd.Parameters.Add(parametrDateTime);
+        //                        //    cmd.ExecuteNonQuery();
+        //                        //}
+        //                    }
+        //                }
+        //            }
+
+        //            Thread.Sleep(20);
+        //        }
+        //    }
+        //    catch (SystemException ex)
+        //    {
+        //        if (ex is SqlException)
+        //        {
+        //            SqlException sqlex = ex as SqlException;
+
+        //            foreach (SqlError er in sqlex.Errors)
+        //            {
+        //                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        //                {
+        //                    if (CollectionMessage.Count > 300)
+        //                    {
+        //                        CollectionMessage.RemoveAt(0);
+
+        //                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
+        //                           + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
+        //                                        "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+        //                    }
+        //                    else
+        //                    {
+        //                        CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + er.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
+        //                           + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
+        //                                        "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+        //                    }
+        //                }));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        //            {
+        //                if (CollectionMessage.Count > 300)
+        //                {
+        //                    CollectionMessage.RemoveAt(0);
+
+        //                    CollectionMessage.Insert(298, "Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
+        //                       + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
+        //                                    "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+        //                }
+        //                else
+        //                {
+        //                    CollectionMessage.Add("Сообщение " + " : " + "Ошибка SQL: " + ex.Message + ". Данные не будут сохраняться в БД с IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1]
+        //                       + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
+        //                                    "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+        //                }
+        //            }));
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        SqlConn.Close();
+        //        SqlConn.Dispose();
+        //    }
+        //} 
 
         private void ConnectedTCP(object obj)
         {
@@ -9779,9 +9654,8 @@ namespace SCADA
 
                 string IPAddressServer = ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] + "." + ethernetObject.EthernetSer.IPAddressServer[3];
 
-                Stopwatch timeCheckExit = new Stopwatch();          
+                Stopwatch timeCheckLink = new Stopwatch();          
                 Stopwatch timePeriod = new Stopwatch();
-                Stopwatch timeRecconect = new Stopwatch();
 
                 IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetObject.EthernetSer.IPAddressClient), ethernetObject.EthernetSer.PortClient);
 
@@ -9803,48 +9677,31 @@ namespace SCADA
                             if (ethernetObject.IsReconnect)
                             {
                                 IsStatusSend = true;
-
-                                while (true)
+                               
+                                if (IsStatusSend)
                                 {
-                                    if (IsStatusSend)
-                                    {
-                                        IsStatusSend = false;
+                                    IsStatusSend = false;
 
-                                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                    {
+                                        if (CollectionMessage.Count > 300)
                                         {
-                                            if (CollectionMessage.Count > 300)
-                                            {
-                                                CollectionMessage.RemoveAt(0);
+                                            CollectionMessage.RemoveAt(0);
 
-                                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
-                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения через 60 секунды. " + DateTime.Now);
-                                            }
-                                            else
-                                            {
-                                                CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
-                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
-                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения через 60 секунды. " + DateTime.Now);
-                                            }
-                                        }));
-                                    }
-
-                                    if (IsStop)
-                                    {
-                                        return;
-                                    }
-
-                                    Thread.Sleep(StaticValues.TimeSleep);
-
-                                    timeCheckExit.Start();
-
-                                    if (timeCheckExit.ElapsedMilliseconds >= (60000))
-                                    {
-                                        ethernetObject.IsReconnect = false;
-                                        timeCheckExit.Reset();
-                                        break;
-                                    }
+                                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                            + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                            "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения. " + DateTime.Now);
+                                        }
+                                        else
+                                        {
+                                            CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                            + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                            "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения. " + DateTime.Now);
+                                        }
+                                    }));
                                 }
+                                                               
+                                ethernetObject.IsReconnect = false;                                                                                                 
                             }
                             else
                             {
@@ -9855,18 +9712,16 @@ namespace SCADA
 
                                 while (true)
                                 {
-                                    timeRecconect.Start();
+                                    timeCheckLink.Start();
 
-                                    if ((ethernetObject.EthernetSer.Time * 2000) <= timeRecconect.ElapsedMilliseconds)
-                                    {
-                                        ethernetObject.DatabaseConnect = false;
-
-                                        throw new Exception("Не удалось подключится к серверу.");
+                                    if ((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
+                                    {                                      
+                                        throw new Exception("Не удалось подключится к серверу " + IPAddressServer + " .");
                                     }
 
                                     if (ethernetObject.TcpClient.Connected)
                                     {
-                                        timeRecconect.Reset();
+                                        timeCheckLink.Reset();
                                         break;
                                     }
 
@@ -9897,6 +9752,7 @@ namespace SCADA
                                 while (true)
                                 {
                                     timePeriod.Start();
+                                    timeCheckLink.Start();
 
                                     if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
                                     {
@@ -9904,7 +9760,7 @@ namespace SCADA
                                         {
                                             if (item.TypeValue == "float")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -9912,18 +9768,18 @@ namespace SCADA
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
                                                     bWrite[item.Range0 + 2] = formulaBuff[2];
                                                     bWrite[item.Range0 + 3] = formulaBuff[3];
-                                                }
 
-                                                lock(ethernetObject.LockValue)
-                                                {
-                                                    item.Value = BitConverter.ToSingle(bWrite, item.Range0);
-                                                }                                                                                              
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToSingle(bWrite, item.Range0);
+                                                    }
+                                                }                                                                                                                                           
                                             }
                                             else if (item.TypeValue == "double")
                                             {
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToDouble(Formula(item, ethernetObject.EthernetSer.Time), 0);
+                                                    item.Value = BitConverter.ToDouble(item.Formula(ethernetObject.EthernetSer.Time), 0);
                                                 }
                                             }
                                             else if (item.TypeValue == "decimal")
@@ -9939,65 +9795,65 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "byte")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
                                                     bWrite[item.Range0] = formulaBuff[0];
-                                                }
 
-                                                lock (ethernetObject.LockValue)
-                                                {
-                                                    item.Value = bWrite[item.Range0];
-                                                }
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = bWrite[item.Range0];
+                                                    }
+                                                }                                               
                                             }
                                             else if (item.TypeValue == "sbyte")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
                                                     bWrite[item.Range0] = formulaBuff[0];
-                                                }
 
-                                                lock (ethernetObject.LockValue)
-                                                {
-                                                    item.Value = (sbyte)bRead[item.Range0];
-                                                }                                                   
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = (sbyte)bRead[item.Range0];
+                                                    }
+                                                }                                                                                                
                                             }
                                             else if (item.TypeValue == "short")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
                                                     bWrite[item.Range0] = formulaBuff[0];
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                }
 
-                                                lock (ethernetObject.LockValue)
-                                                {
-                                                    item.Value = BitConverter.ToInt16(bWrite, item.Range0);
-                                                }
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt16(bWrite, item.Range0);
+                                                    }
+                                                }                                                
                                             }
                                             else if (item.TypeValue == "ushort")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
                                                     bWrite[item.Range0] = formulaBuff[0];
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                }
 
-                                                lock (ethernetObject.LockValue)
-                                                {
-                                                    item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
-                                                }                                                    
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
+                                                    }
+                                                }                                                                                                   
                                             }
                                             else if (item.TypeValue == "int")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -10005,16 +9861,16 @@ namespace SCADA
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
                                                     bWrite[item.Range0 + 2] = formulaBuff[2];
                                                     bWrite[item.Range0 + 3] = formulaBuff[3];
-                                                }
 
-                                                lock (ethernetObject.LockValue)
-                                                {
-                                                    item.Value = BitConverter.ToInt32(bWrite, item.Range0);
-                                                }
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToInt32(bWrite, item.Range0);
+                                                    }
+                                                }                                                
                                             }
                                             else if (item.TypeValue == "uint")
                                             {
-                                                formulaBuff = Formula(item, ethernetObject.EthernetSer.Time);
+                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
 
                                                 if (formulaBuff != null)
                                                 {
@@ -10022,12 +9878,12 @@ namespace SCADA
                                                     bWrite[item.Range0 + 1] = formulaBuff[1];
                                                     bWrite[item.Range0 + 2] = formulaBuff[2];
                                                     bWrite[item.Range0 + 3] = formulaBuff[3];
-                                                }
 
-                                                lock (ethernetObject.LockValue)
-                                                {
-                                                    item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
-                                                }
+                                                    lock (ethernetObject.LockValue)
+                                                    {
+                                                        item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
+                                                    }
+                                                }                                                
                                             }
                                             else if (item.TypeValue == "long")
                                             {
@@ -10076,9 +9932,14 @@ namespace SCADA
                                             return;
                                         }
 
+                                        if((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
+                                        {
+                                            throw new Exception("Потеря связи с сервером " + IPAddressServer + " .");
+                                        }
+
                                         if (ethernetObject.TcpClient.Available == ethernetObject.EthernetSer.BufferSizeRec)
                                         {
-                                            timeRecconect.Reset();
+                                            timeCheckLink.Reset();
 
                                             stream.Read(bRead, 0, bRead.Length);
 
@@ -10086,7 +9947,7 @@ namespace SCADA
                                             {
                                                 if (item.TypeValue == "float")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10098,7 +9959,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "double")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10114,7 +9975,7 @@ namespace SCADA
                                                     aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
                                                     aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
 
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10126,7 +9987,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "byte")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10138,7 +9999,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "sbyte")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10150,7 +10011,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "short")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10162,7 +10023,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "ushort")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10174,7 +10035,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "int")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10186,7 +10047,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "uint")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10198,7 +10059,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "long")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10210,7 +10071,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "ulong")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10222,7 +10083,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "bool")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10234,7 +10095,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "char")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10246,7 +10107,7 @@ namespace SCADA
                                                 }
                                                 else if (item.TypeValue == "string")
                                                 {
-                                                    if (item.Formula.Length > 0)
+                                                    if (item.FormulaText.Length > 0)
                                                     {
 
                                                     }
@@ -10258,7 +10119,10 @@ namespace SCADA
                                                 }
                                             }
 
-                                            ethernetObject.DatabaseConnect = true;
+                                            lock(ethernetObject.LockBool)
+                                            {
+                                                ethernetObject.IsAvailableData = true;
+                                            }
 
                                             break;
                                         }
@@ -10286,6 +10150,8 @@ namespace SCADA
                         }
                         catch (Exception ex)
                         {
+                            ethernetObject.IsReconnect = true;
+
                             if (!IsStop)
                             {                                
                                 this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
@@ -10315,9 +10181,10 @@ namespace SCADA
                                 stream.Close();
                             }
 
-                            ethernetObject.IsAvailableData = false;
-
-                            ethernetObject.IsReconnect = true;
+                            lock(ethernetObject.LockBool)
+                            {
+                                ethernetObject.IsAvailableData = false;
+                            }                                                        
                         }
                     }
                 }
@@ -10347,516 +10214,513 @@ namespace SCADA
                 foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
                 {
                     item.ItemModbus = null;
-                }                             
-
-                if (ethernetObject.RWLock.IsWriteLockHeld)
-                {
-                    ethernetObject.RWLock.ExitWriteLock();
-                }
+                }                                            
             }
         }
-        private void ConnectedUDP(object obj)
-        {
-            EthernetObject ethernetSendTread = (EthernetObject)obj;
 
-            try
-            {
-                int countLinkError = 0;
+        //private void ConnectedUDP(object obj)
+        //{
+        //    EthernetObject ethernetSendTread = (EthernetObject)obj;
 
-                string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
+        //    try
+        //    {
+        //        int countLinkError = 0;
 
-                Stopwatch timePeriod = new Stopwatch();
-                Stopwatch timeRecconect = new Stopwatch();
+        //        string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
 
-                IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
+        //        Stopwatch timePeriod = new Stopwatch();
+        //        Stopwatch timeRecconect = new Stopwatch();
 
-                IPEndPoint localIP = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
-                IPEndPoint remoteIP = new IPEndPoint(IPAddress.Parse(ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3]), ethernetSendTread.EthernetSer.PortServer);
-                IPEndPoint remoteIPRec = null;
+        //        IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
 
-                byte[] bRead = new byte[ethernetSendTread.EthernetSer.BufferSizeRec];
-                byte[] bWrite = new byte[ethernetSendTread.EthernetSer.BufferSizeSend];
+        //        IPEndPoint localIP = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
+        //        IPEndPoint remoteIP = new IPEndPoint(IPAddress.Parse(ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3]), ethernetSendTread.EthernetSer.PortServer);
+        //        IPEndPoint remoteIPRec = null;
 
-                int[] aDecimal = new int[3];
+        //        byte[] bRead = new byte[ethernetSendTread.EthernetSer.BufferSizeRec];
+        //        byte[] bWrite = new byte[ethernetSendTread.EthernetSer.BufferSizeSend];
 
-                byte[] formulaBuff;
+        //        int[] aDecimal = new int[3];
 
-                while (true)
-                {
-                    if (!IsStop)
-                    {
-                        if (ethernetSendTread.IsReconnect)
-                        {
-                            ethernetSendTread.IsReconnect = false;
+        //        byte[] formulaBuff;
 
-                            if (countLinkError == 2)
-                            {
-                                countLinkError = 0;
+        //        while (true)
+        //        {
+        //            if (!IsStop)
+        //            {
+        //                if (ethernetSendTread.IsReconnect)
+        //                {
+        //                    ethernetSendTread.IsReconnect = false;
 
-                                if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
-                                {
-                                    foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-                                    {
-                                        item.Value = "Потеря связи";
-                                    }
-                                }
+        //                    if (countLinkError == 2)
+        //                    {
+        //                        countLinkError = 0;
 
-                                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-                                {
-                                    item.Value = "Потеря связи";
-                                }
+        //                        if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
+        //                        {
+        //                            foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+        //                            {
+        //                                item.Value = "Потеря связи";
+        //                            }
+        //                        }
 
-                                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                                {
-                                    if (CollectionMessage.Count > 300)
-                                    {
-                                        CollectionMessage.RemoveAt(0);
+        //                        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+        //                        {
+        //                            item.Value = "Потеря связи";
+        //                        }
 
-                                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-                                        + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                        "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-                                    }
-                                    else
-                                    {
-                                        CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-                                        + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-                                        "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-                                    }
-                                })); 
-                            }                                                                                                                                                               
-                        }
+        //                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        //                        {
+        //                            if (CollectionMessage.Count > 300)
+        //                            {
+        //                                CollectionMessage.RemoveAt(0);
+
+        //                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
+        //                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
+        //                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+        //                            }
+        //                            else
+        //                            {
+        //                                CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
+        //                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
+        //                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+        //                            }
+        //                        })); 
+        //                    }                                                                                                                                                               
+        //                }
                         
-                        try
-                        {                                                        
-                            ethernetSendTread.UdpClient = new UdpClient(localIP);
-                            ethernetSendTread.UdpClient.Client.ReceiveTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-                            ethernetSendTread.UdpClient.Client.SendTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-
-                            while (true)
-                            {
-                                timePeriod.Start();
-
-                                if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
-                                {
-                                    foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-                                    {
-                                        if (item.TypeValue == "float")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                                bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                bWrite[item.Range0 + 2] = formulaBuff[2];
-                                                bWrite[item.Range0 + 3] = formulaBuff[3];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToSingle(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "double")
-                                        {
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToDouble(Formula(item, ethernetSendTread.EthernetSer.Time), 0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "decimal")
-                                        {
-                                            aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-                                            aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-                                            aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = new Decimal(aDecimal);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "byte")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = bWrite[item.Range0];
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "sbyte")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = (sbyte)bRead[item.Range0];
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "short")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                                bWrite[item.Range0 + 1] = formulaBuff[1];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToInt16(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "ushort")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                                bWrite[item.Range0 + 1] = formulaBuff[1];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "int")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                                bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                bWrite[item.Range0 + 2] = formulaBuff[2];
-                                                bWrite[item.Range0 + 3] = formulaBuff[3];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToInt32(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "uint")
-                                        {
-                                            formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-                                            if (formulaBuff != null)
-                                            {
-                                                bWrite[item.Range0] = formulaBuff[0];
-                                                bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                bWrite[item.Range0 + 2] = formulaBuff[2];
-                                                bWrite[item.Range0 + 3] = formulaBuff[3];
-                                            }
-
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "long")
-                                        {
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToInt64(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "ulong")
-                                        {
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "bool")
-                                        {
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "char")
-                                        {
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToChar(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                        else if (item.TypeValue == "string")
-                                        {
-                                            ethernetSendTread.RWLock.EnterWriteLock();
-                                            item.Value = BitConverter.ToString(bWrite, item.Range0);
-                                            ethernetSendTread.RWLock.ExitWriteLock();
-                                        }
-                                    }
-
-                                    ethernetSendTread.UdpClient.Send(bWrite, bWrite.Length, remoteIP);
-                                }
-
-                                while (true)
-                                {
-                                    if (IsStop)
-                                    {
-                                        return;
-                                    }
-
-                                    if (ethernetSendTread.UdpClient.Available != ethernetSendTread.EthernetSer.BufferSizeRec)
-                                    {
-                                        timeRecconect.Start();
-
-                                        if ((ethernetSendTread.EthernetSer.Time * 2000) <= timeRecconect.ElapsedMilliseconds)
-                                        {
-                                            ethernetSendTread.DatabaseConnect = false;
-
-                                            throw new Exception("Таймаут приема.");
-                                        }
-                                    }
-
-                                    if (ethernetSendTread.UdpClient.Available == ethernetSendTread.EthernetSer.BufferSizeRec)
-                                    {
-                                        timeRecconect.Reset();
-
-                                        ethernetSendTread.UdpClient.Receive(ref remoteIPRec);
-
-                                        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-                                        {
-                                            if (item.TypeValue == "float")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToSingle(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "double")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToDouble(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "decimal")
-                                            {
-                                                aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-                                                aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-                                                aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
-
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = new Decimal(aDecimal);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "byte")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = bRead[item.Range0];
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "sbyte")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = (sbyte)bRead[item.Range0];
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "short")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToInt16(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "ushort")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToUInt16(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "int")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToInt32(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "uint")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToUInt32(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "long")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToInt64(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "ulong")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToUInt64(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "bool")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToBoolean(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "char")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToChar(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                            else if (item.TypeValue == "string")
-                                            {
-                                                if (item.Formula.Length > 0)
-                                                {
-
-                                                }
-
-                                                ethernetSendTread.RWLock.EnterWriteLock();
-                                                item.Value = BitConverter.ToString(bRead, item.Range0);
-                                                ethernetSendTread.RWLock.ExitWriteLock();
-                                            }
-                                        }
-
-                                        ethernetSendTread.DatabaseConnect = true;
-
-                                        break;
-                                    }
-
-                                    Thread.Sleep(StaticValues.TimeSleep);
-                                }
-
-                                while (true)
-                                {
-                                    if (IsStop)
-                                    {
-                                        return;
-                                    }
-
-                                    if ((ethernetSendTread.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
-                                    {
-                                        timePeriod.Reset();
-                                        break;
-                                    }
-
-                                    Thread.Sleep(StaticValues.TimeSleep);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            if (!IsStop)
-                            {
-                                countLinkError++;                                
-
-                                ethernetSendTread.IsReconnect = true;
-
-                                ethernetSendTread.DatabaseConnect = false;
-
-                                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                                {
-                                    if (CollectionMessage.Count > 300)
-                                    {
-                                        CollectionMessage.RemoveAt(0);
-
-                                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
-                                    }
-                                    else
-                                    {
-                                        CollectionMessage.Add("Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
-                                    }
-                                }));
-                            }
-                        }                       
-                    }
-                }               
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-                {
-                    item.ItemModbus = null;
-                }
-
-                ethernetSendTread.DatabaseConnect = false;
-
-                if (ethernetSendTread.UdpClient != null)
-                {
-                    ethernetSendTread.UdpClient.Close();
-                }
-
-                if (ethernetSendTread.RWLock.IsWriteLockHeld)
-                {
-                    ethernetSendTread.RWLock.ExitWriteLock();
-                }
-            }                     
-        }
+        //                try
+        //                {                                                        
+        //                    ethernetSendTread.UdpClient = new UdpClient(localIP);
+        //                    ethernetSendTread.UdpClient.Client.ReceiveTimeout = ethernetSendTread.EthernetSer.Time * 2000;
+        //                    ethernetSendTread.UdpClient.Client.SendTimeout = ethernetSendTread.EthernetSer.Time * 2000;
+
+        //                    while (true)
+        //                    {
+        //                        timePeriod.Start();
+
+        //                        if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
+        //                        {
+        //                            foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+        //                            {
+        //                                if (item.TypeValue == "float")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                                        bWrite[item.Range0 + 2] = formulaBuff[2];
+        //                                        bWrite[item.Range0 + 3] = formulaBuff[3];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToSingle(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "double")
+        //                                {
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToDouble(Formula(item, ethernetSendTread.EthernetSer.Time), 0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "decimal")
+        //                                {
+        //                                    aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+        //                                    aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+        //                                    aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = new Decimal(aDecimal);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "byte")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = bWrite[item.Range0];
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "sbyte")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = (sbyte)bRead[item.Range0];
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "short")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToInt16(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "ushort")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "int")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                                        bWrite[item.Range0 + 2] = formulaBuff[2];
+        //                                        bWrite[item.Range0 + 3] = formulaBuff[3];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToInt32(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "uint")
+        //                                {
+        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
+
+        //                                    if (formulaBuff != null)
+        //                                    {
+        //                                        bWrite[item.Range0] = formulaBuff[0];
+        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
+        //                                        bWrite[item.Range0 + 2] = formulaBuff[2];
+        //                                        bWrite[item.Range0 + 3] = formulaBuff[3];
+        //                                    }
+
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "long")
+        //                                {
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToInt64(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "ulong")
+        //                                {
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "bool")
+        //                                {
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "char")
+        //                                {
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToChar(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                                else if (item.TypeValue == "string")
+        //                                {
+        //                                    ethernetSendTread.RWLock.EnterWriteLock();
+        //                                    item.Value = BitConverter.ToString(bWrite, item.Range0);
+        //                                    ethernetSendTread.RWLock.ExitWriteLock();
+        //                                }
+        //                            }
+
+        //                            ethernetSendTread.UdpClient.Send(bWrite, bWrite.Length, remoteIP);
+        //                        }
+
+        //                        while (true)
+        //                        {
+        //                            if (IsStop)
+        //                            {
+        //                                return;
+        //                            }
+
+        //                            if (ethernetSendTread.UdpClient.Available != ethernetSendTread.EthernetSer.BufferSizeRec)
+        //                            {
+        //                                timeRecconect.Start();
+
+        //                                if ((ethernetSendTread.EthernetSer.Time * 2000) <= timeRecconect.ElapsedMilliseconds)
+        //                                {
+        //                                    ethernetSendTread.DatabaseConnect = false;
+
+        //                                    throw new Exception("Таймаут приема.");
+        //                                }
+        //                            }
+
+        //                            if (ethernetSendTread.UdpClient.Available == ethernetSendTread.EthernetSer.BufferSizeRec)
+        //                            {
+        //                                timeRecconect.Reset();
+
+        //                                ethernetSendTread.UdpClient.Receive(ref remoteIPRec);
+
+        //                                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
+        //                                {
+        //                                    if (item.TypeValue == "float")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToSingle(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "double")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToDouble(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "decimal")
+        //                                    {
+        //                                        aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+        //                                        aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+        //                                        aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = new Decimal(aDecimal);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "byte")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = bRead[item.Range0];
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "sbyte")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = (sbyte)bRead[item.Range0];
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "short")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToInt16(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "ushort")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToUInt16(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "int")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToInt32(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "uint")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToUInt32(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "long")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToInt64(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "ulong")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToUInt64(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "bool")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToBoolean(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "char")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToChar(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                    else if (item.TypeValue == "string")
+        //                                    {
+        //                                        if (item.FormulaText.Length > 0)
+        //                                        {
+
+        //                                        }
+
+        //                                        ethernetSendTread.RWLock.EnterWriteLock();
+        //                                        item.Value = BitConverter.ToString(bRead, item.Range0);
+        //                                        ethernetSendTread.RWLock.ExitWriteLock();
+        //                                    }
+        //                                }
+
+        //                                ethernetSendTread.DatabaseConnect = true;
+
+        //                                break;
+        //                            }
+
+        //                            Thread.Sleep(StaticValues.TimeSleep);
+        //                        }
+
+        //                        while (true)
+        //                        {
+        //                            if (IsStop)
+        //                            {
+        //                                return;
+        //                            }
+
+        //                            if ((ethernetSendTread.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
+        //                            {
+        //                                timePeriod.Reset();
+        //                                break;
+        //                            }
+
+        //                            Thread.Sleep(StaticValues.TimeSleep);
+        //                        }
+        //                    }
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    if (!IsStop)
+        //                    {
+        //                        countLinkError++;                                
+
+        //                        ethernetSendTread.IsReconnect = true;
+
+        //                        lock (ethernetSendTread.LockBool)
+        //                        {
+        //                            ethernetSendTread.IsAvailableData = false;
+        //                        }
+
+        //                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        //                        {
+        //                            if (CollectionMessage.Count > 300)
+        //                            {
+        //                                CollectionMessage.RemoveAt(0);
+
+        //                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
+        //                            }
+        //                            else
+        //                            {
+        //                                CollectionMessage.Add("Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
+        //                            }
+        //                        }));
+        //                    }
+        //                }                       
+        //            }
+        //        }               
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //    }
+        //    finally
+        //    {
+        //        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
+        //        {
+        //            item.ItemModbus = null;
+        //        }
+
+        //        lock(ethernetSendTread.LockBool)
+        //        {
+        //            ethernetSendTread.IsAvailableData = false;
+        //        }
+
+        //        if (ethernetSendTread.UdpClient != null)
+        //        {
+        //            ethernetSendTread.UdpClient.Close();
+        //        }
+        //    }                     
+        //}
 
         //private void ConnectedEthernetOperational(object obj)
         //{

@@ -218,9 +218,9 @@ namespace SCADA
                         isSave = true;
                     }
 
-                    if (EthernetControl.EthernetSer.CollectionItemNetRec[count].Formula != itemNew.Formula)
+                    if (EthernetControl.EthernetSer.CollectionItemNetRec[count].FormulaText != itemNew.FormulaText)
                     {
-                        EthernetControl.EthernetSer.CollectionItemNetRec[count].Formula = itemNew.Formula;
+                        EthernetControl.EthernetSer.CollectionItemNetRec[count].FormulaText = itemNew.FormulaText;
                         isSave = true;
                     }
 
@@ -414,9 +414,9 @@ namespace SCADA
                         isSave = true;
                     }
 
-                    if (EthernetControl.EthernetSer.CollectionItemNetSend[count].Formula != itemNew.Formula)
+                    if (EthernetControl.EthernetSer.CollectionItemNetSend[count].FormulaText != itemNew.FormulaText)
                     {
-                        EthernetControl.EthernetSer.CollectionItemNetSend[count].Formula = itemNew.Formula;
+                        EthernetControl.EthernetSer.CollectionItemNetSend[count].FormulaText = itemNew.FormulaText;
                         isSave = true;
                     }
 
@@ -641,9 +641,9 @@ namespace SCADA
                                         isSave = true;
                                     }
 
-                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].Formula != itemNew.Formula)
+                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].FormulaText != itemNew.FormulaText)
                                     {
-                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].Formula = itemNew.Formula;
+                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].FormulaText = itemNew.FormulaText;
                                         isSave = true;
                                     }
 
@@ -837,9 +837,9 @@ namespace SCADA
                                         isSave = true;
                                     }
 
-                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].Formula != itemNew.Formula)
+                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].FormulaText != itemNew.FormulaText)
                                     {
-                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].Formula = itemNew.Formula;
+                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].FormulaText = itemNew.FormulaText;
                                         isSave = true;
                                     }
 
@@ -1066,9 +1066,9 @@ namespace SCADA
                                         isSave = true;
                                     }
 
-                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].Formula != itemNew.Formula)
+                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].FormulaText != itemNew.FormulaText)
                                     {
-                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].Formula = itemNew.Formula;
+                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].FormulaText = itemNew.FormulaText;
                                         isSave = true;
                                     }
 
@@ -1262,9 +1262,9 @@ namespace SCADA
                                         isSave = true;
                                     }
 
-                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].Formula != itemNew.Formula)
+                                    if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].FormulaText != itemNew.FormulaText)
                                     {
-                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].Formula = itemNew.Formula;
+                                        EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].FormulaText = itemNew.FormulaText;
                                         isSave = true;
                                     }
 
@@ -1519,9 +1519,9 @@ namespace SCADA
                                 isSave2 = true;
                             }
 
-                            if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].Formula != itemNew.Formula)
+                            if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].FormulaText != itemNew.FormulaText)
                             {
-                                EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].Formula = itemNew.Formula;
+                                EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetRec[count2].FormulaText = itemNew.FormulaText;
                                 isSave2 = true;
                             }
 
@@ -1715,9 +1715,9 @@ namespace SCADA
                                 isSave2 = true;
                             }
 
-                            if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].Formula != itemNew.Formula)
+                            if (EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].FormulaText != itemNew.FormulaText)
                             {
-                                EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].Formula = itemNew.Formula;
+                                EthernetControl.EthernetSer.CollectionEthernetOperational[count].CollectionItemNetSend[count2].FormulaText = itemNew.FormulaText;
                                 isSave2 = true;
                             }
 

@@ -20,7 +20,7 @@ namespace SCADA
     public class EthernetControl : ControlOnCanvasControlPanel
     {
         public Border templateBorder;
-        public CustomFlowDocumentScrollViewer customFlowDocumentScrollViewer { get; private set; }
+        public CustomFlowDocumentScrollViewer CustomFlowDocumentScrollViewer { get; private set; }
         public GeometryDrawing leftSize;
         public GeometryDrawing rightSize;
         public GeometryDrawing topSize;
@@ -146,10 +146,10 @@ namespace SCADA
 
             templateBorder = GetTemplateChild("TemplateBorder") as Border;
 
-            customFlowDocumentScrollViewer = GetTemplateChild("CustomFlowDocumentScrollViewer") as CustomFlowDocumentScrollViewer;
-            customFlowDocumentScrollViewer.IsSelectionEnabled = false;
-            customFlowDocumentScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-            customFlowDocumentScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            CustomFlowDocumentScrollViewer = GetTemplateChild("CustomFlowDocumentScrollViewer") as CustomFlowDocumentScrollViewer;
+            CustomFlowDocumentScrollViewer.IsSelectionEnabled = false;
+            CustomFlowDocumentScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            CustomFlowDocumentScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
 
             Thickness thickness = new Thickness(ethernetSer.BorderThickness);
             BorderThickness = thickness;
@@ -165,7 +165,7 @@ namespace SCADA
             flowDocument.PagePadding = new Thickness(2, 0, 0, 0);
             flowDocument.PageWidth = 30000;
 
-            customFlowDocumentScrollViewer.Document = flowDocument;            
+            CustomFlowDocumentScrollViewer.Document = flowDocument;            
         }
 
         private void Properties(object sender, RoutedEventArgs e)

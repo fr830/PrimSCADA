@@ -6350,7 +6350,7 @@ namespace SCADA
             }            
         }
 
-        byte[] formula(ItemNet item, int periodTime)
+        byte[] Formula(ItemNet item, int periodTime)
         {
             string modbusID;
             string itemModbusID;
@@ -6402,7 +6402,7 @@ namespace SCADA
                     return bWrite;
                 }
             }
-            else if (item.Formula.IndexOf("ItemModbusID") != -1)
+            else if (item.FormulaText.IndexOf("ItemModbusID") != -1)
             {
                 int modbusIDIndex = item.Text.IndexOf("ItemModbusID");
                     
@@ -6467,7 +6467,7 @@ namespace SCADA
                     }
                 }
             }
-            else if (item.Formula.IndexOf("Period") != -1)
+            else if (item.FormulaText.IndexOf("Period") != -1)
             {
                 return bWrite = BitConverter.GetBytes(periodTime);
             }
@@ -6748,7 +6748,7 @@ namespace SCADA
                         {
                             if (item.TypeValue == "float")
                             {
-                                formulaBuff = formula(item, 0);
+                                formulaBuff = Formula(item, 0);
 
                                 if (formulaBuff != null)
                                 {
@@ -6762,7 +6762,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "double")
                             {
-                                item.Value = BitConverter.ToDouble(formula(item, 0), 0);
+                                item.Value = BitConverter.ToDouble(Formula(item, 0), 0);
                             }
                             else if (item.TypeValue == "decimal")
                             {
@@ -6774,7 +6774,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "byte")
                             {
-                                formulaBuff = formula(item, 0);
+                                formulaBuff = Formula(item, 0);
 
                                 if (formulaBuff != null)
                                 {
@@ -6785,7 +6785,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "sbyte")
                             {
-                                formulaBuff = formula(item, 0);
+                                formulaBuff = Formula(item, 0);
 
                                 if (formulaBuff != null)
                                 {
@@ -6796,7 +6796,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "short")
                             {
-                                formulaBuff = formula(item, 0);
+                                formulaBuff = Formula(item, 0);
 
                                 if (formulaBuff != null)
                                 {
@@ -6808,7 +6808,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "ushort")
                             {
-                                formulaBuff = formula(item, 0);
+                                formulaBuff = Formula(item, 0);
 
                                 if (formulaBuff != null)
                                 {
@@ -6820,7 +6820,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "int")
                             {
-                                formulaBuff = formula(item, PeriodTime);
+                                formulaBuff = Formula(item, PeriodTime);
 
                                 if (formulaBuff != null)
                                 {
@@ -6834,7 +6834,7 @@ namespace SCADA
                             }
                             else if (item.TypeValue == "uint")
                             {
-                                formulaBuff = formula(item, 0);
+                                formulaBuff = Formula(item, 0);
 
                                 if (formulaBuff != null)
                                 {
@@ -7123,7 +7123,7 @@ namespace SCADA
                             {
                                 if (item.TypeValue == "float")
                                 {
-                                    formulaBuff = formula(item, 0);
+                                    formulaBuff = Formula(item, 0);
 
                                     if (formulaBuff != null)
                                     {
@@ -7137,7 +7137,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "double")
                                 {
-                                    item.Value = BitConverter.ToDouble(formula(item, 0), 0);
+                                    item.Value = BitConverter.ToDouble(Formula(item, 0), 0);
                                 }
                                 else if (item.TypeValue == "decimal")
                                 {
@@ -7149,7 +7149,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "byte")
                                 {
-                                    formulaBuff = formula(item, 0);
+                                    formulaBuff = Formula(item, 0);
 
                                     if (formulaBuff != null)
                                     {
@@ -7160,7 +7160,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "sbyte")
                                 {
-                                    formulaBuff = formula(item, 0);
+                                    formulaBuff = Formula(item, 0);
 
                                     if (formulaBuff != null)
                                     {
@@ -7171,7 +7171,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "short")
                                 {
-                                    formulaBuff = formula(item, 0);
+                                    formulaBuff = Formula(item, 0);
 
                                     if (formulaBuff != null)
                                     {
@@ -7183,7 +7183,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "ushort")
                                 {
-                                    formulaBuff = formula(item, 0);
+                                    formulaBuff = Formula(item, 0);
 
                                     if (formulaBuff != null)
                                     {
@@ -7195,7 +7195,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "int")
                                 {
-                                    formulaBuff = formula(item, PeriodTime);
+                                    formulaBuff = Formula(item, PeriodTime);
 
                                     if (formulaBuff != null)
                                     {
@@ -7209,7 +7209,7 @@ namespace SCADA
                                 }
                                 else if (item.TypeValue == "uint")
                                 {
-                                    formulaBuff = formula(item, 0);
+                                    formulaBuff = Formula(item, 0);
 
                                     if (formulaBuff != null)
                                     {

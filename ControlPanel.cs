@@ -578,7 +578,9 @@ namespace SCADA
     [Serializable]
     public class ItemModbus : Item
     {                                      
-        public ushort Address { get; set; }                      
+        public ushort Address { get; set; }               
+        
+        public ushort Function { get; set; }
                     
         [field: NonSerializedAttribute()]
         private object valueItem;

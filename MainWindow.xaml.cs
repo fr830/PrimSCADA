@@ -8590,7 +8590,10 @@ namespace SCADA
                 cmd.Parameters.Add(parametrDateTime);
                 cmd.Connection = SqlConn;
 
-                CollectionSQLObject.Add(SqlConn);
+                SQLObject sqlObject = new SQLObject();
+                sqlObject.SQL = SqlConn;
+
+                CollectionSQLObject.Add(sqlObject);
 
                 bool isAvailableData;
 
@@ -9649,9 +9652,7 @@ namespace SCADA
             EthernetObject ethernetObject = (EthernetObject)obj;
 
             try
-            {
-                bool IsStatusSend;                     
-
+            {                   
                 string IPAddressServer = ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] + "." + ethernetObject.EthernetSer.IPAddressServer[3];
 
                 Stopwatch timeCheckLink = new Stopwatch();          
@@ -9668,6 +9669,8 @@ namespace SCADA
 
                 NetworkStream stream = null;
 
+                int countLinkError = 0;
+
                 while (true)
                 {
                     if (!IsStop)
@@ -9676,11 +9679,24 @@ namespace SCADA
                         {
                             if (ethernetObject.IsReconnect)
                             {
-                                IsStatusSend = true;
-                               
-                                if (IsStatusSend)
+                                ethernetObject.IsReconnect = false;
+
+                                if (countLinkError == 3)
                                 {
-                                    IsStatusSend = false;
+                                    countLinkError = 0;
+
+                                    if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
+                                    {
+                                        foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
+                                        {
+                                            item.Value = "Потеря связи";
+                                        }
+                                    }
+
+                                    foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetRec)
+                                    {
+                                        item.Value = "Потеря связи";
+                                    }
 
                                     this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
                                     {
@@ -9699,87 +9715,271 @@ namespace SCADA
                                             "." + ethernetObject.EthernetSer.IPAddressServer[3] + ", " + "повторная попытка соединения. " + DateTime.Now);
                                         }
                                     }));
-                                }
-                                                               
-                                ethernetObject.IsReconnect = false;                                                                                                 
+                                }                                                                                                                                                                                                                                                           
                             }
-                            else
+                            
+                            ethernetObject.TcpClient = new TcpClient(localPoint);
+                            ethernetObject.TcpClient.ReceiveTimeout = ethernetObject.EthernetSer.Time * 2000;
+                            ethernetObject.TcpClient.SendTimeout = ethernetObject.EthernetSer.Time * 2000;
+                            ethernetObject.TcpClient.BeginConnect(IPAddress.Parse(IPAddressServer), ethernetObject.EthernetSer.PortServer, null, null);
+
+                            while (true)
                             {
-                                ethernetObject.TcpClient = new TcpClient(localPoint);
-                                ethernetObject.TcpClient.ReceiveTimeout = ethernetObject.EthernetSer.Time * 2000;
-                                ethernetObject.TcpClient.SendTimeout = ethernetObject.EthernetSer.Time * 2000;
-                                ethernetObject.TcpClient.BeginConnect(IPAddress.Parse(IPAddressServer), ethernetObject.EthernetSer.PortServer, null, null);
+                                timeCheckLink.Start();
+
+                                if ((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
+                                {                                      
+                                    throw new Exception("Не удалось подключится к " + IPAddressServer + " .");
+                                }
+
+                                if (ethernetObject.TcpClient.Connected)
+                                {
+                                    timeCheckLink.Reset();
+                                    break;
+                                }
+
+                                if (IsStop)
+                                {
+                                    return;
+                                }
+
+                                Thread.Sleep(StaticValues.TimeSleep);
+                            }
+
+                            this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                            {
+                                if (CollectionMessage.Count > 300)
+                                {
+                                    CollectionMessage.RemoveAt(0);
+
+                                    CollectionMessage.Insert(298, "Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
+                                }
+                                else
+                                {
+                                    CollectionMessage.Add("Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
+                                }
+                            }));
+
+                            stream = ethernetObject.TcpClient.GetStream();
+
+                            while (true)
+                            {
+                                timePeriod.Start();
+                                timeCheckLink.Start();
+
+                                if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
+                                {
+                                    foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
+                                    {
+                                        if (item.TypeValue == "float")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+                                                bWrite[item.Range0 + 2] = formulaBuff[2];
+                                                bWrite[item.Range0 + 3] = formulaBuff[3];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToSingle(bWrite, item.Range0);
+                                                }
+                                            }                                                                                                                                           
+                                        }
+                                        else if (item.TypeValue == "double")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToDouble(item.Formula(ethernetObject.EthernetSer.Time), 0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "decimal")
+                                        {
+                                            aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+                                            aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+                                            aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = new Decimal(aDecimal);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "byte")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = bWrite[item.Range0];
+                                                }
+                                            }                                               
+                                        }
+                                        else if (item.TypeValue == "sbyte")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = (sbyte)bRead[item.Range0];
+                                                }
+                                            }                                                                                                
+                                        }
+                                        else if (item.TypeValue == "short")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt16(bWrite, item.Range0);
+                                                }
+                                            }                                                
+                                        }
+                                        else if (item.TypeValue == "ushort")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
+                                                }
+                                            }                                                                                                   
+                                        }
+                                        else if (item.TypeValue == "int")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+                                                bWrite[item.Range0 + 2] = formulaBuff[2];
+                                                bWrite[item.Range0 + 3] = formulaBuff[3];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt32(bWrite, item.Range0);
+                                                }
+                                            }                                                
+                                        }
+                                        else if (item.TypeValue == "uint")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+                                                bWrite[item.Range0 + 2] = formulaBuff[2];
+                                                bWrite[item.Range0 + 3] = formulaBuff[3];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
+                                                }
+                                            }                                                
+                                        }
+                                        else if (item.TypeValue == "long")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToInt64(bWrite, item.Range0);
+                                            }                                                    
+                                        }
+                                        else if (item.TypeValue == "ulong")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "bool")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "char")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToChar(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "string")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToString(bWrite, item.Range0);
+                                            }
+                                        }
+                                    }
+
+                                    stream.Write(bWrite, 0, bWrite.Length);
+                                }
 
                                 while (true)
                                 {
-                                    timeCheckLink.Start();
-
-                                    if ((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
-                                    {                                      
-                                        throw new Exception("Не удалось подключится к серверу " + IPAddressServer + " .");
-                                    }
-
-                                    if (ethernetObject.TcpClient.Connected)
-                                    {
-                                        timeCheckLink.Reset();
-                                        break;
-                                    }
-
                                     if (IsStop)
                                     {
                                         return;
                                     }
 
-                                    Thread.Sleep(StaticValues.TimeSleep);
-                                }
-
-                                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                                {
-                                    if (CollectionMessage.Count > 300)
+                                    if((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
                                     {
-                                        CollectionMessage.RemoveAt(0);
-
-                                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
+                                        throw new Exception("Потеря связи с " + IPAddressServer + " .");
                                     }
-                                    else
+
+                                    if (ethernetObject.TcpClient.Available == ethernetObject.EthernetSer.BufferSizeRec)
                                     {
-                                        CollectionMessage.Add("Сообщение " + " : " + "Статус: соединение с сервером " + IPAddressServer + " выполнено." + " " + DateTime.Now);
-                                    }
-                                }));
+                                        timeCheckLink.Reset();
 
-                                stream = ethernetObject.TcpClient.GetStream();
+                                        stream.Read(bRead, 0, bRead.Length);
 
-                                while (true)
-                                {
-                                    timePeriod.Start();
-                                    timeCheckLink.Start();
-
-                                    if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
-                                    {
-                                        foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
+                                        foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetRec)
                                         {
                                             if (item.TypeValue == "float")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
-                                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                    bWrite[item.Range0 + 2] = formulaBuff[2];
-                                                    bWrite[item.Range0 + 3] = formulaBuff[3];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToSingle(bWrite, item.Range0);
-                                                    }
-                                                }                                                                                                                                           
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToSingle(bRead, item.Range0);
+                                                }                                                     
                                             }
                                             else if (item.TypeValue == "double")
                                             {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToDouble(item.Formula(ethernetObject.EthernetSer.Time), 0);
+                                                    item.Value = BitConverter.ToDouble(bRead, item.Range0);
                                                 }
                                             }
                                             else if (item.TypeValue == "decimal")
@@ -9788,6 +9988,11 @@ namespace SCADA
                                                 aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
                                                 aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
 
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
                                                     item.Value = new Decimal(aDecimal);
@@ -9795,365 +10000,172 @@ namespace SCADA
                                             }
                                             else if (item.TypeValue == "byte")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = bWrite[item.Range0];
-                                                    }
-                                                }                                               
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = bRead[item.Range0];
+                                                }
                                             }
                                             else if (item.TypeValue == "sbyte")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = (sbyte)bRead[item.Range0];
-                                                    }
-                                                }                                                                                                
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = (sbyte)bRead[item.Range0];
+                                                }                                                        
                                             }
                                             else if (item.TypeValue == "short")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
-                                                    bWrite[item.Range0 + 1] = formulaBuff[1];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToInt16(bWrite, item.Range0);
-                                                    }
-                                                }                                                
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt16(bRead, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "ushort")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
-                                                    bWrite[item.Range0 + 1] = formulaBuff[1];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
-                                                    }
-                                                }                                                                                                   
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt16(bRead, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "int")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
-                                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                    bWrite[item.Range0 + 2] = formulaBuff[2];
-                                                    bWrite[item.Range0 + 3] = formulaBuff[3];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToInt32(bWrite, item.Range0);
-                                                    }
-                                                }                                                
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt32(bRead, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "uint")
                                             {
-                                                formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
-
-                                                if (formulaBuff != null)
+                                                if (item.FormulaText.Length > 0)
                                                 {
-                                                    bWrite[item.Range0] = formulaBuff[0];
-                                                    bWrite[item.Range0 + 1] = formulaBuff[1];
-                                                    bWrite[item.Range0 + 2] = formulaBuff[2];
-                                                    bWrite[item.Range0 + 3] = formulaBuff[3];
 
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
-                                                    }
-                                                }                                                
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt32(bRead, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "long")
                                             {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToInt64(bWrite, item.Range0);
-                                                }                                                    
+                                                    item.Value = BitConverter.ToInt64(bRead, item.Range0);
+                                                }
                                             }
                                             else if (item.TypeValue == "ulong")
                                             {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
+                                                    item.Value = BitConverter.ToUInt64(bRead, item.Range0);
                                                 }
                                             }
                                             else if (item.TypeValue == "bool")
                                             {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
+                                                    item.Value = BitConverter.ToBoolean(bRead, item.Range0);
                                                 }
                                             }
                                             else if (item.TypeValue == "char")
                                             {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToChar(bWrite, item.Range0);
+                                                    item.Value = BitConverter.ToChar(bRead, item.Range0);
                                                 }
                                             }
                                             else if (item.TypeValue == "string")
                                             {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
                                                 lock (ethernetObject.LockValue)
                                                 {
-                                                    item.Value = BitConverter.ToString(bWrite, item.Range0);
+                                                    item.Value = BitConverter.ToString(bRead, item.Range0);
                                                 }
                                             }
                                         }
 
-                                        stream.Write(bWrite, 0, bWrite.Length);
+                                        lock(ethernetObject.LockBool)
+                                        {
+                                            ethernetObject.IsAvailableData = true;
+                                        }
+
+                                        break;
                                     }
 
-                                    while (true)
-                                    {
-                                        if (IsStop)
-                                        {
-                                            return;
-                                        }
-
-                                        if((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
-                                        {
-                                            throw new Exception("Потеря связи с сервером " + IPAddressServer + " .");
-                                        }
-
-                                        if (ethernetObject.TcpClient.Available == ethernetObject.EthernetSer.BufferSizeRec)
-                                        {
-                                            timeCheckLink.Reset();
-
-                                            stream.Read(bRead, 0, bRead.Length);
-
-                                            foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetRec)
-                                            {
-                                                if (item.TypeValue == "float")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToSingle(bRead, item.Range0);
-                                                    }                                                     
-                                                }
-                                                else if (item.TypeValue == "double")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToDouble(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "decimal")
-                                                {
-                                                    aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-                                                    aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-                                                    aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
-
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = new Decimal(aDecimal);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "byte")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = bRead[item.Range0];
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "sbyte")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = (sbyte)bRead[item.Range0];
-                                                    }                                                        
-                                                }
-                                                else if (item.TypeValue == "short")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToInt16(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "ushort")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToUInt16(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "int")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToInt32(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "uint")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToUInt32(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "long")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToInt64(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "ulong")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToUInt64(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "bool")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToBoolean(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "char")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToChar(bRead, item.Range0);
-                                                    }
-                                                }
-                                                else if (item.TypeValue == "string")
-                                                {
-                                                    if (item.FormulaText.Length > 0)
-                                                    {
-
-                                                    }
-
-                                                    lock (ethernetObject.LockValue)
-                                                    {
-                                                        item.Value = BitConverter.ToString(bRead, item.Range0);
-                                                    }
-                                                }
-                                            }
-
-                                            lock(ethernetObject.LockBool)
-                                            {
-                                                ethernetObject.IsAvailableData = true;
-                                            }
-
-                                            break;
-                                        }
-
-                                        Thread.Sleep(StaticValues.TimeSleep);
-                                    }
-
-                                    while (true)
-                                    {
-                                        if (IsStop)
-                                        {
-                                            return;
-                                        }
-
-                                        if ((ethernetObject.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
-                                        {
-                                            timePeriod.Reset();
-                                            break;
-                                        }
-
-                                        Thread.Sleep(StaticValues.TimeSleep);
-                                    }
+                                    Thread.Sleep(StaticValues.TimeSleep);
                                 }
-                            }
+
+                                while (true)
+                                {
+                                    if (IsStop)
+                                    {
+                                        return;
+                                    }
+
+                                    if ((ethernetObject.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
+                                    {
+                                        timePeriod.Reset();
+                                        break;
+                                    }
+
+                                    Thread.Sleep(StaticValues.TimeSleep);
+                                }
+                            }                              
                         }
                         catch (Exception ex)
                         {
-                            ethernetObject.IsReconnect = true;
-
                             if (!IsStop)
-                            {                                
+                            {
+                                ethernetObject.IsReconnect = true;
+                                countLinkError++;
                                 this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
                                 {
                                     if (CollectionMessage.Count > 300)
@@ -10171,15 +10183,15 @@ namespace SCADA
                         }
                         finally
                         {
-                            if (ethernetObject.TcpClient != null)
-                            {
-                                ethernetObject.TcpClient.Close();
-                            }
-
                             if (stream != null)
                             {
                                 stream.Close();
                             }
+
+                            if (ethernetObject.TcpClient != null)
+                            {
+                                ethernetObject.TcpClient.Close();
+                            }                            
 
                             lock(ethernetObject.LockBool)
                             {
@@ -10218,509 +10230,552 @@ namespace SCADA
             }
         }
 
-        //private void ConnectedUDP(object obj)
-        //{
-        //    EthernetObject ethernetSendTread = (EthernetObject)obj;
-
-        //    try
-        //    {
-        //        int countLinkError = 0;
-
-        //        string IPAddressServer = ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3];
-
-        //        Stopwatch timePeriod = new Stopwatch();
-        //        Stopwatch timeRecconect = new Stopwatch();
-
-        //        IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
-
-        //        IPEndPoint localIP = new IPEndPoint(new IPAddress(ethernetSendTread.EthernetSer.IPAddressClient), ethernetSendTread.EthernetSer.PortClient);
-        //        IPEndPoint remoteIP = new IPEndPoint(IPAddress.Parse(ethernetSendTread.EthernetSer.IPAddressServer[0] + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] + "." + ethernetSendTread.EthernetSer.IPAddressServer[3]), ethernetSendTread.EthernetSer.PortServer);
-        //        IPEndPoint remoteIPRec = null;
-
-        //        byte[] bRead = new byte[ethernetSendTread.EthernetSer.BufferSizeRec];
-        //        byte[] bWrite = new byte[ethernetSendTread.EthernetSer.BufferSizeSend];
-
-        //        int[] aDecimal = new int[3];
-
-        //        byte[] formulaBuff;
-
-        //        while (true)
-        //        {
-        //            if (!IsStop)
-        //            {
-        //                if (ethernetSendTread.IsReconnect)
-        //                {
-        //                    ethernetSendTread.IsReconnect = false;
-
-        //                    if (countLinkError == 2)
-        //                    {
-        //                        countLinkError = 0;
-
-        //                        if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
-        //                        {
-        //                            foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-        //                            {
-        //                                item.Value = "Потеря связи";
-        //                            }
-        //                        }
-
-        //                        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-        //                        {
-        //                            item.Value = "Потеря связи";
-        //                        }
-
-        //                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-        //                        {
-        //                            if (CollectionMessage.Count > 300)
-        //                            {
-        //                                CollectionMessage.RemoveAt(0);
-
-        //                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-        //                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-        //                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-        //                            }
-        //                            else
-        //                            {
-        //                                CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetSendTread.EthernetSer.IPAddressServer[0]
-        //                                + "." + ethernetSendTread.EthernetSer.IPAddressServer[1] + "." + ethernetSendTread.EthernetSer.IPAddressServer[2] +
-        //                                "." + ethernetSendTread.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
-        //                            }
-        //                        })); 
-        //                    }                                                                                                                                                               
-        //                }
-                        
-        //                try
-        //                {                                                        
-        //                    ethernetSendTread.UdpClient = new UdpClient(localIP);
-        //                    ethernetSendTread.UdpClient.Client.ReceiveTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-        //                    ethernetSendTread.UdpClient.Client.SendTimeout = ethernetSendTread.EthernetSer.Time * 2000;
-
-        //                    while (true)
-        //                    {
-        //                        timePeriod.Start();
-
-        //                        if (ethernetSendTread.EthernetSer.CollectionItemNetSend.Count > 0)
-        //                        {
-        //                            foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-        //                            {
-        //                                if (item.TypeValue == "float")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
-        //                                        bWrite[item.Range0 + 2] = formulaBuff[2];
-        //                                        bWrite[item.Range0 + 3] = formulaBuff[3];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToSingle(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "double")
-        //                                {
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToDouble(Formula(item, ethernetSendTread.EthernetSer.Time), 0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "decimal")
-        //                                {
-        //                                    aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-        //                                    aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-        //                                    aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = new Decimal(aDecimal);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "byte")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = bWrite[item.Range0];
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "sbyte")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = (sbyte)bRead[item.Range0];
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "short")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToInt16(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "ushort")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "int")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
-        //                                        bWrite[item.Range0 + 2] = formulaBuff[2];
-        //                                        bWrite[item.Range0 + 3] = formulaBuff[3];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToInt32(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "uint")
-        //                                {
-        //                                    formulaBuff = Formula(item, ethernetSendTread.EthernetSer.Time);
-
-        //                                    if (formulaBuff != null)
-        //                                    {
-        //                                        bWrite[item.Range0] = formulaBuff[0];
-        //                                        bWrite[item.Range0 + 1] = formulaBuff[1];
-        //                                        bWrite[item.Range0 + 2] = formulaBuff[2];
-        //                                        bWrite[item.Range0 + 3] = formulaBuff[3];
-        //                                    }
-
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "long")
-        //                                {
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToInt64(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "ulong")
-        //                                {
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "bool")
-        //                                {
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "char")
-        //                                {
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToChar(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                                else if (item.TypeValue == "string")
-        //                                {
-        //                                    ethernetSendTread.RWLock.EnterWriteLock();
-        //                                    item.Value = BitConverter.ToString(bWrite, item.Range0);
-        //                                    ethernetSendTread.RWLock.ExitWriteLock();
-        //                                }
-        //                            }
-
-        //                            ethernetSendTread.UdpClient.Send(bWrite, bWrite.Length, remoteIP);
-        //                        }
-
-        //                        while (true)
-        //                        {
-        //                            if (IsStop)
-        //                            {
-        //                                return;
-        //                            }
-
-        //                            if (ethernetSendTread.UdpClient.Available != ethernetSendTread.EthernetSer.BufferSizeRec)
-        //                            {
-        //                                timeRecconect.Start();
-
-        //                                if ((ethernetSendTread.EthernetSer.Time * 2000) <= timeRecconect.ElapsedMilliseconds)
-        //                                {
-        //                                    ethernetSendTread.DatabaseConnect = false;
-
-        //                                    throw new Exception("Таймаут приема.");
-        //                                }
-        //                            }
-
-        //                            if (ethernetSendTread.UdpClient.Available == ethernetSendTread.EthernetSer.BufferSizeRec)
-        //                            {
-        //                                timeRecconect.Reset();
-
-        //                                ethernetSendTread.UdpClient.Receive(ref remoteIPRec);
-
-        //                                foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetRec)
-        //                                {
-        //                                    if (item.TypeValue == "float")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToSingle(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "double")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToDouble(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "decimal")
-        //                                    {
-        //                                        aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-        //                                        aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-        //                                        aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
-
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = new Decimal(aDecimal);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "byte")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = bRead[item.Range0];
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "sbyte")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = (sbyte)bRead[item.Range0];
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "short")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToInt16(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "ushort")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToUInt16(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "int")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToInt32(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "uint")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToUInt32(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "long")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToInt64(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "ulong")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToUInt64(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "bool")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToBoolean(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "char")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToChar(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                    else if (item.TypeValue == "string")
-        //                                    {
-        //                                        if (item.FormulaText.Length > 0)
-        //                                        {
-
-        //                                        }
-
-        //                                        ethernetSendTread.RWLock.EnterWriteLock();
-        //                                        item.Value = BitConverter.ToString(bRead, item.Range0);
-        //                                        ethernetSendTread.RWLock.ExitWriteLock();
-        //                                    }
-        //                                }
-
-        //                                ethernetSendTread.DatabaseConnect = true;
-
-        //                                break;
-        //                            }
-
-        //                            Thread.Sleep(StaticValues.TimeSleep);
-        //                        }
-
-        //                        while (true)
-        //                        {
-        //                            if (IsStop)
-        //                            {
-        //                                return;
-        //                            }
-
-        //                            if ((ethernetSendTread.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
-        //                            {
-        //                                timePeriod.Reset();
-        //                                break;
-        //                            }
-
-        //                            Thread.Sleep(StaticValues.TimeSleep);
-        //                        }
-        //                    }
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    if (!IsStop)
-        //                    {
-        //                        countLinkError++;                                
-
-        //                        ethernetSendTread.IsReconnect = true;
-
-        //                        lock (ethernetSendTread.LockBool)
-        //                        {
-        //                            ethernetSendTread.IsAvailableData = false;
-        //                        }
-
-        //                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-        //                        {
-        //                            if (CollectionMessage.Count > 300)
-        //                            {
-        //                                CollectionMessage.RemoveAt(0);
-
-        //                                CollectionMessage.Insert(298, "Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
-        //                            }
-        //                            else
-        //                            {
-        //                                CollectionMessage.Add("Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
-        //                            }
-        //                        }));
-        //                    }
-        //                }                       
-        //            }
-        //        }               
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //    }
-        //    finally
-        //    {
-        //        foreach (ItemNet item in ethernetSendTread.EthernetSer.CollectionItemNetSend)
-        //        {
-        //            item.ItemModbus = null;
-        //        }
-
-        //        lock(ethernetSendTread.LockBool)
-        //        {
-        //            ethernetSendTread.IsAvailableData = false;
-        //        }
-
-        //        if (ethernetSendTread.UdpClient != null)
-        //        {
-        //            ethernetSendTread.UdpClient.Close();
-        //        }
-        //    }                     
-        //}
+        private void ConnectedUDP(object obj)
+        {
+            EthernetObject ethernetObject = (EthernetObject)obj;
+
+            try
+            {
+                int countLinkError = 0;
+
+                string IPAddressServer = ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] + "." + ethernetObject.EthernetSer.IPAddressServer[3];
+
+                Stopwatch timeCheckLink = new Stopwatch();
+                Stopwatch timePeriod = new Stopwatch();
+
+                IPEndPoint localPoint = new IPEndPoint(new IPAddress(ethernetObject.EthernetSer.IPAddressClient), ethernetObject.EthernetSer.PortClient);
+
+                IPEndPoint localIP = new IPEndPoint(new IPAddress(ethernetObject.EthernetSer.IPAddressClient), ethernetObject.EthernetSer.PortClient);
+                IPEndPoint remoteIP = new IPEndPoint(IPAddress.Parse(ethernetObject.EthernetSer.IPAddressServer[0] + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] + "." + ethernetObject.EthernetSer.IPAddressServer[3]), ethernetObject.EthernetSer.PortServer);
+                IPEndPoint remoteIPRec = null;
+
+                byte[] bRead = new byte[ethernetObject.EthernetSer.BufferSizeRec];
+                byte[] bWrite = new byte[ethernetObject.EthernetSer.BufferSizeSend];
+
+                int[] aDecimal = new int[3];
+
+                byte[] formulaBuff;
+
+                while (true)
+                {
+                    if (!IsStop)
+                    {
+                        try
+                        {
+                            if (ethernetObject.IsReconnect)
+                            {
+                                ethernetObject.IsReconnect = false;
+
+                                if (countLinkError == 3)
+                                {
+                                    countLinkError = 0;
+
+                                    if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
+                                    {
+                                        foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
+                                        {
+                                            item.Value = "Потеря связи";
+                                        }
+                                    }
+
+                                    foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetRec)
+                                    {
+                                        item.Value = "Потеря связи";
+                                    }
+
+                                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                    {
+                                        if (CollectionMessage.Count > 300)
+                                        {
+                                            CollectionMessage.RemoveAt(0);
+
+                                            CollectionMessage.Insert(298, "Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                            + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                            "." + ethernetObject.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+                                        }
+                                        else
+                                        {
+                                            CollectionMessage.Add("Сообщение " + " : " + "Потеря связи c UDP/IP: " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                            + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                            "." + ethernetObject.EthernetSer.IPAddressServer[3] + " " + DateTime.Now);
+                                        }
+                                    }));
+                                }
+                            }
+                       
+                            ethernetObject.UdpClient = new UdpClient(localIP);
+                            ethernetObject.UdpClient.Client.ReceiveTimeout = ethernetObject.EthernetSer.Time * 2000;
+                            ethernetObject.UdpClient.Client.SendTimeout = ethernetObject.EthernetSer.Time * 2000;
+
+                            while (true)
+                            {
+                                timePeriod.Start();
+                                timeCheckLink.Start();
+
+                                if (ethernetObject.EthernetSer.CollectionItemNetSend.Count > 0)
+                                {
+                                    foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
+                                    {
+                                        if (item.TypeValue == "float")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+                                                bWrite[item.Range0 + 2] = formulaBuff[2];
+                                                bWrite[item.Range0 + 3] = formulaBuff[3];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToSingle(bWrite, item.Range0);
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "double")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToDouble(item.Formula(ethernetObject.EthernetSer.Time), 0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "decimal")
+                                        {
+                                            aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+                                            aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+                                            aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = new Decimal(aDecimal);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "byte")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = bWrite[item.Range0];
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "sbyte")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = (sbyte)bRead[item.Range0];
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "short")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt16(bWrite, item.Range0);
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "ushort")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt16(bWrite, item.Range0);
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "int")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+                                                bWrite[item.Range0 + 2] = formulaBuff[2];
+                                                bWrite[item.Range0 + 3] = formulaBuff[3];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt32(bWrite, item.Range0);
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "uint")
+                                        {
+                                            formulaBuff = item.Formula(ethernetObject.EthernetSer.Time);
+
+                                            if (formulaBuff != null)
+                                            {
+                                                bWrite[item.Range0] = formulaBuff[0];
+                                                bWrite[item.Range0 + 1] = formulaBuff[1];
+                                                bWrite[item.Range0 + 2] = formulaBuff[2];
+                                                bWrite[item.Range0 + 3] = formulaBuff[3];
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt32(bWrite, item.Range0);
+                                                }
+                                            }
+                                        }
+                                        else if (item.TypeValue == "long")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToInt64(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "ulong")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToUInt64(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "bool")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToBoolean(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "char")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToChar(bWrite, item.Range0);
+                                            }
+                                        }
+                                        else if (item.TypeValue == "string")
+                                        {
+                                            lock (ethernetObject.LockValue)
+                                            {
+                                                item.Value = BitConverter.ToString(bWrite, item.Range0);
+                                            }
+                                        }
+                                    }
+
+                                    ethernetObject.UdpClient.Send(bWrite, bWrite.Length, remoteIP);
+                                }
+
+                                while (true)
+                                {
+                                    if (IsStop)
+                                    {
+                                        return;
+                                    }
+
+                                    if ((ethernetObject.EthernetSer.Time * 1100) <= timeCheckLink.ElapsedMilliseconds)
+                                    {
+                                        throw new Exception("Потеря связи с " + IPAddressServer + " .");
+                                    }
+                                   
+                                    if (ethernetObject.UdpClient.Available == ethernetObject.EthernetSer.BufferSizeRec)
+                                    {
+                                        timeCheckLink.Reset();
+
+                                        ethernetObject.UdpClient.Receive(ref remoteIPRec);
+
+                                        foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetRec)
+                                        {
+                                            if (item.TypeValue == "float")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToSingle(bRead, item.Range0);
+                                                }                                                  
+                                            }
+                                            else if (item.TypeValue == "double")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToDouble(bRead, item.Range0);
+                                                }                                                   
+                                            }
+                                            else if (item.TypeValue == "decimal")
+                                            {
+                                                aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
+                                                aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
+                                                aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
+
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = new Decimal(aDecimal);
+                                                }                                                 
+                                            }
+                                            else if (item.TypeValue == "byte")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = bRead[item.Range0];
+                                                }                                                   
+                                            }
+                                            else if (item.TypeValue == "sbyte")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = (sbyte)bRead[item.Range0];
+                                                }                                                  
+                                            }
+                                            else if (item.TypeValue == "short")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt16(bRead, item.Range0);
+                                                }
+                                            }
+                                            else if (item.TypeValue == "ushort")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt16(bRead, item.Range0);
+                                                }                                                  
+                                            }
+                                            else if (item.TypeValue == "int")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt32(bRead, item.Range0);
+                                                }                                                  
+                                            }
+                                            else if (item.TypeValue == "uint")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt32(bRead, item.Range0);
+                                                }                                                   
+                                            }
+                                            else if (item.TypeValue == "long")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToInt64(bRead, item.Range0);
+                                                }                                                   
+                                            }
+                                            else if (item.TypeValue == "ulong")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToUInt64(bRead, item.Range0);
+                                                }                                                   
+                                            }
+                                            else if (item.TypeValue == "bool")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToBoolean(bRead, item.Range0);
+                                                }                                                  
+                                            }
+                                            else if (item.TypeValue == "char")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToChar(bRead, item.Range0);
+                                                }                                                   
+                                            }
+                                            else if (item.TypeValue == "string")
+                                            {
+                                                if (item.FormulaText.Length > 0)
+                                                {
+
+                                                }
+
+                                                lock (ethernetObject.LockValue)
+                                                {
+                                                    item.Value = BitConverter.ToString(bRead, item.Range0);
+                                                }                                                  
+                                            }
+                                        }
+
+                                        lock (ethernetObject.LockBool)
+                                        {
+                                            ethernetObject.IsAvailableData = false;
+                                        }
+
+                                        break;
+                                    }
+
+                                    Thread.Sleep(StaticValues.TimeSleep);
+                                }
+
+                                while (true)
+                                {
+                                    if (IsStop)
+                                    {
+                                        return;
+                                    }
+
+                                    if ((ethernetObject.EthernetSer.Time * 1000) <= timePeriod.ElapsedMilliseconds)
+                                    {
+                                        timePeriod.Reset();
+                                        break;
+                                    }
+
+                                    Thread.Sleep(StaticValues.TimeSleep);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if (!IsStop)
+                            {
+                                countLinkError++;
+
+                                ethernetObject.IsReconnect = true;
+
+                                lock (ethernetObject.LockBool)
+                                {
+                                    ethernetObject.IsAvailableData = false;
+                                }
+
+                                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                {
+                                    if (CollectionMessage.Count > 300)
+                                    {
+                                        CollectionMessage.RemoveAt(0);
+
+                                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
+                                    }
+                                    else
+                                    {
+                                        CollectionMessage.Add("Сообщение " + " : " + "Исключение в опросе UDP/IP " + IPAddressServer + ": " + ex.Message + " " + DateTime.Now);
+                                    }
+                                }));
+                            }
+                        }
+                        finally
+                        {
+                            lock (ethernetObject.LockBool)
+                            {
+                                ethernetObject.IsAvailableData = false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    if (CollectionMessage.Count > 300)
+                    {
+                        CollectionMessage.RemoveAt(0);
+
+                        CollectionMessage.Insert(298, "Сообщение " + " : " + "Аварийный выход из потока " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ex.Message + " " + DateTime.Now);
+                    }
+                    else
+                    {
+                        CollectionMessage.Add("Сообщение " + " : " + "Аварийный выход из потока " + ethernetObject.EthernetSer.IPAddressServer[0]
+                                                + "." + ethernetObject.EthernetSer.IPAddressServer[1] + "." + ethernetObject.EthernetSer.IPAddressServer[2] +
+                                                "." + ethernetObject.EthernetSer.IPAddressServer[3] + ex.Message + " " + DateTime.Now);
+                    }
+                }));
+            }
+            finally
+            {
+                foreach (ItemNet item in ethernetObject.EthernetSer.CollectionItemNetSend)
+                {
+                    item.ItemModbus = null;
+                }
+              
+                if (ethernetObject.UdpClient != null)
+                {
+                    ethernetObject.UdpClient.Close();
+                }
+            }
+        }
 
         //private void ConnectedEthernetOperational(object obj)
         //{

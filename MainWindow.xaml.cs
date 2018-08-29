@@ -6959,7 +6959,7 @@ namespace SCADA
                 return;
             }
 
-            IsStop = false;
+            Interlocked.Exchange(ref IsStop, 0);
 
             CollectionTCPEthernetObject.Clear();
             CollectionUDPEthernetObject.Clear();
@@ -7083,7 +7083,7 @@ namespace SCADA
             {                
                 foreach (EthernetControl ethernetControl in collectionEthernet)
                 {
-                    if (!IsStop)
+                    if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                     {
                         if (ethernetControl.EthernetSer.EthernetProtocol == "TCP")
                         {
@@ -7163,7 +7163,7 @@ namespace SCADA
               
                 foreach (ComSer comSer in ((AppWPF)Application.Current).CollectionComSers)
                 {
-                    if (!IsStop)
+                    if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                     {
                         List<ModbusObject> collectionModbusThread = new List<ModbusObject>();
 
@@ -7262,7 +7262,7 @@ namespace SCADA
             }
             catch (SystemException ex)
             {
-                IsStop = true;
+                Interlocked.Exchange(ref IsStop, 1);
 
                 if (CollectionMessage.Count > 300)
                 {
@@ -7277,7 +7277,7 @@ namespace SCADA
             }
             finally
             {
-                if (IsStop)
+                if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                 {                    
                     IsBindingStartProject = false;
 
@@ -7331,13 +7331,13 @@ namespace SCADA
 
             try
             {
-                while (!IsStop)
+                while (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                 {
                     foreach (ModbusObject modbusSendObject in collectionModbusObject)
                     {
                         Thread.Sleep(StaticValues.TimeSleep);
 
-                        if (IsStop)
+                        if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                         {
                             return;
                         }
@@ -7367,7 +7367,7 @@ namespace SCADA
 
                                 foreach (ItemModbus item in modbusSendObject.ModbusControl.ModbusSer.CollectionItemModbus)
                                 {
-                                    if (IsStop)
+                                    if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                                     {
                                         return;
                                     }
@@ -7756,7 +7756,7 @@ namespace SCADA
             }
             catch (SystemException ex)
             {
-                if (!IsStop)
+                if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                 {                    
                     if (CollectionMessage.Count > 300)
                     {
@@ -7876,7 +7876,7 @@ namespace SCADA
                     {
                         Thread.Sleep(StaticValues.TimeSleep);
 
-                        if (IsStop)
+                        if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                         {                                                      
                             return;
                         }
@@ -8599,7 +8599,7 @@ namespace SCADA
 
                 while (true)
                 {
-                    if (IsStop)
+                    if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                     {
                         SqlConn.Close();
                         SqlConn.Dispose();
@@ -9673,7 +9673,7 @@ namespace SCADA
 
                 while (true)
                 {
-                    if (!IsStop)
+                    if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                     {
                         try
                         {
@@ -9738,7 +9738,7 @@ namespace SCADA
                                     break;
                                 }
 
-                                if (IsStop)
+                                if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                                 {
                                     return;
                                 }
@@ -9940,7 +9940,7 @@ namespace SCADA
 
                                 while (true)
                                 {
-                                    if (IsStop)
+                                    if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                                     {
                                         return;
                                     }
@@ -10145,7 +10145,7 @@ namespace SCADA
 
                                 while (true)
                                 {
-                                    if (IsStop)
+                                    if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                                     {
                                         return;
                                     }
@@ -10162,7 +10162,7 @@ namespace SCADA
                         }
                         catch (Exception ex)
                         {
-                            if (!IsStop)
+                            if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                             {
                                 ethernetObject.IsReconnect = true;
                                 countLinkError++;
@@ -10258,7 +10258,7 @@ namespace SCADA
 
                 while (true)
                 {
-                    if (!IsStop)
+                    if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                     {
                         try
                         {
@@ -10485,7 +10485,7 @@ namespace SCADA
 
                                 while (true)
                                 {
-                                    if (IsStop)
+                                    if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                                     {
                                         return;
                                     }
@@ -10690,7 +10690,7 @@ namespace SCADA
 
                                 while (true)
                                 {
-                                    if (IsStop)
+                                    if (Interlocked.CompareExchange(ref IsStop, 1, 1) == 1)
                                     {
                                         return;
                                     }
@@ -10707,7 +10707,8 @@ namespace SCADA
                         }
                         catch (Exception ex)
                         {
-                            if (!IsStop)
+                            
+                            if (Interlocked.CompareExchange(ref IsStop, 0, 0) == 0)
                             {
                                 countLinkError++;
 
@@ -11102,8 +11103,8 @@ namespace SCADA
         {            
             AppWPF app = (AppWPF)Application.Current;
 
-            IsStop = true;
-            
+            Interlocked.Exchange(ref IsStop, 1);
+
             foreach (EthernetObject client in CollectionTCPEthernetObject)
             {
                 if (client.TcpClient != null)
@@ -11168,9 +11169,9 @@ namespace SCADA
                     BinaryFormatter Projserializer = new BinaryFormatter();
                     Projserializer.Serialize(fs, this.ProjectBin);
                 }
-            }            
-            
-            IsStop = true;              
+            }
+
+            Interlocked.Exchange(ref IsStop, 1);
         }
 
         private void MIWindowMessage_Click(object sender, RoutedEventArgs e)
@@ -11200,7 +11201,7 @@ namespace SCADA
             e.Handled = true;
         }
 
-        public volatile bool IsStop;
+        public int IsStop;
 
         private void About(object sender, RoutedEventArgs e)
         {

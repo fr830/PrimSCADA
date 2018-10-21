@@ -3501,10 +3501,6 @@ namespace SCADA
 
         ItemNet Item;
 
-        public ListBox ListEthernets = new ListBox();
-        Button AddEthernet = new Button();
-        Button RemoveEthernet = new Button();
-
         public EthernetSer NewEthernetSer;
 
         TcpClient TcpClient;
@@ -3559,8 +3555,6 @@ namespace SCADA
         string EscText;
         decimal EscDigital;
 
-        StackPanel PanelButtonEthernets;
-
         public GridPropertiesEthernetGeneral(EthernetControl ethernetControl)
         {
             EthernetControl = ethernetControl;
@@ -3586,74 +3580,8 @@ namespace SCADA
             PopupMessage.AllowsTransparency = true;
             PopupMessage.Child = LPopupMessage;
             PopupMessage.PopupAnimation = PopupAnimation.Fade;
-            PopupMessage.StaysOpen = false;
-
-            ListBoxItem lbEthernet = new ListBoxItem();
-            lbEthernet.Tag = "1";
-            lbEthernet.Content = ethernetControl.EthernetSer.Description;
-
-            ListEthernets.MinWidth = 200;
-            ListEthernets.MaxWidth = 300;
-            ListEthernets.MinHeight = 50;
-            ListEthernets.Items.Add(lbEthernet);            
-            ListEthernets.Margin = new Thickness(5);
-            ListEthernets.SetValue(Grid.RowProperty, 0);
-            ListEthernets.SelectedItem = lbEthernet;
-
-            this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-            {
-                ListEthernets.SelectionChanged += ListEthernets_SelectionChanged;
-            }));
-
-            foreach(EthernetOperational ethernetOperational in NewEthernetSer.CollectionEthernetOperational)
-            {
-                ListBoxItem lbEthernetOperational = new ListBoxItem();
-                lbEthernetOperational.Tag = ethernetOperational;
-                lbEthernetOperational.Content = ethernetOperational.Description;
-
-                ListEthernets.Items.Add(lbEthernetOperational);
-            }
-
-            Image removeEthernetImage = new Image();
-            removeEthernetImage.Source = new BitmapImage(new Uri("Images/DeleteNet.png", UriKind.Relative));
-
-            Image addEthernetImage = new Image();
-            addEthernetImage.Source = new BitmapImage(new Uri("Images/AddNet.png", UriKind.Relative));
-
-            Binding bindingEthernetDelete = new Binding();
-            bindingEthernetDelete.Converter = new EthernetDeleteButtonConverter();
-            bindingEthernetDelete.Source = ListEthernets;
-            bindingEthernetDelete.Path = new PropertyPath("Items.Count");
-
-            Binding bindingEthernetDelete2 = new Binding();
-            bindingEthernetDelete2.Converter = new EthernetDeleteButtonConverter2();
-            bindingEthernetDelete2.Source = ListEthernets;
-            bindingEthernetDelete2.Path = new PropertyPath("SelectedItem");
-
-            MultiBinding bindingEthernetDelete3 = new MultiBinding();
-            bindingEthernetDelete3.Converter = new StartAddEthernetConverter();
-            bindingEthernetDelete3.Bindings.Add(bindingEthernetDelete);
-            bindingEthernetDelete3.Bindings.Add(bindingEthernetDelete2);
-
-            RemoveEthernet.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-            RemoveEthernet.SetBinding(Button.IsEnabledProperty, bindingEthernetDelete3);
-            RemoveEthernet.Click += RemoveEthernet_Click;
-            RemoveEthernet.Margin = new Thickness(3);
-            RemoveEthernet.ToolTip = "Удалить Ethernet";
-            RemoveEthernet.Content = removeEthernetImage;
-
-            AddEthernet.Margin = new Thickness(3);
-            AddEthernet.Click += AddEthernet_Click;
-            AddEthernet.ToolTip = "Добавить Ethernet";
-            AddEthernet.Content = addEthernetImage;
-
-            PanelButtonEthernets = new StackPanel();
-            PanelButtonEthernets.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-            PanelButtonEthernets.Orientation = Orientation.Horizontal;
-            PanelButtonEthernets.SetValue(Grid.RowProperty, 1);
-            PanelButtonEthernets.Children.Add(AddEthernet);
-            PanelButtonEthernets.Children.Add(RemoveEthernet);
-
+            PopupMessage.StaysOpen = false;            
+                                                                              
             this.Unloaded += GridPropertiesEthernetGeneral_Unloaded;
 
             this.MaxWidth = 1000;
@@ -4782,51 +4710,51 @@ namespace SCADA
 
             StackPanel panelID= new StackPanel();
             panelID.Orientation = Orientation.Horizontal;
-            panelID.SetValue(Grid.RowProperty, 2);
+            panelID.SetValue(Grid.RowProperty, 1);
 
             StackPanel panelDescription = new StackPanel();
             panelDescription.Orientation = Orientation.Horizontal;
-            panelDescription.SetValue(Grid.RowProperty, 3);
+            panelDescription.SetValue(Grid.RowProperty, 2);
 
             StackPanel panelIP = new StackPanel();
             panelIP.Orientation = Orientation.Horizontal;
-            panelIP.SetValue(Grid.RowProperty, 4);
+            panelIP.SetValue(Grid.RowProperty, 3);
 
             StackPanel panelIPClient = new StackPanel();
             panelIPClient.Orientation = Orientation.Horizontal;
-            panelIPClient.SetValue(Grid.RowProperty, 5);
+            panelIPClient.SetValue(Grid.RowProperty, 4);
 
             StackPanel panelProtocol = new StackPanel();
             panelProtocol.Orientation = Orientation.Horizontal;
-            panelProtocol.SetValue(Grid.RowProperty, 9);
+            panelProtocol.SetValue(Grid.RowProperty, 8);
 
             StackPanel panelNetButton = new StackPanel();
             panelNetButton.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
             panelNetButton.Orientation = Orientation.Horizontal;
-            panelNetButton.SetValue(Grid.RowProperty, 10);
+            panelNetButton.SetValue(Grid.RowProperty, 9);
 
             StackPanel panelStatus = new StackPanel();
             panelStatus.Margin = new Thickness(0, 0, 0, 5);
             panelStatus.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
             panelStatus.Orientation = Orientation.Horizontal;
-            panelStatus.SetValue(Grid.RowProperty, 11);
+            panelStatus.SetValue(Grid.RowProperty, 10);
 
             StackPanel panelBuffer = new StackPanel();
             panelBuffer.Orientation = Orientation.Horizontal;
-            panelBuffer.SetValue(Grid.RowProperty, 7);
+            panelBuffer.SetValue(Grid.RowProperty, 6);
 
             StackPanel panelTime = new StackPanel();
             panelTime.Orientation = Orientation.Horizontal;
-            panelTime.SetValue(Grid.RowProperty, 6);
+            panelTime.SetValue(Grid.RowProperty, 5);
 
             StackPanel panelBufferSend = new StackPanel();
             panelBufferSend.Orientation = Orientation.Horizontal;
-            panelBufferSend.SetValue(Grid.RowProperty, 8);
+            panelBufferSend.SetValue(Grid.RowProperty, 7);
 
             StackPanel panelButtonSend = new StackPanel();
             panelButtonSend.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
             panelButtonSend.Orientation = Orientation.Horizontal;
-            panelButtonSend.SetValue(Grid.RowProperty, 13);
+            panelButtonSend.SetValue(Grid.RowProperty, 11);
 
             TBStatus = new TextBox();
             TBStatus.TextWrapping = TextWrapping.Wrap;
@@ -5170,8 +5098,6 @@ namespace SCADA
             GridMain.Children.Add(panelNetButton);
             GridMain.Children.Add(panelButtonSend);
             GridMain.Children.Add(DGSend);
-            GridMain.Children.Add(ListEthernets);
-            GridMain.Children.Add(PanelButtonEthernets);
             this.Children.Add(SVMain);  
         }
         
@@ -5180,102 +5106,8 @@ namespace SCADA
             NewEthernetSer.EthernetProtocol = (string)e.AddedItems[0];
 
             e.Handled = true;
-        }
-
-        void RemoveEthernet_Click(object sender, RoutedEventArgs e)
-        {
-            NewEthernetSer.CollectionEthernetOperational.Remove((EthernetOperational)((ListBoxItem)ListEthernets.SelectedItem).Tag);
-
-            ListEthernets.Items.Remove(ListEthernets.SelectedItem);
-
-            ListEthernets.SelectedItem = ListEthernets.Items[0];
-           
-            e.Handled = true;
-        }
-
-        void ListEthernets_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count >= 1)
-            {
-                ListBoxItem lbItem = (ListBoxItem)e.AddedItems[0];
-
-                if (lbItem.Tag == "1")
-                {
-                    IsEthernetOperational = false;
-
-                    BindingOperations.ClearBinding(DGRec, DataGrid.ItemsSourceProperty);
-
-                    BindingOperations.ClearBinding(DGSend, DataGrid.ItemsSourceProperty);
-
-                    Binding bindingCollectionNet = new Binding();
-                    bindingCollectionNet.NotifyOnSourceUpdated = true;
-                    bindingCollectionNet.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    bindingCollectionNet.Source = NewEthernetSer.CollectionItemNetRec;
-
-                    DGRec.SetBinding(DataGrid.ItemsSourceProperty, bindingCollectionNet);
-
-                    Binding bindingCollectionSend = new Binding();
-                    bindingCollectionSend.NotifyOnSourceUpdated = true;
-                    bindingCollectionSend.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    bindingCollectionSend.Source = NewEthernetSer.CollectionItemNetSend;
-
-                    DGSend.SetBinding(DataGrid.ItemsSourceProperty, bindingCollectionSend);
-
-                    TBDescriptionEthernet.Text = NewEthernetSer.Description;
-                    TBBufferSizeRec.Text = NewEthernetSer.BufferSizeRec.ToString();
-                    TBBufferSizeSend.Text = NewEthernetSer.BufferSizeSend.ToString();
-                    TBPortServer.Text = NewEthernetSer.PortServer.ToString();
-                }
-                else
-                {
-                    IsEthernetOperational = true;
-
-                    EthernetOperational ethernetOperational = (EthernetOperational)lbItem.Tag;
-
-                    BindingOperations.ClearBinding(DGRec, DataGrid.ItemsSourceProperty);
-
-                    BindingOperations.ClearBinding(DGSend, DataGrid.ItemsSourceProperty);
-
-                    Binding bindingCollectionNet = new Binding();
-                    bindingCollectionNet.NotifyOnSourceUpdated = true;
-                    bindingCollectionNet.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    bindingCollectionNet.Source = ethernetOperational.CollectionItemNetRec;
-
-                    DGRec.SetBinding(DataGrid.ItemsSourceProperty, bindingCollectionNet);
-
-                    Binding bindingCollectionSend = new Binding();
-                    bindingCollectionSend.NotifyOnSourceUpdated = true;
-                    bindingCollectionSend.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    bindingCollectionSend.Source = ethernetOperational.CollectionItemNetSend;
-
-                    DGSend.SetBinding(DataGrid.ItemsSourceProperty, bindingCollectionSend);
-
-                    TBDescriptionEthernet.Text = ethernetOperational.Description;
-                    TBBufferSizeRec.Text = ethernetOperational.BufferSizeRec.ToString();
-                    TBBufferSizeSend.Text = ethernetOperational.BufferSizeSend.ToString();
-                    TBPortServer.Text = ethernetOperational.Port.ToString();
-                }
-            }
-          
-            e.Handled = true;
-        }
-
-        void AddEthernet_Click(object sender, RoutedEventArgs e)
-        {           
-            EthernetOperational ethernetOperational = new EthernetOperational();
-
-            ListBoxItem lbItem = new ListBoxItem();
-            lbItem.Tag = ethernetOperational;
-            lbItem.Content = ethernetOperational.Description;
-
-            ListEthernets.Items.Add(lbItem);
-            ListEthernets.SelectedItem = lbItem;
-
-            NewEthernetSer.CollectionEthernetOperational.Add(ethernetOperational);
-
-            e.Handled = true;
-        }       
-
+        }        
+                
         private void DigitalTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             PopupMessage.IsOpen = false;
@@ -6166,34 +5998,16 @@ namespace SCADA
         }
         
         void RemoveNetButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (((ListBoxItem)ListEthernets.SelectedItem).Tag == "1")
-            {
-                NewEthernetSer.CollectionItemNetRec.Remove((ItemNet)DGRec.SelectedItem);
-            }
-            else
-            {
-                EthernetOperational ethernetOperational = (EthernetOperational)((ListBoxItem)ListEthernets.SelectedItem).Tag;
-
-                ethernetOperational.CollectionItemNetRec.Remove((ItemNet)DGRec.SelectedItem);
-            }  
-            
+        {           
+            NewEthernetSer.CollectionItemNetRec.Remove((ItemNet)DGRec.SelectedItem);
+                       
             e.Handled = true;
         }
 
         void RemoveNetButtonSend_Click(object sender, RoutedEventArgs e)
-        {
-            if (((ListBoxItem)ListEthernets.SelectedItem).Tag == "1")
-            {
-                NewEthernetSer.CollectionItemNetSend.Remove((ItemNet)DGSend.SelectedItem);
-            }
-            else
-            {
-                EthernetOperational ethernetOperational = (EthernetOperational)((ListBoxItem)ListEthernets.SelectedItem).Tag;
-
-                ethernetOperational.CollectionItemNetSend.Remove((ItemNet)DGSend.SelectedItem);
-            }   
-
+        {            
+            NewEthernetSer.CollectionItemNetSend.Remove((ItemNet)DGSend.SelectedItem);
+            
             e.Handled = true;
         }
 
@@ -6296,14 +6110,7 @@ namespace SCADA
                         Thread threadConnect = new Thread(ConnectUDP);
                         threadConnect.IsBackground = true;
                         threadConnect.Start();
-                    }
-                    
-                    foreach (EthernetOperational ethernetOperational in NewEthernetSer.CollectionEthernetOperational)
-                    {
-                        Thread threadConnectEthernetOperation = new Thread(ConnectEthernetOperation);
-                        threadConnectEthernetOperation.IsBackground = true;
-                        threadConnectEthernetOperation.Start(ethernetOperational);
-                    }                   
+                    }                                                     
                 }
                 else
                 {
@@ -6474,247 +6281,7 @@ namespace SCADA
 
             return null;
         }
-
-        void ConnectEthernetOperation(object eo)
-        {
-            if (!IsStop)
-            {
-                try
-                {
-                    EthernetOperational ethernetOperational = (EthernetOperational)eo;
-
-                    IPEndPoint localPoint = new IPEndPoint(IPAddressClient, PortClient);
-
-                    TcpClient = new TcpClient(localPoint);
-
-                    BufferSize = ethernetOperational.BufferSizeRec + 1;
-                    BufferSizeSend = ethernetOperational.BufferSizeSend + 1;
-
-                    byte[] bRead = new byte[BufferSize];
-                    byte[] bWrite = new byte[BufferSizeSend];
-
-                    TcpClient.Connect(IPAddress.Parse(IPAddressServer), ethernetOperational.Port);
-
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                    {
-                        TBStatus.Text = "Статус: соединение с сервером " + IPAddressServer + " порт " + ethernetOperational.Port + " выполнено.";
-                    }));
-
-                    NetworkStream stream = TcpClient.GetStream();
-
-                    int[] aDecimal = new int[3];
-
-                    Stopwatch timeCheckExit = new Stopwatch();
-
-                    while (true)
-                    {
-                        if (ethernetOperational.CollectionItemNetRec.Count > 0)
-                        {
-                            if (TcpClient.Available == BufferSize)
-                            {
-                                stream.Read(bRead, 0, bRead.Length);
-
-                                foreach (ItemNet item in NewEthernetSer.CollectionItemNetRec)
-                                {
-                                    if (item.TypeValue == "floatOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToSingle(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                    else if (item.TypeValue == "doubleOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToDouble(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                    else if (item.TypeValue == "decimalOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            aDecimal[0] = BitConverter.ToInt32(bRead, item.Range0);
-                                            aDecimal[1] = BitConverter.ToInt32(bRead, item.Range0 + 4);
-                                            aDecimal[2] = BitConverter.ToInt32(bRead, item.Range0 + 8);
-
-                                            item.Value = new Decimal(aDecimal);
-                                        }                                      
-                                    }
-                                    else if (item.TypeValue == "byteOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = bRead[item.Range0];
-                                        }                                        
-                                    }
-                                    else if (item.TypeValue == "sbyteOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = (sbyte)bRead[item.Range0];
-                                        }                                        
-                                    }
-                                    else if (item.TypeValue == "shortOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToInt16(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                    else if (item.TypeValue == "ushortOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToUInt16(bRead, item.Range0);
-                                        }                                      
-                                    }
-                                    else if (item.TypeValue == "intOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToInt32(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                    else if (item.TypeValue == "uintOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToUInt32(bRead, item.Range0);
-                                        }                                     
-                                    }
-                                    else if (item.TypeValue == "longOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToInt64(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                    else if (item.TypeValue == "ulongOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToUInt64(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                    else if (item.TypeValue == "boolOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToBoolean(bRead, item.Range0);
-                                        }                                      
-                                    }
-                                    else if (item.TypeValue == "charOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToChar(bRead, item.Range0);
-                                        }                                        
-                                    }
-                                    else if (item.TypeValue == "stringOperational")
-                                    {
-                                        if (BitConverter.ToBoolean(bRead, item.Range1 - 1))
-                                        {
-                                            item.Value = BitConverter.ToString(bRead, item.Range0);
-                                        }                                       
-                                    }
-                                }
-                            }
-                        }
-                        
-                        while (true)
-                        {
-                            Thread.Sleep(StaticValues.TimeSleep);
-
-                            if (IsStop)
-                            {
-                                IsStop = false;
-
-                                this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                                {
-                                    TBStatus.Text = "Статус: Опрос остановлен.";
-                                }));
-
-                                return;
-                            }
-
-                            timeCheckExit.Start();
-
-                            if ((PeriodTime * 1000) >= timeCheckExit.ElapsedMilliseconds)
-                            {
-                                timeCheckExit.Reset();
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.ErrorCode == 10048)
-                    {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                        {
-                            TBStatus.Text = "Статус: Порт: " + PortClient + " еще не освободился, повторите попытку позже.";
-                        }));
-                    }
-                    else
-                    {
-                        this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                        {
-                            TBStatus.Text = "Статус: " + ex;
-                        }));
-                    }
-                }
-                catch (SystemException ex)
-                {
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                    {
-                        TBStatus.Text = "Статус: " + ex;
-                    }));
-                }
-                finally
-                {
-                    if (TcpClient != null)
-                    {
-                        TcpClient.Close();
-                    }
-
-                    this.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                    {
-                        IsBindingStart = false;
-                        Stop.IsEnabled = false;
-                        AddNetButton.IsEnabled = true;
-                        TBBufferSizeRec.IsReadOnly = false;
-                        TBPortClient.IsReadOnly = false;
-                        TBPortServer.IsReadOnly = false;
-                        TBTime.IsReadOnly = false;
-                        TBIPAdress1.IsReadOnly = false;
-                        TBIPAdress2.IsReadOnly = false;
-                        TBIPAdress3.IsReadOnly = false;
-                        TBIPAdress4.IsReadOnly = false;
-                        CBLocalIPs.IsEnabled = true;
-                        CBProtocol.IsEnabled = true;
-
-                        foreach (DataGridColumn column in DGRec.Columns)
-                        {
-                            if (column.Header == StaticValue.SRange0)
-                            {
-                                column.IsReadOnly = false;
-                            }
-                            else if (column.Header == StaticValue.SRange1)
-                            {
-                                column.IsReadOnly = false;
-                            }
-                            else if (column.Header == "Тип")
-                            {
-                                column.IsReadOnly = false;
-                            }
-                        }
-                    }));
-                }
-            }
-        }
-
+       
         private void ConnectUDP()
         {
             try
@@ -9547,21 +9114,9 @@ namespace SCADA
 
                 e.Handled = true;
             }            
-
-            if (((ListBoxItem)ListEthernets.SelectedItem).Tag == "1")
-            {                
-                AddItemNetWindow addItemNetWindow = new AddItemNetWindow(bufferSize - 1, NewEthernetSer.CollectionItemNetRec, null);
-
-                addItemNetWindow.ShowDialog();
-            }
-            else
-            {
-                EthernetOperational ethernetOperational = (EthernetOperational)((ListBoxItem)ListEthernets.SelectedItem).Tag;
-
-                AddItemNetWindow addItemNetWindow = new AddItemNetWindow(bufferSize - 1, ethernetOperational.CollectionItemNetRec, ethernetOperational);
-
-                addItemNetWindow.ShowDialog();
-            }                        
+                        
+             AddItemNetWindow addItemNetWindow = new AddItemNetWindow(bufferSize - 1, NewEthernetSer.CollectionItemNetRec);
+             addItemNetWindow.ShowDialog();                                 
         }
 
         void AddNetButtonSend_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -9576,21 +9131,9 @@ namespace SCADA
 
                 e.Handled = true;
             }           
-           
-            if (((ListBoxItem)ListEthernets.SelectedItem).Tag == "1")
-            {
-                AddItemNetWindow addItemNetWindow = new AddItemNetWindow(bufferSize - 1, NewEthernetSer.CollectionItemNetSend, null);
-
-                addItemNetWindow.ShowDialog();
-            }
-            else
-            {
-                EthernetOperational ethernetOperational = (EthernetOperational)((ListBoxItem)ListEthernets.SelectedItem).Tag;
-
-                AddItemNetWindow addItemNetWindow = new AddItemNetWindow(bufferSize, ethernetOperational.CollectionItemNetSend, ethernetOperational);
-
-                addItemNetWindow.ShowDialog();
-            }           
+                     
+            AddItemNetWindow addItemNetWindow = new AddItemNetWindow(bufferSize - 1, NewEthernetSer.CollectionItemNetSend);
+            addItemNetWindow.ShowDialog();                    
         }              
 
         private void IgnoreCut(object sender, ExecutedRoutedEventArgs e)
@@ -10736,20 +10279,7 @@ namespace SCADA
                             }));
                         }
                         else
-                        {
-                            foreach (EthernetOperational ethernetOperational in ethernetSer.CollectionEthernetOperational)
-                            {
-                                foreach (ItemNet itemNet in ethernetOperational.CollectionItemNetRec)
-                                {
-                                    itemNet.IsBinding = false;
-                                }
-
-                                foreach (ItemNet itemNet in ethernetOperational.CollectionItemNetSend)
-                                {
-                                    itemNet.IsBinding = false;
-                                }
-                            }
-
+                        {                          
                             foreach (ItemNet itemNet in ethernetSer.CollectionItemNetRec)
                             {
                                 itemNet.IsBinding = false;
@@ -10765,20 +10295,7 @@ namespace SCADA
                 else
                 {
                     foreach (EthernetSer ethernetSer in ((AppWPF)Application.Current).CollectionEthernetSers)
-                    {
-                        foreach (EthernetOperational ethernetOperational in ethernetSer.CollectionEthernetOperational)
-                        {
-                            foreach (ItemNet itemNet in ethernetOperational.CollectionItemNetRec)
-                            {
-                                itemNet.IsBinding = false;
-                            }
-
-                            foreach (ItemNet itemNet in ethernetOperational.CollectionItemNetSend)
-                            {
-                                itemNet.IsBinding = false;
-                            }
-                        }
-
+                    {                       
                         foreach (ItemNet itemNet in ethernetSer.CollectionItemNetRec)
                         {
                             itemNet.IsBinding = false;

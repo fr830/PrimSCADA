@@ -10031,18 +10031,6 @@ namespace SCADA
         public bool IsWork;
     }
 
-    public class EthernetOperationalObject
-    {
-        public object LockValue = new object();
-        public object LockBool = new object();
-        public EthernetSer EthernetSer;
-        public EthernetOperational EthernetOperational;      
-        public TcpClient TcpClient;
-        public bool IsReconnect;
-        public bool IsAvailableData;
-        public bool IsWork;
-    }
-
     public class SerialPortObject : SerialPort
     {
         public bool IsWork;

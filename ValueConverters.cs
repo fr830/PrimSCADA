@@ -154,29 +154,7 @@ namespace SCADA
             return null;
         }
     }    
-
-    public class EthernetDeleteButtonConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            int count = (int)value;
-
-            if (count > 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
+   
     public class EthernetOperationDescriptionConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -189,29 +167,7 @@ namespace SCADA
             return null;
         }
     }
-
-    public class EthernetDeleteButtonConverter2 : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            ListBoxItem listBoxItem = (ListBoxItem)value;
-
-            if (listBoxItem != null && listBoxItem.Tag is EthernetOperational)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-    }
-       
+         
     [ValueConversion(typeof(bool), typeof(bool))]
     public class EnableButtonsStartValueConverter : IValueConverter
     {
@@ -227,27 +183,7 @@ namespace SCADA
             return null;
         }
     }
-
-    public class StartAddEthernetConverter : IMultiValueConverter
-    {
-        public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (((bool)value[0]) && !(bool)value[1])
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
+  
     public class StartDGEnableValueConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)

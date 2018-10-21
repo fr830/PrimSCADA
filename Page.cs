@@ -60,9 +60,7 @@ namespace SCADA
     { }
     public class CollectionsModbus : List<ModbusSer>
     { }
-    [Serializable]
-    public class CollectionEthernetOperational : List<EthernetOperational>
-    { }
+
     [Serializable]
     public class CollectionNets : ObservableCollection<ItemNet>
     { }
@@ -634,7 +632,6 @@ namespace SCADA
         public bool IsCollRec { get; set; }
         public string EthernetSearch { get; set; }
         public string ModbusSearch { get; set; }
-        public EthernetOperationalSearch EthernetOperationalSearch { get; set; }
         public bool IsEthernet { get; set; }
         public bool IsModbus { get; set; }
         public ItemNet ItemNetSearch { get; set; }
@@ -787,8 +784,6 @@ namespace SCADA
         public ObservableCollection<ItemNet> CollectionItemNetRec { get; set; }
 
         public ObservableCollection<ItemNet> CollectionItemNetSend { get; set; }
-
-        public CollectionEthernetOperational CollectionEthernetOperational { get; set; }
 
         public TwoPointSegment RightSize { get; set; }
         public TwoPointSegment LeftSize { get; set; }
@@ -1186,122 +1181,6 @@ namespace SCADA
         }
     }
 
-    [Serializable]
-    public class EthernetOperationalSearch
-    {
-        public int BufferSizeRec { get; set; }
-        public int BufferSizeSend { get; set; }
-        public string Description { get; set; }
-        public ushort Port { get; set; }
-
-        public static bool operator ==(EthernetOperationalSearch op1, EthernetOperationalSearch op2)
-        {           
-            if ((object)op1 == null)
-            {
-                return (object)op2 == null;
-            }
-
-            return op1.Equals(op2);
-        }
-
-        public static bool operator !=(EthernetOperationalSearch op1, EthernetOperationalSearch op2)
-        {
-            if ((object)op1 != null)
-            {
-                if ((object)op2 == null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return !op1.Equals(op2);
-                }
-            }
-            else
-            {
-                return (object)op2 != null;                
-            } 
-        }
-
-        public override bool Equals(System.Object obj)
-        {
-            // If parameter is null return false.
-            if (obj == null)
-            {
-                return false;
-            }
-
-            // If parameter cannot be cast to ItemNet return false.
-            EthernetOperationalSearch ethernetOperationalSearch = obj as EthernetOperationalSearch;
-            if ((System.Object)ethernetOperationalSearch == null)
-            {
-                return false;
-            }
-
-            // Return true if the fields match:
-            if (BufferSizeRec == ethernetOperationalSearch.BufferSizeRec && BufferSizeSend == ethernetOperationalSearch.BufferSizeSend && Description == ethernetOperationalSearch.Description && Port == ethernetOperationalSearch.Port)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool Equals(EthernetOperationalSearch ethernetOperationalSearch)
-        {
-            // If parameter is null return false:
-            if ((object)ethernetOperationalSearch == null)
-            {
-                return false;
-            }
-
-            // Return true if the fields match:
-            if (BufferSizeRec == ethernetOperationalSearch.BufferSizeRec && BufferSizeSend == ethernetOperationalSearch.BufferSizeSend && Description == ethernetOperationalSearch.Description && Port == ethernetOperationalSearch.Port)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public EthernetOperationalSearch()
-        {
-        }
-    }
-    [Serializable]
-    public class EthernetOperational
-    {
-        public ObservableCollection<ItemNet> CollectionItemNetRec { get; set; }
-        public ObservableCollection<ItemNet> CollectionItemNetSend { get; set; }
-        public ushort Port { get; set; }
-        public int BufferSizeRec { get; set; }
-        public int BufferSizeSend { get; set; }
-        public string Description { get; set; }
-
-        [NonSerialized]
-        public EthernetOperationalSearch EthernetOperationalSearch = new EthernetOperationalSearch();
-
-        public EthernetOperational()
-        {
-            CollectionItemNetRec = new CollectionNets();
-            CollectionItemNetSend = new CollectionNets();
-            BufferSizeRec = 4;
-            BufferSizeSend = 4;
-            Port = 1000;
-            Description = "Описание " + ((AppWPF)Application.Current).GenerateTextName.Next();
-
-            EthernetOperationalSearch.Description = Description;
-            EthernetOperationalSearch.BufferSizeRec = BufferSizeRec;
-            EthernetOperationalSearch.BufferSizeSend = BufferSizeSend;
-            EthernetOperationalSearch.Port = Port;
-        }
-
-    }
-
     public class AddItemNetWindow : Window
     {
         TextBox TBRange0;
@@ -1325,7 +1204,7 @@ namespace SCADA
         ItemNet Item;
         string EscText;
 
-        public AddItemNetWindow(int bufferSize, ObservableCollection<ItemNet> collectionNets, EthernetOperational eo)
+        public AddItemNetWindow(int bufferSize, ObservableCollection<ItemNet> collectionNets)
         {
             LPopupMessage = new Label();
             LPopupMessage.BorderThickness = new Thickness(1);

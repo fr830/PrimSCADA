@@ -25,7 +25,6 @@ namespace SCADA
         public TVEthernets TVEthernets;
         public ItemNet ItemNetSearch;
         public string EthernetSearch;
-        public EthernetOperationalSearch EthernetOperationalSearch;
         public DisplaySer DisplaySer;
 
         public TVItemNet(DisplaySer displaySer)
@@ -44,8 +43,6 @@ namespace SCADA
                 EthernetSer ethernetSerBinding = TVEthernets.TVEthernet.SelectedItem as EthernetSer;
 
                 EthernetSearch = ethernetSerBinding.ID;
-
-                EthernetOperationalSearch = null;
 
                 foreach (TreeViewItem tvItemNet in TVItemNets.Items)
                 {
@@ -71,55 +68,7 @@ namespace SCADA
                     }                                 
                 }
             }
-            else if (TVEthernets.TVEthernet.SelectedItem is EthernetOperational)
-            {
-                EthernetOperational ethernetOperationalBinding = TVEthernets.TVEthernet.SelectedItem as EthernetOperational;
-
-                TreeViewItem tvItemEthernet = null;
-
-                foreach(var Item in TVEthernets.TVEthernet.Items)
-                {
-                    TreeViewItem treeItem = (TreeViewItem)TVEthernets.TVEthernet.ItemContainerGenerator.ContainerFromItem(Item);
-
-                    foreach (var ItemSub in treeItem.Items)
-                    {
-                        if (ethernetOperationalBinding == ItemSub)
-                        {
-                            tvItemEthernet = treeItem;
-                            break;
-                        }
-                    }
-                }
-
-                EthernetSearch = ((EthernetSer)tvItemEthernet.DataContext).ID;
-
-                EthernetOperationalSearch = ethernetOperationalBinding.EthernetOperationalSearch;             
-
-                foreach (TreeViewItem tvItemNet in TVItemNets.Items)
-                {
-                    foreach (ItemNet itemNet in tvItemNet.Items)
-                    {
-                        if (!System.Object.ReferenceEquals(ItemNetSearch, itemNet))
-                        {
-                            itemNet.IsBinding = false;
-                        }
-                        else
-                        {
-                            if (tvItemNet == TVItemNets.Items[0])
-                            {
-                                DisplaySer.IsCollRec = true;
-                                DisplaySer.IsCollSend = false;
-                            }
-                            else if (tvItemNet == TVItemNets.Items[1])
-                            {
-                                DisplaySer.IsCollRec = false;
-                                DisplaySer.IsCollSend = true;
-                            }
-                        }
-                    }
-                }
-            }
-            
+                        
             ItemNetSearch.IsBinding = true;
 
             e.Handled = true;
@@ -133,7 +82,6 @@ namespace SCADA
             {
                 ItemNetSearch = null;
                 EthernetSearch = null;
-                EthernetOperationalSearch = null;
                 DisplaySer.IsCollRec = false;
                 DisplaySer.IsCollSend = false;
             }

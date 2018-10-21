@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 
 namespace SCADA
 {
-    public class EthernetControl : ControlOnCanvasControlPanel
+    public class EthernetControl : ControlOnCanvasPage
     {
         public Border templateBorder;
         public CustomFlowDocumentScrollViewer CustomFlowDocumentScrollViewer { get; private set; }
@@ -82,12 +82,12 @@ namespace SCADA
             DefaultStyleKeyProperty.OverrideMetadata(typeof(EthernetControl), new FrameworkPropertyMetadata(typeof(EthernetControl)));
         }
 
-        public EthernetControl(ControlPanelScada cps, CanvasControlPanel canvasControlPanel, EthernetSer ethernetSer) 
+        public EthernetControl(PageScada ps, CanvasPage canvasPage, EthernetSer ethernetSer) 
             :base(ethernetSer)
         {
             this.Focusable = false;
-            CPS = cps;
-            CanvasControlPanel = canvasControlPanel;
+            PS = ps;
+            CanvasPage = canvasPage;
             EthernetSer = ethernetSer;
                        
             menuItemProperties.Click += Properties;
@@ -276,7 +276,7 @@ namespace SCADA
             base.OnMouseMove(e);
 
             Point translatePointMainWindow = e.GetPosition(Application.Current.MainWindow);
-            Point translatePointCanvas = e.GetPosition(CanvasControlPanel);
+            Point translatePointCanvas = e.GetPosition(CanvasPage);
 
             p.X = p.X - translatePointMainWindow.X;
             p.Y = p.Y - translatePointMainWindow.Y;
@@ -305,7 +305,7 @@ namespace SCADA
                 CoordinateX.Text = string.Format("{0:F2}", transformX);
                 CoordinateY.Text = string.Format("{0:F2}", transformY);
 
-                foreach (ControlOnCanvas controlMove in this.CanvasControlPanel.Children)
+                foreach (ControlOnCanvas controlMove in this.CanvasPage.Children)
                 {
                     if (controlMove.IsSelected)
                     {
@@ -320,7 +320,7 @@ namespace SCADA
                     }
                 }
             }
-            else if (IsTextControlMove && CanvasControlPanel.CountSelect <= 1)
+            else if (IsTextControlMove && CanvasPage.CountSelect <= 1)
             {
                 double x = (double)this.GetValue(Canvas.LeftProperty);
                 x -= p.X;
@@ -353,7 +353,7 @@ namespace SCADA
             }
             if (!this.IsMouseCaptured)
             {
-                if (!this.IsSelected || this.CanvasControlPanel.CountSelect > 1)
+                if (!this.IsSelected || this.CanvasPage.CountSelect > 1)
                 {
                     this.Cursor = null;
 

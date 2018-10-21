@@ -93,19 +93,7 @@ namespace SCADA
 
             e.Effects = DragDropEffects.None;
 
-            if (this is CanvasControlPanel)
-            {
-                DragAndDropCanvas data = (DragAndDropCanvas)e.Data.GetData(typeof(DragAndDropCanvas));
-
-                if (data != null)
-                {
-                    if (data.IsEthernet || data.IsCom || data.IsModbus)
-                    {
-                        e.Effects = DragDropEffects.Copy;
-                    }
-                }
-            }
-            else if (this is CanvasPage)
+            if (this is CanvasPage)
             {
                 DragAndDropCanvas data = (DragAndDropCanvas)e.Data.GetData(typeof(DragAndDropCanvas));
 

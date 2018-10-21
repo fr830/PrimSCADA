@@ -57,6 +57,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework6.Npgsql, Version=3.2.0.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework6.Npgsql.3.2.0\lib\net45\EntityFramework6.Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="HelixToolkit, Version=2015.1.629.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <HintPath>packages\HelixToolkit.2015.1.629\lib\portable-net4+sl4+wp71+win8\HelixToolkit.dll</HintPath>
       <Private>True</Private>
@@ -68,9 +77,8 @@
     <Reference Include="Modbus">
       <HintPath>.\Modbus.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=3.0.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>packages\Npgsql.3.0.3\lib\net45\Npgsql.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Npgsql, Version=4.0.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>packages\Npgsql.4.0.3\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="npNetTools">
       <HintPath>packages\npNetTools.1.0.1\lib\net40\npNetTools.dll</HintPath>
@@ -86,9 +94,21 @@
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Printing" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -106,13 +126,15 @@
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>.\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.8.10.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>packages\Z.EntityFramework.Plus.EF6.1.8.10\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="AppWPF.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CanvasControlPanel.cs" />
     <Compile Include="CanvasTab.cs" />
     <Compile Include="Clipboard.cs" />
     <Compile Include="ColorBrushPicker.cs" />
@@ -120,9 +142,7 @@
     <Compile Include="ColorButton.cs" />
     <Compile Include="ComControl.cs" />
     <Compile Include="ControlOnCanvas.cs" />
-    <Compile Include="ControlOnCanvasControlPanel.cs" />
     <Compile Include="ControlOnCanvasPage.cs" />
-    <Compile Include="ControlPanel.cs" />
     <Compile Include="ControlSelected.cs" />
     <Compile Include="CRC16.cs" />
     <Compile Include="CustomFlowDocumentScrollViewer.cs" />
@@ -135,12 +155,6 @@
     </Compile>
     <Compile Include="DialogWindowBrushColor.xaml.cs">
       <DependentUpon>DialogWindowBrushColor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DialogWindowContextMenuCreateControlPanel.xaml.cs">
-      <DependentUpon>DialogWindowContextMenuCreateControlPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DialogWindowCreateControlPanel.xaml.cs">
-      <DependentUpon>DialogWindowCreateControlPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="DialogWindowCreateFile.xaml.cs">
       <DependentUpon>DialogWindowCreateFile.xaml</DependentUpon>
@@ -181,7 +195,6 @@
     <Compile Include="Page.cs" />
     <Compile Include="PModbus.cs" />
     <Compile Include="StaticValues.cs" />
-    <Compile Include="TabItemControlPanel.cs" />
     <Compile Include="TabItemParent.cs" />
     <Compile Include="Pipe.cs" />
     <Compile Include="Pipe90.cs" />
@@ -237,14 +250,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DialogWindowBrushColor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DialogWindowContextMenuCreateControlPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DialogWindowCreateControlPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

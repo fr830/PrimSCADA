@@ -265,11 +265,7 @@ namespace SCADA
             if (this is ControlOnCanvasPage)
             {
                 copyObjects = new ClipboardManipulation(1);
-            }
-            else if (this is ControlOnCanvasControlPanel)
-            {
-                copyObjects = new ClipboardManipulation(3);
-            }
+            }           
 
             Clipboard.SetDataObject(copyObjects);
 
@@ -295,11 +291,7 @@ namespace SCADA
             if(this is ControlOnCanvasPage)
             {
                 cutObjects = new ClipboardManipulation(2);
-            }
-            else if (this is ControlOnCanvasControlPanel)
-            {
-                cutObjects = new ClipboardManipulation(4);
-            }
+            }            
             
             Clipboard.SetDataObject(cutObjects);
 

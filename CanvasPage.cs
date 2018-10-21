@@ -154,7 +154,73 @@ namespace SCADA
 
                 Mouse.OverrideCursor = null;
             }
-            
+            else if (dragItem.IsEthernet)
+            {
+                Point p = new Point();
+                p = e.GetPosition(this);
+
+                EthernetSer ethernetSer = new EthernetSer(this.Children.Count + 1, 0, p);
+
+                Page page = ((AppWPF)Application.Current).CollectionPage[this.pS.Path];
+                page.CollectionEthernet.Add(ethernetSer);
+
+                EthernetControl ethernetControl = new EthernetControl(this.PS, this, ethernetSer);
+                ethernetControl.SetValue(Canvas.TopProperty, p.Y);
+                ethernetControl.SetValue(Canvas.LeftProperty, p.X);
+
+                this.Children.Add(ethernetControl);
+
+                ((AppWPF)Application.Current).SaveTabItem(this.TabItemPage);
+
+                ((AppWPF)Application.Current).CollectionEthernetSers.Add(ethernetSer);
+
+                Mouse.OverrideCursor = null;
+            }
+            else if (dragItem.IsCom)
+            {
+                Point p = new Point();
+                p = e.GetPosition(this);
+
+                ComSer comSer = new ComSer(this.Children.Count + 1, 0, p);
+
+                Page page = ((AppWPF)Application.Current).CollectionPage[this.pS.Path];
+                page.CollectionCom.Add(comSer);
+
+                ComControl comControl = new ComControl(this.PS, this, comSer);
+                comControl.SetValue(Canvas.TopProperty, p.Y);
+                comControl.SetValue(Canvas.LeftProperty, p.X);
+
+                this.Children.Add(comControl);
+
+                ((AppWPF)Application.Current).SaveTabItem(this.TabItemPage);
+
+                ((AppWPF)Application.Current).CollectionComSers.Add(comSer);
+
+                Mouse.OverrideCursor = null;
+            }
+            else if (dragItem.IsModbus)
+            {
+                Point p = new Point();
+                p = e.GetPosition(this);
+
+                ModbusSer modbusSer = new ModbusSer(this.Children.Count + 1, 0, p);
+
+                Page page = ((AppWPF)Application.Current).CollectionPage[this.pS.Path];
+                page.CollectionModbus.Add(modbusSer);
+
+                ModbusControl modbusControl = new ModbusControl(this.PS, this, modbusSer);
+                modbusControl.SetValue(Canvas.TopProperty, p.Y);
+                modbusControl.SetValue(Canvas.LeftProperty, p.X);
+
+                this.Children.Add(modbusControl);
+
+                ((AppWPF)Application.Current).SaveTabItem(this.TabItemPage);
+
+                ((AppWPF)Application.Current).CollectionModbusSers.Add(modbusSer);
+
+                Mouse.OverrideCursor = null;
+            }
+
             e.Handled = true;
         }
 
@@ -180,6 +246,9 @@ namespace SCADA
             Text cutText = null;
             Display cutDisplay = null;
             ImageControl cutImageControl = null;
+            EthernetControl cutEthernetControl = null;
+            ComControl cutComControl = null;
+
             int countPipe = 0;
             bool falseComparer = false;
             CanvasPage cutCanvas = null;
@@ -512,6 +581,110 @@ namespace SCADA
                             page.CollectionImage.Add(copyImageSer);
                         }
                         #endregion
+                        #region CopyEthernetControl
+                        if (mainWindow.CurrentObjects[0] is EthernetControl)
+                        {
+                            EthernetControl ethernetControl = mainWindow.CurrentObjects[0] as EthernetControl;
+
+                            EthernetSer curEthernetSer = ethernetControl.EthernetSer;
+
+                            EthernetSer copyEthernetSer;
+
+                            using (MemoryStream TempStream = new MemoryStream())
+                            {
+                                XamlWriter.Save(curEthernetSer, TempStream);
+
+                                using (MemoryStream TempStreamRead = new MemoryStream(TempStream.ToArray()))
+                                {
+                                    copyEthernetSer = (EthernetSer)XamlReader.Load(TempStreamRead);
+                                }
+                            }
+
+                            EthernetControl copyEthernetControl = new EthernetControl(this.PS, this, copyEthernetSer);
+                            copyControlOnCanvas = copyEthernetControl;
+
+                            copyEthernetSer.Сoordinates = Mouse.GetPosition(this);
+
+                            copyEthernetControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                            {
+                                copyEthernetControl.PathFigureLeftSize.StartPoint = copyEthernetSer.LeftSize.point[0];
+                                copyEthernetControl.LineSegmentLeftSize.Point = copyEthernetSer.LeftSize.point[1];
+
+                                copyEthernetControl.PathFigureRightSize.StartPoint = copyEthernetSer.RightSize.point[0];
+                                copyEthernetControl.LineSegmentRightSize.Point = copyEthernetSer.RightSize.point[1];
+
+                                copyEthernetControl.PathFigureTopSize.StartPoint = copyEthernetSer.TopSize.point[0];
+                                copyEthernetControl.LineSegmentTopSize.Point = copyEthernetSer.TopSize.point[1];
+
+                                copyEthernetControl.PathFigureDownSize.StartPoint = copyEthernetSer.DownSize.point[0];
+                                copyEthernetControl.LineSegmentDownSize.Point = copyEthernetSer.DownSize.point[1];
+
+                                copyEthernetControl.PathFigureBorder.StartPoint = copyEthernetSer.Border.point[0];
+                                copyEthernetControl.PolyLineSegmentBorder.Points[0] = copyEthernetSer.Border.point[1];
+                                copyEthernetControl.PolyLineSegmentBorder.Points[1] = copyEthernetSer.Border.point[2];
+                                copyEthernetControl.PolyLineSegmentBorder.Points[2] = copyEthernetSer.Border.point[3];
+                                copyEthernetControl.PolyLineSegmentBorder.Points[3] = copyEthernetSer.Border.point[4];
+
+                                copyEthernetControl.border.Pen.Brush.Opacity = 100;
+                            }));
+
+                            page.CollectionEthernet.Add(copyEthernetSer);
+
+                            ((AppWPF)Application.Current).CollectionEthernetSers.Add(copyEthernetSer);
+                        }
+                        #endregion
+                        #region CopyComControl
+                        if (mainWindow.CurrentObjects[0] is ComControl)
+                        {
+                            ComControl comControl = mainWindow.CurrentObjects[0] as ComControl;
+
+                            ComSer curComSer = comControl.ComSer;
+
+                            ComSer copyComSer;
+
+                            using (MemoryStream TempStream = new MemoryStream())
+                            {
+                                XamlWriter.Save(curComSer, TempStream);
+
+                                using (MemoryStream TempStreamRead = new MemoryStream(TempStream.ToArray()))
+                                {
+                                    copyComSer = (ComSer)XamlReader.Load(TempStreamRead);
+                                }
+                            }
+
+                            ComControl copyComControl = new ComControl(this.PS, this, copyComSer);
+                            copyControlOnCanvas = copyComControl;
+
+                            copyComSer.Сoordinates = Mouse.GetPosition(this);
+
+                            copyComControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                            {
+                                copyComControl.PathFigureLeftSize.StartPoint = copyComSer.LeftSize.point[0];
+                                copyComControl.LineSegmentLeftSize.Point = copyComSer.LeftSize.point[1];
+
+                                copyComControl.PathFigureRightSize.StartPoint = copyComSer.RightSize.point[0];
+                                copyComControl.LineSegmentRightSize.Point = copyComSer.RightSize.point[1];
+
+                                copyComControl.PathFigureTopSize.StartPoint = copyComSer.TopSize.point[0];
+                                copyComControl.LineSegmentTopSize.Point = copyComSer.TopSize.point[1];
+
+                                copyComControl.PathFigureDownSize.StartPoint = copyComSer.DownSize.point[0];
+                                copyComControl.LineSegmentDownSize.Point = copyComSer.DownSize.point[1];
+
+                                copyComControl.PathFigureBorder.StartPoint = copyComSer.Border.point[0];
+                                copyComControl.PolyLineSegmentBorder.Points[0] = copyComSer.Border.point[1];
+                                copyComControl.PolyLineSegmentBorder.Points[1] = copyComSer.Border.point[2];
+                                copyComControl.PolyLineSegmentBorder.Points[2] = copyComSer.Border.point[3];
+                                copyComControl.PolyLineSegmentBorder.Points[3] = copyComSer.Border.point[4];
+
+                                copyComControl.border.Pen.Brush.Opacity = 100;
+                            }));
+
+                            page.CollectionCom.Add(copyComSer);
+
+                            ((AppWPF)Application.Current).CollectionComSers.Add(copyComSer);
+                        }
+                        #endregion
                         copyControlOnCanvas.IsSelected = true;
 
                         copyControlOnCanvas.SetValue(Canvas.LeftProperty, copyControlOnCanvas.controlOnCanvasSer.Сoordinates.X);
@@ -534,6 +707,8 @@ namespace SCADA
                         CollectionsText curTextSers = new CollectionsText();
                         CollectionsDisplay curDisplaySers = new CollectionsDisplay();
                         CollectionsImage curImageSers = new CollectionsImage();
+                        CollectionsEthernet curEthernetSers = new CollectionsEthernet();
+                        CollectionsCom curComSers = new CollectionsCom();
 
                         foreach (ControlOnCanvas controlOnCanvas in mainWindow.CurrentObjects)
                         {
@@ -591,6 +766,14 @@ namespace SCADA
                             {
                                 curImageSers.Add(((ImageControl)controlOnCanvas).ImageSer);
                             }
+                            else if (controlOnCanvas is EthernetControl)
+                            {
+                                curEthernetSers.Add(((EthernetControl)controlOnCanvas).EthernetSer);
+                            }
+                            else if (controlOnCanvas is ComControl)
+                            {
+                                curComSers.Add(((ComControl)controlOnCanvas).ComSer);
+                            }
                         }
 
                         List<PipeSer> copyPipeSers = new List<PipeSer>();
@@ -599,6 +782,8 @@ namespace SCADA
                         List<DisplaySer> copyDisplaySers = new List<DisplaySer>();
                         List<ImageSer> copyImageSers = new List<ImageSer>();
                         List<ControlOnCanvasSer> copyControlsOnCanvasSer = new List<ControlOnCanvasSer>();
+                        List<EthernetSer> copyEthernetSers = new List<EthernetSer>();
+                        List<ComSer> copyComSers = new List<ComSer>();
 
                         if (curPipeSers.Count != 0)
                         {
@@ -673,11 +858,39 @@ namespace SCADA
                             }
                         }
 
+                        if (curEthernetSers.Count != 0)
+                        {
+                            using (MemoryStream TempStream = new MemoryStream())
+                            {
+                                XamlWriter.Save(curEthernetSers, TempStream);
+
+                                using (MemoryStream TempStreamRead = new MemoryStream(TempStream.ToArray()))
+                                {
+                                    copyEthernetSers = (CollectionsEthernet)XamlReader.Load(TempStreamRead);
+                                }
+                            }
+                        }
+
+                        if (curComSers.Count != 0)
+                        {
+                            using (MemoryStream TempStream = new MemoryStream())
+                            {
+                                XamlWriter.Save(curComSers, TempStream);
+
+                                using (MemoryStream TempStreamRead = new MemoryStream(TempStream.ToArray()))
+                                {
+                                    copyComSers = (CollectionsCom)XamlReader.Load(TempStreamRead);
+                                }
+                            }
+                        }
+
                         copyControlsOnCanvasSer.AddRange(copyPipeSers);
                         copyControlsOnCanvasSer.AddRange(copyPipe90Sers);
                         copyControlsOnCanvasSer.AddRange(copyTextSers);
                         copyControlsOnCanvasSer.AddRange(copyDisplaySers);
                         copyControlsOnCanvasSer.AddRange(copyImageSers);
+                        copyControlsOnCanvasSer.AddRange(copyEthernetSers);
+                        copyControlsOnCanvasSer.AddRange(copyComSers);
                         copyControlsOnCanvasSer.Sort();
 
                         x = comparerRelativelyX - Mouse.GetPosition(this).X;
@@ -873,6 +1086,77 @@ namespace SCADA
                                 page.CollectionDisplay.Add(copyDisplaySer);
                             }
                             #endregion
+                            #region CopyEthernetSer
+                            else if (copyControlOnCanvasSer is EthernetSer)
+                            {
+                                EthernetSer copyEthernetSer = copyControlOnCanvasSer as EthernetSer;
+                                EthernetControl copyEthernetControl = new EthernetControl(this.PS, this, copyEthernetSer);
+                                copyControlOnCanvas = copyEthernetControl;
+
+                                copyEthernetControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                {
+                                    copyEthernetControl.PathFigureLeftSize.StartPoint = copyEthernetSer.LeftSize.point[0];
+                                    copyEthernetControl.LineSegmentLeftSize.Point = copyEthernetSer.LeftSize.point[1];
+
+                                    copyEthernetControl.PathFigureRightSize.StartPoint = copyEthernetSer.RightSize.point[0];
+                                    copyEthernetControl.LineSegmentRightSize.Point = copyEthernetSer.RightSize.point[1];
+
+                                    copyEthernetControl.PathFigureTopSize.StartPoint = copyEthernetSer.TopSize.point[0];
+                                    copyEthernetControl.LineSegmentTopSize.Point = copyEthernetSer.TopSize.point[1];
+
+                                    copyEthernetControl.PathFigureDownSize.StartPoint = copyEthernetSer.DownSize.point[0];
+                                    copyEthernetControl.LineSegmentDownSize.Point = copyEthernetSer.DownSize.point[1];
+
+                                    copyEthernetControl.PathFigureBorder.StartPoint = copyEthernetSer.Border.point[0];
+                                    copyEthernetControl.PolyLineSegmentBorder.Points[0] = copyEthernetSer.Border.point[1];
+                                    copyEthernetControl.PolyLineSegmentBorder.Points[1] = copyEthernetSer.Border.point[2];
+                                    copyEthernetControl.PolyLineSegmentBorder.Points[2] = copyEthernetSer.Border.point[3];
+                                    copyEthernetControl.PolyLineSegmentBorder.Points[3] = copyEthernetSer.Border.point[4];
+
+                                    copyEthernetControl.border.Pen.Brush.Opacity = 100;
+                                }));
+
+                                page.CollectionEthernet.Add(copyEthernetSer);
+
+                                ((AppWPF)Application.Current).CollectionEthernetSers.Add(copyEthernetSer);
+                            }
+                            #endregion
+                            #region CopyComSer
+                            else if (copyControlOnCanvasSer is ComSer)
+                            {
+                                ComSer copyComSer = copyControlOnCanvasSer as ComSer;
+                                ComControl copyComControl = new ComControl(this.PS, this, copyComSer);
+                                copyControlOnCanvas = copyComControl;
+
+                                copyComControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                                {
+                                    copyComControl.PathFigureLeftSize.StartPoint = copyComSer.LeftSize.point[0];
+                                    copyComControl.LineSegmentLeftSize.Point = copyComSer.LeftSize.point[1];
+
+                                    copyComControl.PathFigureRightSize.StartPoint = copyComSer.RightSize.point[0];
+                                    copyComControl.LineSegmentRightSize.Point = copyComSer.RightSize.point[1];
+
+                                    copyComControl.PathFigureTopSize.StartPoint = copyComSer.TopSize.point[0];
+                                    copyComControl.LineSegmentTopSize.Point = copyComSer.TopSize.point[1];
+
+                                    copyComControl.PathFigureDownSize.StartPoint = copyComSer.DownSize.point[0];
+                                    copyComControl.LineSegmentDownSize.Point = copyComSer.DownSize.point[1];
+
+                                    copyComControl.PathFigureBorder.StartPoint = copyComSer.Border.point[0];
+                                    copyComControl.PolyLineSegmentBorder.Points[0] = copyComSer.Border.point[1];
+                                    copyComControl.PolyLineSegmentBorder.Points[1] = copyComSer.Border.point[2];
+                                    copyComControl.PolyLineSegmentBorder.Points[2] = copyComSer.Border.point[3];
+                                    copyComControl.PolyLineSegmentBorder.Points[3] = copyComSer.Border.point[4];
+
+                                    copyComControl.border.Pen.Brush.Opacity = 100;
+                                }));
+
+                                page.CollectionCom.Add(copyComSer);
+
+                                ((AppWPF)Application.Current).CollectionComSers.Add(copyComSer);
+                            }
+                            #endregion
+
                             copyControlOnCanvas.IsSelected = true;
 
                             copyControlOnCanvas.SetValue(Canvas.LeftProperty, copyControlOnCanvasSer.Сoordinates.X);
@@ -995,6 +1279,34 @@ namespace SCADA
 
                                 page.CollectionImage.Add(curImageSer);
                             }
+                            else if (mainWindow.CurrentObjects[0] is EthernetControl)
+                            {
+                                EthernetControl currentEthernetControl = mainWindow.CurrentObjects[0] as EthernetControl;
+
+                                EthernetSer curEthernetSer = currentEthernetControl.EthernetSer;
+
+                                cutEthernetControl = currentEthernetControl;
+                                cutEthernetControl.CanvasPage.Children.Remove(cutEthernetControl);
+
+                                Page cutPage = ((AppWPF)Application.Current).CollectionPage[cutDisplay.PS.Path];
+                                cutPage.CollectionEthernet.Remove(curEthernetSer);
+
+                                page.CollectionEthernet.Add(curEthernetSer);
+                            }
+                            else if (mainWindow.CurrentObjects[0] is ComControl)
+                            {
+                                ComControl currentComControl = mainWindow.CurrentObjects[0] as ComControl;
+
+                                ComSer curComSer = currentComControl.ComSer;
+
+                                cutComControl = currentComControl;
+                                cutComControl.CanvasPage.Children.Remove(cutComControl);
+
+                                Page cutPage = ((AppWPF)Application.Current).CollectionPage[cutDisplay.PS.Path];
+                                cutPage.CollectionCom.Remove(curComSer);
+
+                                page.CollectionCom.Add(curComSer);
+                            }
                         }
 
                         foreach (ControlOnCanvas controlOnCanvas in cutCanvas.Children)
@@ -1032,6 +1344,8 @@ namespace SCADA
                         List<Display> cutDisplays = new List<Display>();
                         List<ImageControl> cutImageControls = new List<ImageControl>();
                         List<ControlOnCanvas> cutControlsOnCanvas = new List<ControlOnCanvas>();
+                        List<EthernetControl> cutEthernetControls = new List<EthernetControl>();
+                        List<ComControl> cutComControls = new List<ComControl>();
 
                         foreach (ControlOnCanvas controlOnCanvas in mainWindow.CurrentObjects)
                         {
@@ -1089,6 +1403,14 @@ namespace SCADA
                             {
                                 cutImageControls.Add((ImageControl)controlOnCanvas);
                             }
+                            else if (controlOnCanvas is EthernetControl)
+                            {
+                                cutEthernetControls.Add((EthernetControl)controlOnCanvas);
+                            }
+                            else if (controlOnCanvas is ComControl)
+                            {
+                                cutComControls.Add((ComControl)controlOnCanvas);
+                            }
                         }
 
                         cutControlsOnCanvas.AddRange(cutPipes);
@@ -1096,6 +1418,8 @@ namespace SCADA
                         cutControlsOnCanvas.AddRange(cutTexts);
                         cutControlsOnCanvas.AddRange(cutDisplays);
                         cutControlsOnCanvas.AddRange(cutImageControls);
+                        cutControlsOnCanvas.AddRange(cutEthernetControls);
+                        cutControlsOnCanvas.AddRange(cutComControls);
                         cutControlsOnCanvas.Sort();
                        
                         x = comparerRelativelyX - Mouse.GetPosition(this).X;
@@ -1118,8 +1442,7 @@ namespace SCADA
 
                                 page.CollectionPipe.Add(cutPipe.PipeSer);
                             }
-
-                            if (controlOnCanvas is Pipe90)
+                            else if (controlOnCanvas is Pipe90)
                             {
                                 cutPipe90 = controlOnCanvas as Pipe90;
                                 cutPipe90.Pipe90Ser.Сoordinates = new Point(cutPipe90.Pipe90Ser.Сoordinates.X - x, cutPipe90.Pipe90Ser.Сoordinates.Y - y);
@@ -1134,8 +1457,7 @@ namespace SCADA
 
                                 page.CollectionPipe90.Add(cutPipe90.Pipe90Ser);
                             }
-
-                            if (controlOnCanvas is Text)
+                            else if (controlOnCanvas is Text)
                             {
                                 cutText = controlOnCanvas as Text;
                                 cutText.TextSer.Сoordinates = new Point(cutText.TextSer.Сoordinates.X - x, cutText.TextSer.Сoordinates.Y - y);
@@ -1150,8 +1472,7 @@ namespace SCADA
 
                                 page.CollectionText.Add(cutText.TextSer);
                             }
-
-                            if (controlOnCanvas is Display)
+                            else if (controlOnCanvas is Display)
                             {
                                 cutDisplay = controlOnCanvas as Display;
                                 cutDisplay.DisplaySer.Сoordinates = new Point(cutDisplay.DisplaySer.Сoordinates.X - x, cutDisplay.DisplaySer.Сoordinates.Y - y);
@@ -1166,8 +1487,7 @@ namespace SCADA
 
                                 page.CollectionDisplay.Add(cutDisplay.DisplaySer);
                             }
-
-                            if (controlOnCanvas is ImageControl)
+                            else if (controlOnCanvas is ImageControl)
                             {
                                 cutImageControl = controlOnCanvas as ImageControl;
                                 cutImageControl.ImageSer.Сoordinates = new Point(cutImageControl.ImageSer.Сoordinates.X - x, cutImageControl.ImageSer.Сoordinates.Y - y);
@@ -1181,6 +1501,36 @@ namespace SCADA
                                 cutImageControl.CanvasPage = this;
 
                                 page.CollectionImage.Add(cutImageControl.ImageSer);
+                            }
+                            else if (controlOnCanvas is EthernetControl)
+                            {
+                                cutEthernetControl = controlOnCanvas as EthernetControl;
+                                cutEthernetControl.EthernetSer.Сoordinates = new Point(cutEthernetControl.EthernetSer.Сoordinates.X - x, cutEthernetControl.EthernetSer.Сoordinates.Y - y);
+
+                                cutEthernetControl.CanvasPage.Children.Remove(cutEthernetControl);
+
+                                Page cutPage = ((AppWPF)Application.Current).CollectionPage[cutImageControl.PS.Path];
+                                cutPage.CollectionEthernet.Remove(cutEthernetControl.EthernetSer);
+
+                                cutEthernetControl.PS = this.PS;
+                                cutEthernetControl.CanvasPage = this;
+
+                                page.CollectionEthernet.Add(cutEthernetControl.EthernetSer);
+                            }
+                            else if (controlOnCanvas is ComControl)
+                            {
+                                cutComControl = controlOnCanvas as ComControl;
+                                cutComControl.ComSer.Сoordinates = new Point(cutComControl.ComSer.Сoordinates.X - x, cutComControl.ComSer.Сoordinates.Y - y);
+
+                                cutComControl.CanvasPage.Children.Remove(cutComControl);
+
+                                Page cutPage = ((AppWPF)Application.Current).CollectionPage[cutImageControl.PS.Path];
+                                cutPage.CollectionCom.Remove(cutComControl.ComSer);
+
+                                cutComControl.PS = this.PS;
+                                cutComControl.CanvasPage = this;
+
+                                page.CollectionCom.Add(cutComControl.ComSer);
                             }
 
                             this.Children.Add(controlOnCanvas);

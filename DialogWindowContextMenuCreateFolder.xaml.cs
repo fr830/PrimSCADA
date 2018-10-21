@@ -128,19 +128,10 @@ namespace SCADA
             Image ImageCopy = new Image();
             ImageCopy.Source = new BitmapImage(new Uri("Images/CopyFolder16.ico", UriKind.Relative));
 
-            Image imageControlPanel = new Image();
-            imageControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
             fs.TreeItem = ItemFolder;
 
             MenuItem MenuItemCreate = new MenuItem();
             MenuItemCreate.Header = "Добавить";
-
-            MenuItem MenuItemCreateControlPanel = new MenuItem();
-            MenuItemCreateControlPanel.Click += ((MainWindow)MainWindow).ContextMenuCreateControlPanel;
-            MenuItemCreateControlPanel.Icon = imageControlPanel;
-            MenuItemCreateControlPanel.Header = "Щит управления";
-            MenuItemCreateControlPanel.Tag = ItemFolder;
 
             MenuItem MenuItemCreateFolder = new MenuItem();
             MenuItemCreateFolder.Icon = imageMenuItemCreateFolder;
@@ -190,7 +181,6 @@ namespace SCADA
 
             MenuItemCreate.Items.Add(MenuItemCreateFolder);
             MenuItemCreate.Items.Add(MenuItemCreatePage);
-            MenuItemCreate.Items.Add(MenuItemCreateControlPanel);
 
             ContextMenu ContextMenuFolder = new ContextMenu();
             ContextMenuFolder.Tag = "FolderScada";

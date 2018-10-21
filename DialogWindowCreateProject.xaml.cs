@@ -88,8 +88,7 @@ namespace SCADA
                         else
                         {
                             ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionFolderScada.Clear();
-                            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Clear();
-                            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Clear();                        
+                            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Clear();                   
                         }
 
                         ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.ProjectName = BrowseDialog.SafeFileName;
@@ -111,8 +110,7 @@ namespace SCADA
                         else
                         {
                             ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionFolderScada.Clear();
-                            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Clear();
-                            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Clear();                        
+                            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Clear();                       
                         }
 
                         ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.ProjectName = BrowseDialog.SafeFileName;
@@ -125,7 +123,6 @@ namespace SCADA
                 Window MainWindow = ((AppWPF)Application.Current).MainWindow;
 
                 ((AppWPF)Application.Current).CollectionPage.Clear();
-                ((AppWPF)Application.Current).CollectionControlPanel.Clear();
                 ((AppWPF)Application.Current).CollectionTabItemParent.Clear();
                 ((AppWPF)Application.Current).CollectionSaveTabItem.Clear();
                 ((MainWindow)MainWindow).BrowseProject.Items.Clear();
@@ -146,18 +143,10 @@ namespace SCADA
                 Image imageInsertProject = new Image();
                 imageInsertProject.Source = new BitmapImage(new Uri("Images/Insert16.ico", UriKind.Relative));
 
-                Image imageNewControlPanel = new Image();
-                imageNewControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
                 MenuItem MenuItemCreateFolder = new MenuItem();
                 MenuItemCreateFolder.Click += ((MainWindow)MainWindow).CreateFolder;
                 MenuItemCreateFolder.Icon = ImageNewFolder;
                 MenuItemCreateFolder.Header = "Создать папку";
-
-                MenuItem MenuItemCreateControlPanelProject = new MenuItem();
-                MenuItemCreateControlPanelProject.Click += ((MainWindow)MainWindow).CreateControlPanel;
-                MenuItemCreateControlPanelProject.Icon = imageNewControlPanel;
-                MenuItemCreateControlPanelProject.Header = "Создать щит управления";
 
                 MenuItem MenuItemCreatePage = new MenuItem();
                 MenuItemCreatePage.Click += ((MainWindow)MainWindow).CreatePage;
@@ -178,7 +167,6 @@ namespace SCADA
                 ContextMenu ContextMenuProject = new ContextMenu();
                 ContextMenuProject.Items.Add(MenuItemCreateFolder);
                 ContextMenuProject.Items.Add(MenuItemCreatePage);
-                ContextMenuProject.Items.Add(MenuItemCreateControlPanelProject);
                 ContextMenuProject.Items.Add(MenuItemInsertProject);
 
                 TreeViewItem ItemNameProject = new TreeViewItem();

@@ -505,18 +505,10 @@ namespace SCADA
             Image imageInsertProject = new Image();
             imageInsertProject.Source = new BitmapImage(new Uri("Images/Insert16.ico", UriKind.Relative));
 
-            Image imageNewControlPanel = new Image();
-            imageNewControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
             MenuItem MenuItemCreateFolderProject = new MenuItem();
             MenuItemCreateFolderProject.Click += CreateFolder;
             MenuItemCreateFolderProject.Icon = ImageNewFolder;
             MenuItemCreateFolderProject.Header = "Создать папку";
-
-            MenuItem MenuItemCreateControlPanelProject = new MenuItem();
-            MenuItemCreateControlPanelProject.Click += CreateControlPanel;
-            MenuItemCreateControlPanelProject.Icon = imageNewControlPanel;
-            MenuItemCreateControlPanelProject.Header = "Создать щит управления";
 
             MenuItem MenuItemCreatePageProject = new MenuItem();
             MenuItemCreatePageProject.Click += CreatePage;
@@ -537,7 +529,6 @@ namespace SCADA
             ContextMenu ContextMenuProject = new ContextMenu();
             ContextMenuProject.Items.Add(MenuItemCreateFolderProject);
             ContextMenuProject.Items.Add(MenuItemCreatePageProject);
-            ContextMenuProject.Items.Add(MenuItemCreateControlPanelProject);
             ContextMenuProject.Items.Add(MenuItemInsertProject);
 
             TreeViewItem ItemNameProject = new TreeViewItem();
@@ -591,10 +582,7 @@ namespace SCADA
 
                 Image ImageCopy = new Image();
                 ImageCopy.Source = new BitmapImage(new Uri("Images/CopyFolder16.ico", UriKind.Relative));
-
-                Image imageControlPanel = new Image();
-                imageControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
+                
                 TextBox tbFolder = new TextBox();
                 tbFolder.KeyDown += OkRenameFolder;
                 tbFolder.Text = fs.Name;
@@ -629,13 +617,7 @@ namespace SCADA
                 MenuItemCreateFolder.Header = "Папку";
                 MenuItemCreateFolder.Tag = ItemFolder; // Нужен для индефикации в какую папку сохранять при создании вложенной папки
                 MenuItemCreateFolder.Click += ContextMenuCreateFolder;
-
-                MenuItem MenuItemCreateControlPanel = new MenuItem();
-                MenuItemCreateControlPanel.Click += ContextMenuCreateControlPanel;
-                MenuItemCreateControlPanel.Icon = imageControlPanel;
-                MenuItemCreateControlPanel.Header = "Щит управления";
-                MenuItemCreateControlPanel.Tag = ItemFolder;
-
+                
                 MenuItem MenuItemCreatePage = new MenuItem();
                 MenuItemCreatePage.Icon = imageMenuItemCreatePage;
                 MenuItemCreatePage.Header = "Страницу";
@@ -678,7 +660,6 @@ namespace SCADA
 
                 MenuItemCreate.Items.Add(MenuItemCreateFolder);
                 MenuItemCreate.Items.Add(MenuItemCreatePage);
-                MenuItemCreate.Items.Add(MenuItemCreateControlPanel);
 
                 ContextMenu ContextMenuFolder = new ContextMenu();
                 ContextMenuFolder.Tag = "FolderScada";
@@ -707,120 +688,7 @@ namespace SCADA
                 else BrowseProject.Items.Add(ItemFolder);
 
             }
-
-            ControlPanelScada[] CollectionControlPanel = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Values.ToArray();
-
-            Array.Sort(CollectionControlPanel);
-
-            foreach (ControlPanelScada cps in CollectionControlPanel)
-            {
-                StackPanel panelControlPanel = new StackPanel();
-                panelControlPanel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-
-                Image imagePage = new Image();
-                imagePage.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
-                Image imageCut = new Image();
-                imageCut.Source = new BitmapImage(new Uri("Images/Cut16.png", UriKind.Relative));
-
-                Image imageDelete = new Image();
-                imageDelete.Source = new BitmapImage(new Uri("Images/PageDelete16.png", UriKind.Relative));
-
-                Image imageCopy = new Image();
-                imageCopy.Source = new BitmapImage(new Uri("Images/CopyPage16.png", UriKind.Relative));
-
-                MenuItem menuItemCopyControlPanel = new MenuItem();
-                menuItemCopyControlPanel.IsEnabled = false;
-                menuItemCopyControlPanel.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-                menuItemCopyControlPanel.Header = "Копировать";
-                menuItemCopyControlPanel.Icon = imageCopy;
-                menuItemCopyControlPanel.Tag = cps;
-                menuItemCopyControlPanel.Click += CopyItem;
-
-                MenuItem menuItemCutControlPanel = new MenuItem();
-                menuItemCutControlPanel.IsEnabled = false;
-                menuItemCutControlPanel.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-                menuItemCutControlPanel.Header = "Вырезать";
-                menuItemCutControlPanel.Icon = imageCut;
-                menuItemCutControlPanel.Tag = cps;
-                menuItemCutControlPanel.Click += CutItem;
-
-                MenuItem menuItemDeleteControlPanel = new MenuItem();
-                menuItemDeleteControlPanel.Header = "Удалить";
-                menuItemDeleteControlPanel.Icon = imageDelete;
-                menuItemDeleteControlPanel.Tag = cps;
-                menuItemDeleteControlPanel.Click += DeleteItem;
-
-                TextBox tbControlPanel = new TextBox();
-                tbControlPanel.KeyDown += OkRenameControlPanel;
-                tbControlPanel.Text = cps.Name;
-
-                Label lNameControlPanel = new Label();
-                lNameControlPanel.Content = tbControlPanel.Text;
-                lNameControlPanel.Tag = tbControlPanel;
-
-                ContextMenu contextMenuControlPanel = new ContextMenu();
-                contextMenuControlPanel.Items.Add(menuItemCopyControlPanel);
-                contextMenuControlPanel.Items.Add(menuItemCutControlPanel);
-                contextMenuControlPanel.Items.Add(menuItemDeleteControlPanel);
-                contextMenuControlPanel.Tag = "X";
-
-                AlphanumComparator a = new AlphanumComparator();
-                a.Name = (string)lNameControlPanel.Content;
-
-                panelControlPanel.Children.Add(imagePage);
-                panelControlPanel.Children.Add(lNameControlPanel);
-                panelControlPanel.Tag = a;
-
-                TreeViewItem ItemControlPanel = new TreeViewItem();
-                ItemControlPanel.Tag = cps;
-                ItemControlPanel.MouseDoubleClick += OpenBrowseControlPanel;
-                ItemControlPanel.KeyDown += RenameControlPanel;
-                ItemControlPanel.Header = panelControlPanel;
-                ItemControlPanel.ContextMenu = contextMenuControlPanel;
-
-                cps.TreeItem = ItemControlPanel;
-
-                if (cps.Attachments != 0)
-                {
-                    using (FileStream ProjectStream = File.Open(cps.Path, FileMode.Open, FileAccess.ReadWrite))
-                    {
-                        ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, (ControlPanel)XamlReader.Load(ProjectStream));
-                        ProjectStream.Close();
-
-                        FolderScada parentFolder = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionFolderScada[cps.AttachmentFolder];
-
-                        TreeViewItem parentItem = parentFolder.TreeItem;
-                        parentItem.Items.Add(ItemControlPanel);
-
-                        cps.ParentItem = parentItem;
-
-                        if (parentFolder.ChildItem == null) parentFolder.ChildItem = new List<TreeViewItem>();
-                        parentFolder.ChildItem.Add(ItemControlPanel);
-
-                        TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                        if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                        if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-                    }
-                }
-                else
-                {
-                    using (FileStream ProjectStream = File.Open(cps.Path, FileMode.Open, FileAccess.ReadWrite))
-                    {
-                        ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, (ControlPanel)XamlReader.Load(ProjectStream));
-                        ProjectStream.Close();
-
-                        BrowseProject.Items.Add(ItemControlPanel);
-
-                        TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                        if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                        if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-                    }
-                }               
-            }
-
+                      
             PageScada[] CollectionPage = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Values.ToArray();
 
             Array.Sort(CollectionPage);
@@ -972,7 +840,6 @@ namespace SCADA
                         // Если старый проект не пустой, коллекции освобождаются
                         ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Clear();
                         ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionFolderScada.Clear();
-                        ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Clear();
                         ((AppWPF)Application.Current).CollectionEthernetSers.Clear();
                         ((AppWPF)Application.Current).CollectionComSers.Clear();
                         ((AppWPF)Application.Current).CollectionModbusSers.Clear();
@@ -985,7 +852,6 @@ namespace SCADA
                 }
 
                 ((AppWPF)Application.Current).CollectionPage.Clear();
-                ((AppWPF)Application.Current).CollectionControlPanel.Clear();
                 ((AppWPF)System.Windows.Application.Current).CollectionTabItemParent.Clear();
                 ((AppWPF)Application.Current).CollectionSaveTabItem.Clear();
                 TabControlMain.Items.Clear();
@@ -1013,12 +879,7 @@ namespace SCADA
                 MenuItemCreateFolderProject.Click += CreateFolder;
                 MenuItemCreateFolderProject.Icon = ImageNewFolder;
                 MenuItemCreateFolderProject.Header = "Создать папку";
-
-                MenuItem MenuItemCreateControlPanelProject = new MenuItem();
-                MenuItemCreateControlPanelProject.Click += CreateControlPanel;
-                MenuItemCreateControlPanelProject.Icon = imageNewControlPanel;
-                MenuItemCreateControlPanelProject.Header = "Создать щит управления";
-
+            
                 MenuItem MenuItemCreatePageProject = new MenuItem();
                 MenuItemCreatePageProject.Click += CreatePage;
                 MenuItemCreatePageProject.Icon = imageNewPage;
@@ -1038,7 +899,6 @@ namespace SCADA
                 ContextMenu ContextMenuProject = new ContextMenu();
                 ContextMenuProject.Items.Add(MenuItemCreateFolderProject);
                 ContextMenuProject.Items.Add(MenuItemCreatePageProject);
-                ContextMenuProject.Items.Add(MenuItemCreateControlPanelProject);
                 ContextMenuProject.Items.Add(MenuItemInsertProject);
 
                 TreeViewItem ItemNameProject = new TreeViewItem();
@@ -1131,12 +991,6 @@ namespace SCADA
                     MenuItemCreateFolder.Tag = ItemFolder; // Нужен для индефикации в какую папку сохранять при создании вложенной папки
                     MenuItemCreateFolder.Click += ContextMenuCreateFolder;
 
-                    MenuItem MenuItemCreateControlPanel = new MenuItem();
-                    MenuItemCreateControlPanel.Click += ContextMenuCreateControlPanel;
-                    MenuItemCreateControlPanel.Icon = imageControlPanel;
-                    MenuItemCreateControlPanel.Header = "Щит управления";
-                    MenuItemCreateControlPanel.Tag = ItemFolder;
-
                     MenuItem MenuItemCreatePage = new MenuItem();
                     MenuItemCreatePage.Icon = imageMenuItemCreatePage;
                     MenuItemCreatePage.Header = "Страницу";
@@ -1179,7 +1033,6 @@ namespace SCADA
 
                     MenuItemCreate.Items.Add(MenuItemCreateFolder);
                     MenuItemCreate.Items.Add(MenuItemCreatePage);
-                    MenuItemCreate.Items.Add(MenuItemCreateControlPanel);
 
                     ContextMenu ContextMenuFolder = new ContextMenu();
                     ContextMenuFolder.Tag = "FolderScada";
@@ -1207,191 +1060,7 @@ namespace SCADA
                     }
                     else BrowseProject.Items.Add(ItemFolder);
                 }
-                
-                ControlPanelScada[] CollectionControlPanel = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Values.ToArray();
-                Array.Sort(CollectionControlPanel);
-
-                foreach (ControlPanelScada cps in CollectionControlPanel)
-                {
-                    StackPanel panelControlPanel = new StackPanel();
-                    panelControlPanel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-
-                    Image imagePage = new Image();
-                    imagePage.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
-                    Image imageCut = new Image();
-                    imageCut.Source = new BitmapImage(new Uri("Images/Cut16.png", UriKind.Relative));
-
-                    Image imageDelete = new Image();
-                    imageDelete.Source = new BitmapImage(new Uri("Images/PageDelete16.png", UriKind.Relative));
-
-                    Image imageCopy = new Image();
-                    imageCopy.Source = new BitmapImage(new Uri("Images/CopyPage16.png", UriKind.Relative));
-
-                    MenuItem menuItemCopyControlPanel = new MenuItem();
-                    menuItemCopyControlPanel.IsEnabled = false;
-                    menuItemCopyControlPanel.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-                    menuItemCopyControlPanel.Header = "Копировать";
-                    menuItemCopyControlPanel.Icon = imageCopy;
-                    menuItemCopyControlPanel.Tag = cps;
-                    menuItemCopyControlPanel.Click += CopyItem;
-
-                    MenuItem menuItemCutControlPanel = new MenuItem();
-                    menuItemCutControlPanel.IsEnabled = false;
-                    menuItemCutControlPanel.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-                    menuItemCutControlPanel.Header = "Вырезать";
-                    menuItemCutControlPanel.Icon = imageCut;
-                    menuItemCutControlPanel.Tag = cps;
-                    menuItemCutControlPanel.Click += CutItem;
-
-                    MenuItem menuItemDeleteControlPanel = new MenuItem();
-                    menuItemDeleteControlPanel.Header = "Удалить";
-                    menuItemDeleteControlPanel.Icon = imageDelete;
-                    menuItemDeleteControlPanel.Tag = cps;
-                    menuItemDeleteControlPanel.Click += DeleteItem;
-
-                    TextBox tbControlPanel = new TextBox();
-                    tbControlPanel.KeyDown += OkRenameControlPanel;
-                    tbControlPanel.Text = cps.Name;
-
-                    Label lNameControlPanel = new Label();
-                    lNameControlPanel.Content = tbControlPanel.Text;
-                    lNameControlPanel.Tag = tbControlPanel;
-
-                    ContextMenu contextMenuControlPanel = new ContextMenu();
-                    contextMenuControlPanel.Items.Add(menuItemCopyControlPanel);
-                    contextMenuControlPanel.Items.Add(menuItemCutControlPanel);
-                    contextMenuControlPanel.Items.Add(menuItemDeleteControlPanel);
-                    contextMenuControlPanel.Tag = "X";
-
-                    AlphanumComparator a = new AlphanumComparator();
-                    a.Name = (string)lNameControlPanel.Content;
-
-                    panelControlPanel.Children.Add(imagePage);
-                    panelControlPanel.Children.Add(lNameControlPanel);
-                    panelControlPanel.Tag = a;
-
-                    TreeViewItem ItemControlPanel = new TreeViewItem();
-                    ItemControlPanel.Tag = cps;
-                    ItemControlPanel.MouseDoubleClick += OpenBrowseControlPanel;
-                    ItemControlPanel.KeyDown += RenameControlPanel;
-                    ItemControlPanel.Header = panelControlPanel;
-                    ItemControlPanel.ContextMenu = contextMenuControlPanel;
-
-                    cps.TreeItem = ItemControlPanel;
-
-                    if (cps.Attachments != 0)
-                    {
-                        if (File.Exists(cps.Path))
-                        {
-                            using (FileStream ProjectStream = File.Open(cps.Path, FileMode.Open, FileAccess.ReadWrite))
-                            {
-                                ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, (ControlPanel)XamlReader.Load(ProjectStream));
-                                ProjectStream.Close();
-
-                                FolderScada parentFolder = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionFolderScada[cps.AttachmentFolder];
-
-                                TreeViewItem parentItem = parentFolder.TreeItem;
-                                parentItem.Items.Add(ItemControlPanel);
-
-                                cps.ParentItem = parentItem;
-
-                                if (parentFolder.ChildItem == null) parentFolder.ChildItem = new List<TreeViewItem>();
-                                parentFolder.ChildItem.Add(ItemControlPanel);
-
-                                TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                                if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                                if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-                            }
-                        }
-                        else
-                        {
-                            OpenFileDialog NotLoad = new OpenFileDialog();
-                            NotLoad.Title = "Не найден файл " + cps.Path; 
-                            NotLoad.Filter = "SCADA щит управления(*.cp)|*.cp";
-                            NotLoad.InitialDirectory = ((AppWPF)Application.Current).ConfigProgramBin.PathBrowseProject;
-                            if (NotLoad.ShowDialog() == true)
-                            {
-                                ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Remove(cps.Path);
-
-                                using (FileStream ProjectStream = File.Open(cps.Path = NotLoad.FileName, FileMode.Open, FileAccess.ReadWrite))
-                                {
-                                    ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, (ControlPanel)XamlReader.Load(ProjectStream));
-                                    ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Add(cps.Path, cps);
-                                    ProjectStream.Close();
-
-                                    FolderScada parentFolder = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionFolderScada[cps.AttachmentFolder];
-
-                                    TreeViewItem parentItem = parentFolder.TreeItem;
-                                    parentItem.Items.Add(ItemControlPanel);
-
-                                    cps.ParentItem = parentItem;
-
-                                    if (parentFolder.ChildItem == null) parentFolder.ChildItem = new List<TreeViewItem>();
-                                    parentFolder.ChildItem.Add(ItemControlPanel);
-
-                                    TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                                    if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                                    if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-                                }
-                            }
-                            else
-                            {
-                                ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Remove(cps.Path);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (File.Exists(cps.Path))
-                        {
-                            using (FileStream ProjectStream = File.Open(cps.Path, FileMode.Open, FileAccess.ReadWrite))
-                            {
-                                ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, (ControlPanel)XamlReader.Load(ProjectStream));
-                                ProjectStream.Close();
-
-                                BrowseProject.Items.Add(ItemControlPanel);
-
-                                TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                                if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                                if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-                            }
-                        }
-                        else
-                        {
-                            OpenFileDialog NotLoad = new OpenFileDialog();
-                            NotLoad.Title = "Не найден файл " + cps.Path; 
-                            NotLoad.Filter = "SCADA щит управления(*.cp)|*.cp";
-                            NotLoad.InitialDirectory = ((AppWPF)Application.Current).ConfigProgramBin.PathBrowseProject;
-                            if (NotLoad.ShowDialog() == true)
-                            {
-                                ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Remove(cps.Path);
-
-                                using (FileStream ProjectStream = File.Open(cps.Path = NotLoad.FileName, FileMode.Open, FileAccess.ReadWrite))
-                                {
-                                    ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, (ControlPanel)XamlReader.Load(ProjectStream));
-                                    ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Add(cps.Path, cps);
-                                    ProjectStream.Close();
-
-                                    BrowseProject.Items.Add(ItemControlPanel);
-
-                                    TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                                    if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                                    if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-                                }
-                            }
-                            else
-                            {
-                                ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Remove(cps.Path);
-                            }
-                        }
-                    }                   
-                }
-
+                               
                 PageScada[] CollectionPage = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Values.ToArray();
                 Array.Sort(CollectionPage);
 
@@ -1588,26 +1257,7 @@ namespace SCADA
         
             e.Handled = true;
         }
-
-        public void OpenBrowseControlPanel(object sender, MouseButtonEventArgs e)
-        {
-            ControlPanelScada cps = (ControlPanelScada)((TreeViewItem)sender).Tag;
-
-            TabItemParent tabItemParent = ((AppWPF)System.Windows.Application.Current).CollectionTabItemParent[cps.Path];
-
-            if (TabControlMain.Items.IndexOf(tabItemParent) == -1)
-            {
-                TabControlMain.Items.Add(tabItemParent);
-            }
-
-            tabItemParent.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-            {
-                tabItemParent.Focus();
-            }));
-
-            e.Handled = true;
-        }
-
+      
         public void OpenBrowsePage(object sender, MouseButtonEventArgs e)
         {
             PageScada ps = (PageScada)((TreeViewItem)sender).Tag;
@@ -1642,206 +1292,7 @@ namespace SCADA
 
             e.Handled = true;
         }
-
-        public void ContextMenuCreateControlPanel(object sender, RoutedEventArgs e)
-        {
-            DialogWindowContextMenuCreateControlPanel DialogWindow = new DialogWindowContextMenuCreateControlPanel();
-            DialogWindow.Owner = this;
-            DialogWindow.Tag = ((MenuItem)sender).Tag;
-            DialogWindow.ShowDialog();
-
-            e.Handled = true;
-        }
-
-        public void OkRenameControlPanel(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                TextBox t = (TextBox)sender;
-                StackPanel panel = (StackPanel)t.Parent;
-
-                Label l = (Label)t.Tag;
-
-                TreeViewItem i = (TreeViewItem)panel.Parent;
-
-                ControlPanelScada cps = (ControlPanelScada)i.Tag;
-
-                char[] InvalidChars = { '"', '/', '\\', '<', '>', '?', '*', '|', ':' };
-
-                if (t.Text.IndexOfAny(InvalidChars) != -1)
-                {
-                    Popup ErrorPopup = new Popup();
-                    ErrorPopup.PlacementTarget = i;
-                    ErrorPopup.Placement = PlacementMode.Bottom;
-                    ErrorPopup.AllowsTransparency = true;
-                    ErrorPopup.PopupAnimation = PopupAnimation.Slide;
-                    ErrorPopup.StaysOpen = false;
-
-                    Border border = new Border();
-                    border.BorderThickness = new Thickness(2);
-                    border.Background = new SolidColorBrush(Colors.White);
-                    border.BorderBrush = new SolidColorBrush(Colors.Red);
-
-                    TextBlock text = new TextBlock();
-                    text.TextWrapping = TextWrapping.Wrap;
-                    text.Foreground = new SolidColorBrush(Colors.Black);
-                    text.FontSize = 16;
-                    text.Text = "Имя щита управления не должно содержать символы: < > | \" / \\ * : ?";
-
-                    Binding BindWidth = new Binding();
-                    BindWidth.Source = BrowseProject;
-                    BindWidth.Path = new PropertyPath("ActualWidth");
-                    BindWidth.Mode = BindingMode.OneTime;
-
-                    ErrorPopup.SetBinding(Popup.WidthProperty, BindWidth);
-
-                    border.Child = text;
-
-                    ErrorPopup.Child = border;
-                    ErrorPopup.IsOpen = true;
-
-                    e.Handled = true;
-
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(t.Text))
-                {
-                    Popup ErrorPopup = new Popup();
-                    ErrorPopup.PlacementTarget = i;
-                    ErrorPopup.Placement = PlacementMode.Bottom;
-                    ErrorPopup.AllowsTransparency = true;
-                    ErrorPopup.PopupAnimation = PopupAnimation.Slide;
-                    ErrorPopup.StaysOpen = false;
-
-                    Border border = new Border();
-                    border.BorderThickness = new Thickness(2);
-                    border.Background = new SolidColorBrush(Colors.White);
-                    border.BorderBrush = new SolidColorBrush(Colors.Red);
-
-                    TextBlock text = new TextBlock();
-                    text.TextWrapping = TextWrapping.Wrap;
-                    text.Foreground = new SolidColorBrush(Colors.Black);
-                    text.FontSize = 16;
-                    text.Text = "Имя щита управления не должно содержать только пробелы или быть пустой строкой.";
-
-                    Binding BindWidth = new Binding();
-                    BindWidth.Source = BrowseProject;
-                    BindWidth.Path = new PropertyPath("ActualWidth");
-                    BindWidth.Mode = BindingMode.OneTime;
-
-                    ErrorPopup.SetBinding(Popup.WidthProperty, BindWidth);
-
-                    border.Child = text;
-
-                    ErrorPopup.Child = border;
-                    ErrorPopup.IsOpen = true;
-
-                    e.Handled = true;
-
-                    return;
-                }
-
-                if (!t.Text.EndsWith(".cp"))
-                {
-                    t.Text = t.Text + ".cp";
-                }
-
-                ControlPanel controlPanel = ((AppWPF)Application.Current).CollectionControlPanel[cps.Path];
-
-                int index = cps.Path.LastIndexOf(cps.Name);
-                string path = cps.Path.Remove(index);
-                path = path + t.Text;
-
-                if (cps.Path == path)
-                {
-                    panel.Children.Remove(t);
-                    panel.Children.Add(l);
-
-                    e.Handled = true;
-
-                    return;
-                }
-
-                //Если файл страницы с таким именем существует, переименование не происходит.  
-                if (File.Exists(path))
-                {
-                    MessageBox.Show("Внимание! Щит управления " + path + " уже существует.", "Ошибка переименования", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                    e.Handled = true;
-
-                    return;
-                }
-                else File.Move(cps.Path, path); // Переименование
-
-                l.Content = t.Text;
-
-                AlphanumComparator a = new AlphanumComparator();
-                a.Name = (string)l.Content;
-
-                panel.Children.Remove(t);
-                panel.Children.Add(l);
-                panel.Tag = a;
-
-                TabItemParent tabParent = ((AppWPF)Application.Current).CollectionTabItemParent[cps.Path];
-
-                this.RemoveCollectionControlPanel(cps);
-
-                cps.Name = t.Text;
-                cps.Path = path;
-
-                tabParent.RenameTab();
-
-                if (cps.Attachments > 0)
-                {
-                    TreeViewItem parentFolder = cps.ParentItem;
-
-                    parentFolder.Items.SortDescriptions.Clear();
-                    parentFolder.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
-                    parentFolder.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-                }
-                else
-                {
-                    BrowseProject.Items.SortDescriptions.Clear();
-                    BrowseProject.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
-                    BrowseProject.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-                }
-
-                this.AddCollectionControlPanel(cps, tabParent, controlPanel);
-
-                e.Handled = true;
-            }
-        }
-
-        public void RenameControlPanel(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F2)
-            {
-                TreeViewItem i = (TreeViewItem)sender;
-                StackPanel panel = (StackPanel)i.Header;
-                Label l = (Label)panel.Children[1];
-                TextBox t = (TextBox)l.Tag;
-                t.Tag = l;
-                panel.Children.Remove(l);
-                panel.Children.Add(t);
-                t.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                {
-                    t.Focus();
-                }));
-                t.SelectAll();
-
-                e.Handled = true;
-            }
-        }
-
-        public void CreateControlPanel(object sender, RoutedEventArgs e)
-        {
-            DialogWindowCreateControlPanel DialogCreateFile = new DialogWindowCreateControlPanel();
-            DialogCreateFile.Owner = this;
-            DialogCreateFile.ShowDialog();
-            e.Handled = true;
-        }
-
+                      
         private void CreateProject(object sender, RoutedEventArgs e)
         {
             DialogWindowCreateProject DialogProject = new DialogWindowCreateProject();
@@ -2053,110 +1504,7 @@ namespace SCADA
             {
                 using (FileStream ProjectStream = File.Open(OpenFile.FileName, FileMode.Open, FileAccess.ReadWrite))
                 {
-                    if (OpenFile.FileName.IndexOf(".cp") != -1)
-                    {
-                        ControlPanelScada[] CollectionControlPanel = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Values.ToArray();
-
-                        foreach (ControlPanelScada controlPanelScada in CollectionControlPanel)
-                        {
-                            if (controlPanelScada.Path == OpenFile.FileName)
-                            {
-                                MessageBox.Show("Такая панель управления уже существует", "Ошибка добавления панели управления", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                                return;
-                            }
-                        }
-
-                        ControlPanelScada cps = new ControlPanelScada();
-                        cps.Name = OpenFile.SafeFileName;
-                        cps.Path = OpenFile.FileName;
-
-                        StackPanel panelControlPanel = new StackPanel();
-                        panelControlPanel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-
-                        Image imagePage = new Image();
-                        imagePage.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
-                        Image imageCut = new Image();
-                        imageCut.Source = new BitmapImage(new Uri("Images/Cut16.png", UriKind.Relative));
-
-                        Image imageDelete = new Image();
-                        imageDelete.Source = new BitmapImage(new Uri("Images/PageDelete16.png", UriKind.Relative));
-
-                        Image imageCopy = new Image();
-                        imageCopy.Source = new BitmapImage(new Uri("Images/CopyPage16.png", UriKind.Relative));
-
-                        MenuItem menuItemCopyControlPanel = new MenuItem();
-                        menuItemCopyControlPanel.IsEnabled = false;
-                        menuItemCopyControlPanel.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-                        menuItemCopyControlPanel.Header = "Копировать";
-                        menuItemCopyControlPanel.Icon = imageCopy;
-                        menuItemCopyControlPanel.Tag = cps;
-                        menuItemCopyControlPanel.Click += CopyItem;
-
-                        MenuItem menuItemCutControlPanel = new MenuItem();
-                        menuItemCutControlPanel.IsEnabled = false;
-                        menuItemCutControlPanel.Style = (Style)Application.Current.FindResource("ControlOnToolBar");
-                        menuItemCutControlPanel.Header = "Вырезать";
-                        menuItemCutControlPanel.Icon = imageCut;
-                        menuItemCutControlPanel.Tag = cps;
-                        menuItemCutControlPanel.Click += CutItem;
-
-                        MenuItem menuItemDeleteControlPanel = new MenuItem();
-                        menuItemDeleteControlPanel.Header = "Удалить";
-                        menuItemDeleteControlPanel.Icon = imageDelete;
-                        menuItemDeleteControlPanel.Tag = cps;
-                        menuItemDeleteControlPanel.Click += DeleteItem;
-
-                        TextBox tbControlPanel = new TextBox();
-                        tbControlPanel.KeyDown += OkRenameControlPanel;
-                        tbControlPanel.Text = cps.Name;
-
-                        Label lNameControlPanel = new Label();
-                        lNameControlPanel.Content = tbControlPanel.Text;
-                        lNameControlPanel.Tag = tbControlPanel;
-
-                        ContextMenu contextMenuControlPanel = new ContextMenu();
-                        contextMenuControlPanel.Items.Add(menuItemCopyControlPanel);
-                        contextMenuControlPanel.Items.Add(menuItemCutControlPanel);
-                        contextMenuControlPanel.Items.Add(menuItemDeleteControlPanel);
-                        contextMenuControlPanel.Tag = "X";
-
-                        AlphanumComparator a = new AlphanumComparator();
-                        a.Name = (string)lNameControlPanel.Content;
-
-                        panelControlPanel.Children.Add(imagePage);
-                        panelControlPanel.Children.Add(lNameControlPanel);
-                        panelControlPanel.Tag = a;
-
-                        TreeViewItem ItemControlPanel = new TreeViewItem();
-                        ItemControlPanel.Tag = cps;
-                        ItemControlPanel.MouseDoubleClick += OpenBrowseControlPanel;
-                        ItemControlPanel.KeyDown += RenameControlPanel;
-                        ItemControlPanel.Header = panelControlPanel;
-                        ItemControlPanel.ContextMenu = contextMenuControlPanel;
-
-                        cps.TreeItem = ItemControlPanel;
-
-                        ControlPanel controlPanel = (ControlPanel)XamlReader.Load(ProjectStream);
-
-                        ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, controlPanel);
-                        ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Add(cps.Path, cps);
-                        ProjectStream.Close();
-
-                        BrowseProject.Items.Add(ItemControlPanel);
-
-                        TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(cps);
-
-                        if (cps.IsOpen) TabControlMain.Items.Add(tabItemControlPanel);
-                        if (cps.IsFocus) TabControlMain.SelectedItem = tabItemControlPanel;
-
-                        foreach (TreeViewItem item in BrowseProject.Items)
-                        {
-                            SortedBrowseProject(item);
-                        }
-                    }
-                    else if (OpenFile.FileName.IndexOf(".pg") != -1)
+                     if (OpenFile.FileName.IndexOf(".pg") != -1)
                     {
                         PageScada[] CollectionPage = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Values.ToArray();
 
@@ -2338,24 +1686,7 @@ namespace SCADA
 
                     this.AddCollectionPage(childPageScada, tabParent, pageChild);
                 }
-
-                if (objectChild is ControlPanelScada)
-                {
-                    ControlPanelScada childControlPanelScada = (ControlPanelScada)objectChild;
-                    ControlPanel cPanelChild = ((AppWPF)Application.Current).CollectionControlPanel[childControlPanelScada.Path];
-
-                    TabItemParent tabParent = ((AppWPF)Application.Current).CollectionTabItemParent[childControlPanelScada.Path];
-
-                    this.RemoveCollectionControlPanel(childControlPanelScada);
-
-                    childControlPanelScada.Path = parentFolder.Path + "\\" + childControlPanelScada.Name;
-                    childControlPanelScada.AttachmentFolder = parentFolder.Path;
-
-                    tabParent.RenameTab();
-
-                    this.AddCollectionControlPanel(childControlPanelScada, tabParent, cPanelChild);                    
-                }
-
+             
                 RenameFolderCollection(child);
             }
 
@@ -2787,25 +2118,7 @@ namespace SCADA
 
                     this.AddCollectionPage(childPageScada, tabParent, pageChild);
                 }
-
-                if (objectChild is ControlPanelScada)
-                {
-                    ControlPanelScada childControlPanelScada = (ControlPanelScada)objectChild;
-                    ControlPanel childPanelControl = ((AppWPF)Application.Current).CollectionControlPanel[childControlPanelScada.Path];
-
-                    TabItemParent tabParent = ((AppWPF)Application.Current).CollectionTabItemParent[childControlPanelScada.Path];
-
-                    this.RemoveCollectionControlPanel(childControlPanelScada);
-
-                    childControlPanelScada.Path = parentFolder.Path + "\\" + childControlPanelScada.Name;
-                    childControlPanelScada.Attachments = parentFolder.Attachments + 1;
-                    childControlPanelScada.AttachmentFolder = parentFolder.Path;
-
-                    tabParent.RenameTab();
-
-                    this.AddCollectionControlPanel(childControlPanelScada, tabParent, childPanelControl);
-                }
-
+              
                 RenameFolderItemInsert(child);
             }
 
@@ -2896,12 +2209,6 @@ namespace SCADA
                         MenuItem MenuItemCreate = new MenuItem();
                         MenuItemCreate.Header = "Добавить";
 
-                        MenuItem MenuItemCreateControlPanel = new MenuItem();
-                        MenuItemCreateControlPanel.Click += ContextMenuCreateControlPanel;
-                        MenuItemCreateControlPanel.Icon = imageControlPanel;
-                        MenuItemCreateControlPanel.Header = "Щит управления";
-                        MenuItemCreateControlPanel.Tag = copyItem;
-
                         MenuItem MenuItemCreateFolder = new MenuItem();
                         MenuItemCreateFolder.Icon = imageMenuItemCreateFolder;
                         MenuItemCreateFolder.Header = "Папку";
@@ -2948,7 +2255,6 @@ namespace SCADA
 
                         MenuItemCreate.Items.Add(MenuItemCreateFolder);
                         MenuItemCreate.Items.Add(MenuItemCreatePage);
-                        MenuItemCreate.Items.Add(MenuItemCreateControlPanel);
 
                         ContextMenu ContextMenuFolder = new ContextMenu();
                         ContextMenuFolder.Tag = "FolderScada";
@@ -3093,109 +2399,7 @@ namespace SCADA
                             BinaryFormatter serializer = new BinaryFormatter();
                             serializer.Serialize(fs, copyPage);
                         }
-                    }
-                    else if (CurrentItem.Tag is ControlPanelScada)
-                    {
-                        ControlPanelScada cps = CurrentItem.Tag as ControlPanelScada;
-
-                        int index = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.LastIndexOf(((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.ProjectName);
-                        string nameControlPanel = "Копия - " + cps.Name;
-                        string path = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.Remove(index) + nameControlPanel;
-
-                        if (File.Exists(path)) nameControlPanel = RenameCopyControlPanel(1);
-
-                        path = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.Remove(index) + nameControlPanel;
-
-                        ControlPanelScada copycps = new ControlPanelScada();
-                        copycps.AttachmentFolder = null;
-                        copycps.Attachments = 0;
-                        copycps.Name = nameControlPanel;
-                        copycps.ParentItem = null;
-                        copycps.Path = path;
-
-                        StackPanel panel = new StackPanel();
-                        panel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-
-                        Image imageControlPanel = new Image();
-                        imageControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
-                        Image imageCut = new Image();
-                        imageCut.Source = new BitmapImage(new Uri("Images/Cut16.png", UriKind.Relative));
-
-                        Image imageDelete = new Image();
-                        imageDelete.Source = new BitmapImage(new Uri("Images/PageDelete16.png", UriKind.Relative));
-
-                        Image imageCopy = new Image();
-                        imageCopy.Source = new BitmapImage(new Uri("Images/CopyPage16.png", UriKind.Relative));
-
-                        MenuItem menuItemCopyControlPanel = new MenuItem();
-                        menuItemCopyControlPanel.Header = "Копировать";
-                        menuItemCopyControlPanel.Icon = imageCopy;
-                        menuItemCopyControlPanel.Tag = copycps;
-                        menuItemCopyControlPanel.Click += CopyItem;
-
-                        Window MainWindow = ((AppWPF)System.Windows.Application.Current).MainWindow;
-
-                        MenuItem menuItemCutControlPanel = new MenuItem();
-                        menuItemCutControlPanel.Header = "Вырезать";
-                        menuItemCutControlPanel.Icon = imageCut;
-                        menuItemCutControlPanel.Tag = copycps;
-                        menuItemCutControlPanel.Click += ((MainWindow)MainWindow).CutItem;
-
-                        MenuItem menuItemDeleteControlPanel = new MenuItem();
-                        menuItemDeleteControlPanel.Header = "Удалить";
-                        menuItemDeleteControlPanel.Icon = imageDelete;
-                        menuItemDeleteControlPanel.Tag = copycps;
-                        menuItemDeleteControlPanel.Click += DeleteItem;
-
-                        TextBox tbControlPanel = new TextBox();
-                        tbControlPanel.KeyDown += OkRenameControlPanel;
-                        tbControlPanel.Text = copycps.Name;
-
-                        Label lNameControlPanel = new Label();
-                        lNameControlPanel.Content = tbControlPanel.Text;
-                        lNameControlPanel.Tag = tbControlPanel;
-
-                        ContextMenu contextMenuControlPanel = new ContextMenu();
-                        contextMenuControlPanel.Items.Add(menuItemCopyControlPanel);
-                        contextMenuControlPanel.Items.Add(menuItemCutControlPanel);
-                        contextMenuControlPanel.Items.Add(menuItemDeleteControlPanel);
-                        contextMenuControlPanel.Tag = "X";
-
-                        AlphanumComparator a = new AlphanumComparator();
-                        a.Name = (string)lNameControlPanel.Content;
-
-                        panel.Children.Add(imageControlPanel);
-                        panel.Children.Add(lNameControlPanel);
-                        panel.Tag = a;
-
-                        TreeViewItem copyItemControlPanel = new TreeViewItem();
-                        copyItemControlPanel.Tag = copycps;
-                        copyItemControlPanel.KeyDown += RenameControlPanel;
-                        copyItemControlPanel.Header = panel;
-                        copyItemControlPanel.ContextMenu = contextMenuControlPanel;
-
-                        copycps.TreeItem = copyItemControlPanel;
-
-                        ControlPanel curControlPanel = ((AppWPF)Application.Current).CollectionControlPanel[cps.Path];
-                        ControlPanel copyControlPanel = new ControlPanel();
-
-                        this.AddCollectionControlPanelCopy(copycps, copyControlPanel);
-
-                        TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(copycps);
-
-                        BrowseProject.Items.Add(copyItemControlPanel);
-                                                                  
-                        BrowseProject.Items.SortDescriptions.Clear();
-                        BrowseProject.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
-                        BrowseProject.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-
-                        using (FileStream fs = File.Create((path)))
-                        {
-                            BinaryFormatter serializer = new BinaryFormatter();
-                            serializer.Serialize(fs, copyControlPanel);
-                        }                        
-                    }
+                    }                    
 
                     e.Handled = true;
                     return;
@@ -3288,12 +2492,6 @@ namespace SCADA
                         MenuItem MenuItemCreate = new MenuItem();
                         MenuItemCreate.Header = "Добавить";
 
-                        MenuItem MenuItemCreateControlPanel = new MenuItem();
-                        MenuItemCreateControlPanel.Click += ContextMenuCreateControlPanel;
-                        MenuItemCreateControlPanel.Icon = imageControlPanel;
-                        MenuItemCreateControlPanel.Header = "Щит управления";
-                        MenuItemCreateControlPanel.Tag = copyItem;
-
                         MenuItem MenuItemCreateFolder = new MenuItem();
                         MenuItemCreateFolder.Icon = imageMenuItemCreateFolder;
                         MenuItemCreateFolder.Header = "Папку";
@@ -3340,7 +2538,6 @@ namespace SCADA
 
                         MenuItemCreate.Items.Add(MenuItemCreateFolder);
                         MenuItemCreate.Items.Add(MenuItemCreatePage);
-                        MenuItemCreate.Items.Add(MenuItemCreateControlPanel);
 
                         ContextMenu ContextMenuFolder = new ContextMenu();
                         ContextMenuFolder.Tag = "FolderScada";
@@ -3486,108 +2683,7 @@ namespace SCADA
                         infs.TreeItem.Items.SortDescriptions.Clear();
                         infs.TreeItem.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
                         infs.TreeItem.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-                    }
-                    else if (CutItem is ControlPanelScada)
-                    {
-                        ControlPanelScada cps = CurrentItem.Tag as ControlPanelScada;
-                        FolderScada infs = InItem as FolderScada;
-
-                        string nameControlPanel = "Копия - " + cps.Name;
-                        string path = infs.Path + "\\" + nameControlPanel;
-
-                        if (File.Exists(path)) nameControlPanel = RenameCopyInItemControlPanel(1, infs.Path);
-
-                        path = infs.Path + "\\" + nameControlPanel;
-
-                        File.Copy(cps.Path, path);
-
-                        ControlPanelScada copycps = new ControlPanelScada();
-                        copycps.AttachmentFolder = infs.Path;
-                        copycps.Attachments = infs.Attachments + 1;
-                        copycps.Name = nameControlPanel;
-                        copycps.ParentItem = infs.TreeItem;
-                        copycps.Path = path;
-
-                        StackPanel panel = new StackPanel();
-                        panel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-
-                        Image imageControlPanel = new Image();
-                        imageControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
-                        Image imageCut = new Image();
-                        imageCut.Source = new BitmapImage(new Uri("Images/Cut16.png", UriKind.Relative));
-
-                        Image imageDelete = new Image();
-                        imageDelete.Source = new BitmapImage(new Uri("Images/PageDelete16.png", UriKind.Relative));
-
-                        Image imageCopy = new Image();
-                        imageCopy.Source = new BitmapImage(new Uri("Images/CopyPage16.png", UriKind.Relative));
-
-                        MenuItem menuItemCopyControlPanel = new MenuItem();
-                        menuItemCopyControlPanel.Header = "Копировать";
-                        menuItemCopyControlPanel.Icon = imageCopy;
-                        menuItemCopyControlPanel.Tag = copycps;
-                        menuItemCopyControlPanel.Click += CopyItem;
-
-                        Window MainWindow = ((AppWPF)System.Windows.Application.Current).MainWindow;
-
-                        MenuItem menuItemCutControlPanel = new MenuItem();
-                        menuItemCutControlPanel.Header = "Вырезать";
-                        menuItemCutControlPanel.Icon = imageCut;
-                        menuItemCutControlPanel.Tag = copycps;
-                        menuItemCutControlPanel.Click += ((MainWindow)MainWindow).CutItem;
-
-                        MenuItem menuItemDeleteControlPanel = new MenuItem();
-                        menuItemDeleteControlPanel.Header = "Удалить";
-                        menuItemDeleteControlPanel.Icon = imageDelete;
-                        menuItemDeleteControlPanel.Tag = copycps;
-                        menuItemDeleteControlPanel.Click += DeleteItem;
-
-                        TextBox tbControlPanel = new TextBox();
-                        tbControlPanel.KeyDown += OkRenameControlPanel;
-                        tbControlPanel.Text = copycps.Name;
-
-                        Label lNameControlPanel = new Label();
-                        lNameControlPanel.Content = tbControlPanel.Text;
-                        lNameControlPanel.Tag = tbControlPanel;
-
-                        ContextMenu contextMenuControlPanel = new ContextMenu();
-                        contextMenuControlPanel.Items.Add(menuItemCopyControlPanel);
-                        contextMenuControlPanel.Items.Add(menuItemCutControlPanel);
-                        contextMenuControlPanel.Items.Add(menuItemDeleteControlPanel);
-                        contextMenuControlPanel.Tag = "X";
-
-                        AlphanumComparator a = new AlphanumComparator();
-                        a.Name = (string)lNameControlPanel.Content;
-
-                        panel.Children.Add(imageControlPanel);
-                        panel.Children.Add(lNameControlPanel);
-                        panel.Tag = a;
-
-                        TreeViewItem copyItemControlPanel = new TreeViewItem();
-                        copyItemControlPanel.Tag = copycps;
-                        copyItemControlPanel.KeyDown += RenameControlPanel;
-                        copyItemControlPanel.Header = panel;
-                        copyItemControlPanel.ContextMenu = contextMenuControlPanel;
-
-                        copycps.TreeItem = copyItemControlPanel;
-
-                        ControlPanel curControlPanel = ((AppWPF)Application.Current).CollectionControlPanel[cps.Path];
-
-                        ControlPanel copyControlPanel = new ControlPanel();
-
-                        this.AddCollectionControlPanelCopy(copycps, copyControlPanel);
-
-                        TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(copycps);
-                       
-                        infs.TreeItem.Items.Add(copyItemControlPanel);
-                        if (infs.ChildItem == null) infs.ChildItem = new List<TreeViewItem>();
-                        infs.ChildItem.Add(copyItemControlPanel);
-
-                        infs.TreeItem.Items.SortDescriptions.Clear();
-                        infs.TreeItem.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
-                        infs.TreeItem.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-                    }
+                    }                    
 
                     e.Handled = true;
                     return;
@@ -3672,53 +2768,7 @@ namespace SCADA
 
                     this.AddCollectionPage(CutPageScada, tabParent, pageCut);
                 }
-
-                if (CutItem is ControlPanelScada)
-                {
-                    ControlPanelScada CutControlPanelScada = CutItem as ControlPanelScada;
-                    int index = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.LastIndexOf(((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.ProjectName);
-                    string newPathCut = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.Remove(index) + CutControlPanelScada.Name;
-
-                    if (File.Exists(newPathCut))
-                    {
-                        MessageBox.Show("Внимание! Щит управления " + newPathCut + " уже существует.", "Ошибка вставки", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                        e.Handled = true;
-                        return;
-                    }
-
-                    File.Move(CutControlPanelScada.Path, newPathCut);
-
-                    ControlPanel controlPanelCut = ((AppWPF)Application.Current).CollectionControlPanel[CutControlPanelScada.Path];
-
-                    TabItemParent tabParent = ((AppWPF)Application.Current).CollectionTabItemParent[CutControlPanelScada.Path];
-
-                    this.RemoveCollectionControlPanel(CutControlPanelScada);
-
-                    TreeViewItem itemControlPanelScada = CutControlPanelScada.TreeItem;
-                    TreeViewItem parentItemFolder = CutControlPanelScada.ParentItem;
-                    parentItemFolder.Items.Remove(itemControlPanelScada);
-
-                    FolderScada parentFolderScada = parentItemFolder.Tag as FolderScada;
-
-                    parentFolderScada.ChildItem.Remove(CurrentItem);
-
-                    CutControlPanelScada.Path = newPathCut;
-                    CutControlPanelScada.Attachments = 0;
-                    CutControlPanelScada.AttachmentFolder = null;
-                    CutControlPanelScada.ParentItem = null;
-
-                    tabParent.RenameTab();
-
-                    BrowseProject.Items.Add(itemControlPanelScada);
-
-                    BrowseProject.Items.SortDescriptions.Clear();
-                    BrowseProject.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
-                    BrowseProject.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-
-                    this.AddCollectionControlPanel(CutControlPanelScada, tabParent, controlPanelCut);        
-                }
-
+               
                 Clipboard.Clear();
                 e.Handled = true;
                 return;
@@ -3851,68 +2901,7 @@ namespace SCADA
 
                     this.AddCollectionPage(CutPageScada, tabParent, pageCut);   
                 }
-
-                if (CutItem is ControlPanelScada)
-                {
-                    FolderScada inItemFolderScada = InItem as FolderScada;
-                    ControlPanelScada CutControlPanelScada = CutItem as ControlPanelScada;
-
-                    string newPathCut = inItemFolderScada.Path + "\\" + CutControlPanelScada.Name;
-
-                    if (File.Exists(newPathCut))
-                    {
-                        MessageBox.Show("Внимание! Щит управления " + newPathCut + " уже существует.", "Ошибка вставки", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                        e.Handled = true;
-                        return;
-                    }
-
-                    File.Move(CutControlPanelScada.Path, newPathCut);
-
-                    ControlPanel ControlPanelCut = ((AppWPF)Application.Current).CollectionControlPanel[CutControlPanelScada.Path];
-
-                    TabItemParent tabParent = ((AppWPF)Application.Current).CollectionTabItemParent[CutControlPanelScada.Path];
-
-                    this.RemoveCollectionControlPanel(CutControlPanelScada);
-
-                    TreeViewItem parentItemFolder = CutControlPanelScada.ParentItem;
-                    TreeViewItem inItemFolder = inItemFolderScada.TreeItem;
-
-                    if (parentItemFolder != null)
-                    {
-                        parentItemFolder.Items.Remove(CurrentItem);
-
-                        FolderScada parentFolderScada = parentItemFolder.Tag as FolderScada;
-                        parentFolderScada.ChildItem.Remove(CurrentItem);
-                    }
-                    else
-                    {
-                        BrowseProject.Items.Remove(CurrentItem);
-                    }
-
-                    CutControlPanelScada.Path = newPathCut;
-                    CutControlPanelScada.Attachments = inItemFolderScada.Attachments + 1;
-                    CutControlPanelScada.AttachmentFolder = inItemFolderScada.Path;
-                    CutControlPanelScada.ParentItem = inItemFolderScada.TreeItem;
-
-                    if (inItemFolderScada.ChildItem == null)
-                    {
-                        inItemFolderScada.ChildItem = new List<TreeViewItem>();
-                    }
-
-                    inItemFolderScada.ChildItem.Add(CurrentItem);
-
-                    inItemFolder.Items.Add(CurrentItem);
-
-                    inItemFolder.Items.SortDescriptions.Clear();
-                    inItemFolder.Items.SortDescriptions.Add(new SortDescription("ContextMenu.Tag", ListSortDirection.Ascending));
-                    inItemFolder.Items.SortDescriptions.Add(new SortDescription("Header.Tag", ListSortDirection.Ascending));
-
-                    tabParent.RenameTab();
-
-                    this.AddCollectionControlPanel(CutControlPanelScada, tabParent, ControlPanelCut);                
-                }
-
+                
                 Clipboard.Clear();
                 e.Handled = true;
                 return;
@@ -3966,29 +2955,7 @@ namespace SCADA
 
                 if (CurrentItem != null) CurrentItem.Background = new SolidColorBrush(Colors.White);
                 CurrentItem = ItemPage;
-            }
-            else if (((MenuItem)sender).Tag is ControlPanelScada)
-            {
-                ControlPanelScada cps = (ControlPanelScada)((MenuItem)sender).Tag;
-
-                TreeViewItem ItemControlPanel = cps.TreeItem;
-
-                if (ItemControlPanel == CurrentItem)
-                {
-                    if (IsCopy)
-                    {
-                        ItemControlPanel.Background = new SolidColorBrush(Colors.Gray);
-                        IsCopy = false;
-                    }
-                    e.Handled = true;
-                    return;
-                }
-
-                ItemControlPanel.Background = new SolidColorBrush(Colors.Gray);
-
-                if (CurrentItem != null) CurrentItem.Background = new SolidColorBrush(Colors.White);
-                CurrentItem = ItemControlPanel;
-            }
+            }           
 
             IsCopy = false;
             Clipboard.SetDataObject(((MenuItem)sender).Tag); // Передаем FolderScada или PageScada или ControlPanelScada
@@ -4007,16 +2974,6 @@ namespace SCADA
                 PageScada ps = item.Tag as PageScada;
 
                 ((AppWPF)Application.Current).CollectionTabItemParent[ps.Path].DeleteTabItem();
-
-                return;
-            }
-
-            if (item.Tag is ControlPanelScada)
-            {
-                ControlPanelScada cps = item.Tag as ControlPanelScada;
-
-                ((AppWPF)Application.Current).CollectionControlPanel.Remove(cps.Path);
-                ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Remove(cps.Path);
 
                 return;
             }
@@ -4083,33 +3040,7 @@ namespace SCADA
                     File.Delete(ps.Path);
                 }
             }
-
-            if (((MenuItem)sender).Tag is ControlPanelScada)
-            {
-                ControlPanelScada cps = ((MenuItem)sender).Tag as ControlPanelScada;
-
-                if (cps.ParentItem == null)
-                {
-                    ((AppWPF)Application.Current).CollectionTabItemParent[cps.Path].DeleteTabItem();
-
-                    BrowseProject.Items.Remove(cps.TreeItem);
-
-                    File.Delete(cps.Path);
-                }
-                else 
-                {
-                    TreeViewItem parentItem = cps.ParentItem;
-                    parentItem.Items.Remove(cps.TreeItem);
-
-                    FolderScada parentFolderScada = parentItem.Tag as FolderScada;
-                    parentFolderScada.ChildItem.Remove(cps.TreeItem);
-
-                    ((AppWPF)Application.Current).CollectionTabItemParent[cps.Path].DeleteTabItem();
-
-                    File.Delete(cps.Path);
-                }
-            }
-
+           
             e.Handled = true;
         }
 
@@ -4127,17 +3058,7 @@ namespace SCADA
                 CopyDir(s, ToDir + "\\" + System.IO.Path.GetFileName(s));
             }
         }
-
-        public string RenameCopyControlPanel(int count)
-        {
-            int index = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.LastIndexOf(((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.ProjectName);
-            string path = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.Remove(index) + "Копия" + count + " - " + ((ControlPanelScada)currentItem.Tag).Name;
-            string nameControlPanel = "Копия" + count + " - " + ((ControlPanelScada)currentItem.Tag).Name;
-
-            if (File.Exists(path)) nameControlPanel = RenameCopyControlPanel(count + 1);
-            return nameControlPanel;
-        }
-        
+                
         public string RenameCopyPage(int count)
         {
             int index = ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.PathProject.LastIndexOf(((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.ProjectName);
@@ -4147,16 +3068,7 @@ namespace SCADA
             if (File.Exists(path)) namePage = RenameCopyPage(count + 1);
             return namePage;
         }
-
-        public string RenameCopyInItemControlPanel(int count, string inPath)
-        {
-            string nameControlPanel = "Копия" + count + " - " + ((ControlPanelScada)currentItem.Tag).Name;
-            string path = inPath + "\\" + nameControlPanel;
-
-            if (File.Exists(path)) nameControlPanel = RenameCopyInItemControlPanel(count + 1, inPath);
-            return nameControlPanel;
-        }
-
+       
         public string RenameCopyInItemPage(int count, string inPath)
         {
             string namePage = "Копия" + count + " - " + ((PageScada)currentItem.Tag).Name;
@@ -4231,9 +3143,6 @@ namespace SCADA
                     Image ImageCopy = new Image();
                     ImageCopy.Source = new BitmapImage(new Uri("Images/CopyFolder16.ico", UriKind.Relative));
 
-                    Image imageControlPanel = new Image();
-                    imageControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
                     TextBox tbFolder = new TextBox();
                     tbFolder.KeyDown += OkRenameFolder;
                     tbFolder.Text = childCopyFolderScada.Name;
@@ -4265,12 +3174,6 @@ namespace SCADA
 
                     MenuItem MenuItemCreate = new MenuItem();
                     MenuItemCreate.Header = "Добавить";
-
-                    MenuItem MenuItemCreateControlPanel = new MenuItem();
-                    MenuItemCreateControlPanel.Click += ContextMenuCreateControlPanel;
-                    MenuItemCreateControlPanel.Icon = imageControlPanel;
-                    MenuItemCreateControlPanel.Header = "Щит управления";
-                    MenuItemCreateControlPanel.Tag = copyItem;
 
                     MenuItem MenuItemCreateFolder = new MenuItem();
                     MenuItemCreateFolder.Icon = imageMenuItemCreateFolder;
@@ -4316,7 +3219,6 @@ namespace SCADA
 
                     MenuItemCreate.Items.Add(MenuItemCreateFolder);
                     MenuItemCreate.Items.Add(MenuItemCreatePage);
-                    MenuItemCreate.Items.Add(MenuItemCreateControlPanel);
 
                     ContextMenu ContextMenuFolder = new ContextMenu();
                     ContextMenuFolder.Tag = "FolderScada";
@@ -4440,93 +3342,7 @@ namespace SCADA
                     TabItemPage tabItemPage = new TabItemPage(childCopyPageScada);
 
                 }
-
-                if (objectChild is ControlPanelScada)
-                {
-                    ControlPanelScada childCurControlPanelScada = objectChild as ControlPanelScada;
-
-                    ControlPanelScada childCopyControlPanelScada = new ControlPanelScada();
-                    childCopyControlPanelScada.AttachmentFolder = ((FolderScada)parentCopyItem.Tag).Path;
-                    childCopyControlPanelScada.Attachments = childCurControlPanelScada.Attachments;
-                    childCopyControlPanelScada.Name = childCurControlPanelScada.Name;
-                    childCopyControlPanelScada.ParentItem = parentCopyItem;
-                    childCopyControlPanelScada.Path = ((FolderScada)parentCopyItem.Tag).Path + "\\" + childCopyControlPanelScada.Name;
-
-                    StackPanel panel = new StackPanel();
-                    panel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-
-                    Image imageControlPanel = new Image();
-                    imageControlPanel.Source = new BitmapImage(new Uri("Images/ControlPanel16.png", UriKind.Relative));
-
-                    Image imageCut = new Image();
-                    imageCut.Source = new BitmapImage(new Uri("Images/Cut16.png", UriKind.Relative));
-
-                    Image imageDelete = new Image();
-                    imageDelete.Source = new BitmapImage(new Uri("Images/PageDelete16.png", UriKind.Relative));
-
-                    Image imageCopy = new Image();
-                    imageCopy.Source = new BitmapImage(new Uri("Images/CopyPage16.png", UriKind.Relative));
-
-                    MenuItem menuItemCopyControlPanel = new MenuItem();
-                    menuItemCopyControlPanel.Header = "Копировать";
-                    menuItemCopyControlPanel.Icon = imageCopy;
-                    menuItemCopyControlPanel.Tag = childCopyControlPanelScada;
-                    menuItemCopyControlPanel.Click += CopyItem;
-
-                    MenuItem menuItemCutControlPanel = new MenuItem();
-                    menuItemCutControlPanel.Header = "Вырезать";
-                    menuItemCutControlPanel.Icon = imageCut;
-                    menuItemCutControlPanel.Tag = childCopyControlPanelScada;
-                    menuItemCutControlPanel.Click += CutItem;
-
-                    MenuItem menuItemDeleteControlPanel = new MenuItem();
-                    menuItemDeleteControlPanel.Header = "Удалить";
-                    menuItemDeleteControlPanel.Icon = imageDelete;
-                    menuItemDeleteControlPanel.Tag = childCopyControlPanelScada;
-                    menuItemDeleteControlPanel.Click += DeleteItem;
-
-                    TextBox tbControlPanel = new TextBox();
-                    tbControlPanel.KeyDown += OkRenameControlPanel;
-                    tbControlPanel.Text = childCopyControlPanelScada.Name;
-
-                    Label lNameControlPanel = new Label();
-                    lNameControlPanel.Content = tbControlPanel.Text;
-                    lNameControlPanel.Tag = tbControlPanel;
-
-                    ContextMenu contextMenuControlPanel = new ContextMenu();
-                    contextMenuControlPanel.Items.Add(menuItemCopyControlPanel);
-                    contextMenuControlPanel.Items.Add(menuItemCutControlPanel);
-                    contextMenuControlPanel.Items.Add(menuItemDeleteControlPanel);
-                    contextMenuControlPanel.Tag = "X";
-
-                    AlphanumComparator a = new AlphanumComparator();
-                    a.Name = (string)lNameControlPanel.Content;
-
-                    panel.Children.Add(imageControlPanel);
-                    panel.Children.Add(lNameControlPanel);
-                    panel.Tag = a;
-
-                    TreeViewItem copyItemControlPanel = new TreeViewItem();
-                    copyItemControlPanel.Tag = childCopyControlPanelScada;
-                    copyItemControlPanel.KeyDown += RenameControlPanel;
-                    copyItemControlPanel.Header = panel;
-                    copyItemControlPanel.ContextMenu = contextMenuControlPanel;
-
-                    nextCopyItem = copyItemControlPanel;
-
-                    childCopyControlPanelScada.TreeItem = copyItemControlPanel;
-
-                    if (((FolderScada)parentCopyItem.Tag).ChildItem == null) ((FolderScada)parentCopyItem.Tag).ChildItem = new List<TreeViewItem>();
-                    ((FolderScada)parentCopyItem.Tag).ChildItem.Add(copyItemControlPanel);
-
-                    ControlPanel copyControlPanel = new ControlPanel();
-
-                    ControlPanel curControlPanel = ((AppWPF)Application.Current).CollectionControlPanel[childCurControlPanelScada.Path];
-
-                    this.AddCollectionControlPanelCopy(childCurControlPanelScada, copyControlPanel);
-
-                    TabItemControlPanel tabItemControlPanel = new TabItemControlPanel(childCurControlPanelScada);
-                }
+               
                 parentCopyItem.Items.Add(nextCopyItem);
 
                 CopyItemBrowse(child, nextCopyItem);
@@ -4575,27 +3391,7 @@ namespace SCADA
 
                 if (CurrentItem != null) CurrentItem.Background = new SolidColorBrush(Colors.White);
                 CurrentItem = ItemPage;
-            }
-            else if (((MenuItem)sender).Tag is ControlPanelScada)
-            {
-                ControlPanelScada cps = (ControlPanelScada)((MenuItem)sender).Tag;
-
-                TreeViewItem ItemPage = cps.TreeItem;
-
-                if (ItemPage == CurrentItem)
-                {
-                    if (!IsCopy)
-                    {
-                        CurrentItem.Background = new SolidColorBrush(Colors.White);
-                        IsCopy = true;
-                    }
-                    e.Handled = true;
-                    return;
-                }
-
-                if (CurrentItem != null) CurrentItem.Background = new SolidColorBrush(Colors.White);
-                CurrentItem = ItemPage;
-            }
+            }            
 
             IsCopy = true;
             Clipboard.SetDataObject(((MenuItem)sender).Tag); // Передаем FolderScada или PageScada
@@ -4675,10 +3471,6 @@ namespace SCADA
                         if (tabItemSelcted is TabItemPage)
                         {
                             obj = ((AppWPF)Application.Current).CollectionPage[IS.Path];
-                        }
-                        else if (tabItemSelcted is TabItemControlPanel)
-                        {
-                            obj = ((AppWPF)Application.Current).CollectionControlPanel[IS.Path];
                         }
 
                         using (FileStream fs = File.Create((IS.Path)))
@@ -4934,69 +3726,7 @@ namespace SCADA
                         TextBoxDiameter.Text = null;
                         ComboBoxEnvironment.SelectedIndex = -1;
                     }
-                }
-                else if (scroll.Content is CanvasControlPanel)
-                {
-                    CanvasControlPanel canvasAS = scroll.Content as CanvasControlPanel;
-
-                    TextBoxDiameter.IsReadOnly = false;
-                    ComboBoxEnvironment.IsEnabled = false;
-                    TextBoxDiameter.Text = null;
-                    ComboBoxEnvironment.SelectedIndex = -1;
-                    TextBoxDiameter.IsReadOnly = true;
-
-                    if (canvasAS.CountSelect > 1)
-                    {
-                        CoordinateObjectX.IsReadOnly = true;
-                        CoordinateObjectY.IsReadOnly = true;
-                        CoordinateObjectX.Text = null;
-                        CoordinateObjectY.Text = null;
-
-                        LabelSelected.Content = "Выделенно объектов: " + canvasAS.CountSelect;                        
-                    }
-                    else if (canvasAS.CountSelect == 1)
-                    {                       
-                        LabelSelected.Content = "Выделенно объектов: " + canvasAS.CountSelect;
-
-                        foreach (ControlOnCanvas controlOnCanvas in canvasAS.Children)
-                        {
-                            if (controlOnCanvas.IsSelected)
-                            {
-                                CoordinateObjectX.IsReadOnly = false;
-                                CoordinateObjectY.IsReadOnly = false;
-                                if (controlOnCanvas.controlOnCanvasSer.Transform == 0)
-                                {
-                                    controlOnCanvas.CoordinateX.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.LeftProperty));
-                                    controlOnCanvas.CoordinateY.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.TopProperty));
-                                }
-                                else if (controlOnCanvas.controlOnCanvasSer.Transform == -90 || controlOnCanvas.controlOnCanvasSer.Transform == 270)
-                                {
-                                    controlOnCanvas.CoordinateY.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.TopProperty) - controlOnCanvas.ActualWidth);
-                                    controlOnCanvas.CoordinateX.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.LeftProperty));
-                                }
-                                else if (controlOnCanvas.controlOnCanvasSer.Transform == -180 || controlOnCanvas.controlOnCanvasSer.Transform == 180)
-                                {
-                                    controlOnCanvas.CoordinateY.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.TopProperty) - controlOnCanvas.ActualHeight);
-                                    controlOnCanvas.CoordinateX.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.LeftProperty) - controlOnCanvas.ActualWidth);
-                                }
-                                else if (controlOnCanvas.controlOnCanvasSer.Transform == -270 || controlOnCanvas.controlOnCanvasSer.Transform == 90)
-                                {
-                                    controlOnCanvas.CoordinateY.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.TopProperty));
-                                    controlOnCanvas.CoordinateX.Text = string.Format("{0:F2}", (double)controlOnCanvas.GetValue(Canvas.LeftProperty) - controlOnCanvas.ActualHeight);
-                                }                                
-                            }
-                        }
-                    }
-                    else if (canvasAS.CountSelect == 0)
-                    {
-                        LabelSelected.Content = "Выделенно объектов: " + canvasAS.CountSelect;
-
-                        CoordinateObjectX.IsReadOnly = true;
-                        CoordinateObjectY.IsReadOnly = true;
-                        CoordinateObjectX.Text = null;
-                        CoordinateObjectY.Text = null;                        
-                    }
-                }
+                }              
             }
                       
             e.Handled = true;
@@ -5023,29 +3753,7 @@ namespace SCADA
             ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionPageScada.Add(ps.Path, ps);
             ((AppWPF)Application.Current).CollectionPage.Add(ps.Path, page);
         }
-
-        // при переименовании ключа, сначала удаляем из словаря
-        public void RemoveCollectionControlPanel(ControlPanelScada cps)
-        {
-            ((AppWPF)Application.Current).CollectionTabItemParent.Remove(cps.Path);
-            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Remove(cps.Path);
-            ((AppWPF)Application.Current).CollectionControlPanel.Remove(cps.Path);
-        }
-
-        // а сдесь добавляем, уже с новым значением ключа
-        public void AddCollectionControlPanel(ControlPanelScada cps, TabItemParent tabItemParent, ControlPanel cpanel)
-        {
-            ((AppWPF)Application.Current).CollectionTabItemParent.Add(cps.Path, tabItemParent);
-            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Add(cps.Path, cps);
-            ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, cpanel);
-        }
-
-        public void AddCollectionControlPanelCopy(ControlPanelScada cps, ControlPanel cpanel)
-        {
-            ((MainWindow)((AppWPF)Application.Current).MainWindow).ProjectBin.CollectionControlPanelScada.Add(cps.Path, cps);
-            ((AppWPF)Application.Current).CollectionControlPanel.Add(cps.Path, cpanel);
-        }
-
+               
         public void UpdateThread()
         {
             if (((AppWPF)Application.Current).ConfigProgramBin.IsWindowUpdate)
@@ -5493,12 +4201,7 @@ namespace SCADA
             if (selectedScrollViewer.Content is CanvasPage)
             {
                 selectedCanvas = selectedScrollViewer.Content as CanvasPage;
-            }
-            else if (selectedScrollViewer.Content is CanvasControlPanel)
-            {
-                e.Handled = true;
-                return;
-            }
+            }           
             
             foreach (ControlOnCanvas controlOnCanvas in selectedCanvas.SelectedControlOnCanvas)
             {
@@ -6827,12 +5530,7 @@ namespace SCADA
         }
 
         private void BStartProject_Click(object sender, RoutedEventArgs e)
-        {
-            if (e != null)
-            {
-                e.Handled = true;
-            }
-
+        {                          
             bool isTCPObjectNotClose = false;
             bool isUDPObjectNotClose = false;
             bool isModbusObjectNotClose = false;
@@ -7018,9 +5716,9 @@ namespace SCADA
 
             List<ModbusControl> collectionModbus = new List<ModbusControl>();
 
-            foreach (ControlPanel cp in app.CollectionControlPanel.Values)
+            foreach (Page pg in app.CollectionPage.Values)
             {
-                foreach (EthernetSer es in cp.CollectionEthernet)
+                foreach (EthernetSer es in pg.CollectionEthernet)
                 {
                     foreach(ItemNet item in es.CollectionItemNetSend)
                     {
@@ -7033,7 +5731,7 @@ namespace SCADA
                     collectionEthernet.Add((EthernetControl)es.ControlItem);
                 }
 
-                foreach (ModbusSer ms in cp.CollectionModbus)
+                foreach (ModbusSer ms in pg.CollectionModbus)
                 {
                     collectionModbus.Add((ModbusControl)ms.ControlItem);
                 }
@@ -7734,7 +6432,7 @@ namespace SCADA
                                             }
                                         }
 
-                                        lock (modbusSendObject.LockValue)
+                                        lock (modbusSendObject.LockAvailableData)
                                         {
                                             modbusSendObject.IsAvailableData = true;
                                         }
@@ -7742,10 +6440,12 @@ namespace SCADA
                                     catch
                                     {                                        
                                         modbusSendObject.IsReconnect = true;
-                                        lock (modbusSendObject.LockValue)
+
+                                        lock (modbusSendObject.LockAvailableData)
                                         {
                                             modbusSendObject.IsAvailableData = false;
                                         }
+
                                         break;
                                     }
                                 }
@@ -11101,46 +9801,8 @@ namespace SCADA
 
         private void BStopProject_Click(object sender, RoutedEventArgs e)
         {            
-            AppWPF app = (AppWPF)Application.Current;
-
             Interlocked.Exchange(ref IsStop, 1);
-
-            foreach (EthernetObject client in CollectionTCPEthernetObject)
-            {
-                if (client.TcpClient != null)
-                {
-                    client.TcpClient.Close();
-                }
-            }
-
-            foreach (EthernetObject client in CollectionUDPEthernetObject)
-            {
-                if (client.UdpClient != null)
-                {
-                    client.UdpClient.Close();
-                }
-            }
-
-            foreach (SerialPort serialPort in CollectionSerialPortThread)
-            {
-                if (serialPort != null)
-                {
-                    if (serialPort.IsOpen)
-                    {
-                        serialPort.Close();
-                    }
-                }
-            }
-
-            foreach (SQLObject SqlCon in CollectionSQLObject)
-            {
-                if (SqlCon.SQL != null)
-                {
-                    SqlCon.SQL.Close();
-                    SqlCon.SQL.Dispose();
-                }
-            }
-
+                      
             if (CollectionMessage.Count > 300)
             {
                 CollectionMessage.RemoveAt(0);
@@ -11315,11 +9977,7 @@ namespace SCADA
                             if (tabItemSelcted is TabItemPage)
                             {
                                 obj = ((AppWPF)Application.Current).CollectionPage[IS.Path];
-                            }
-                            else if (tabItemSelcted is TabItemControlPanel)
-                            {
-                                obj = ((AppWPF)Application.Current).CollectionControlPanel[IS.Path];
-                            }
+                            }                           
 
                             using (FileStream fs = File.Create((IS.Path)))
                             {

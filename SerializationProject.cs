@@ -104,17 +104,6 @@ namespace SCADA
         }       
     }
     [Serializable]
-    public class ControlPanelScada : ItemScadaTabItem, IComparable
-    {
-        public int CompareTo(object obj)
-        {
-            ControlPanelScada otherControlPanelScada = obj as ControlPanelScada;
-
-            if (otherControlPanelScada != null) return this.Attachments.CompareTo(otherControlPanelScada.Attachments);
-            else throw new ArgumentException("Пустой объект для сортировки");
-        }        
-    }
-    [Serializable]
     public class PageScada: ItemScadaTabItem, IComparable
     {
         public int CompareTo(object obj)
@@ -152,12 +141,6 @@ namespace SCADA
         public Dictionary<string, FolderScada> CollectionFolderScada
         {
             get { return collectionFolderScada; }
-        }
-
-        private Dictionary<string, ControlPanelScada> collectionControlPanelScada = new Dictionary<string, ControlPanelScada>();
-        public Dictionary<string, ControlPanelScada> CollectionControlPanelScada
-        {
-            get { return collectionControlPanelScada; }
         }       
     }
 }

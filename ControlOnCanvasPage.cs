@@ -73,6 +73,24 @@ namespace SCADA
                 ImageControl imageControl = objectOnCanvas as ImageControl;
                 page.CollectionImage.Remove(imageControl.ImageSer);
             }
+            else if (objectOnCanvas is EthernetControl)
+            {
+                EthernetControl ethernetControl = objectOnCanvas as EthernetControl;
+                page.CollectionEthernet.Remove(ethernetControl.EthernetSer);
+                ((AppWPF)Application.Current).CollectionEthernetSers.Remove(((EthernetControl)objectOnCanvas).EthernetSer);
+            }
+            else if (objectOnCanvas is ComControl)
+            {
+                ComControl comControl = objectOnCanvas as ComControl;
+                page.CollectionCom.Remove(comControl.ComSer);
+                ((AppWPF)Application.Current).CollectionComSers.Remove(((ComControl)objectOnCanvas).ComSer);
+            }
+            else if (objectOnCanvas is ModbusControl)
+            {
+                ModbusControl modbusControl = objectOnCanvas as ModbusControl;
+                page.CollectionModbus.Remove(modbusControl.ModbusSer);
+                ((AppWPF)Application.Current).CollectionModbusSers.Remove(modbusControl.ModbusSer);
+            }
 
             objectOnCanvas.CanvasTab.Children.Remove(objectOnCanvas);     
         }

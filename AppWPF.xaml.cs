@@ -114,13 +114,7 @@ namespace SCADA
         public Dictionary<string, TabItemParent> CollectionTabItemParent
         {
             get { return collectionTabItemParent; }
-        }
-
-        private Dictionary<string, ControlPanel> collectionControlPanel = new Dictionary<string,ControlPanel>();
-        public Dictionary<string, ControlPanel> CollectionControlPanel
-        {
-            get { return collectionControlPanel; }
-        }
+        }        
 
         public bool IsSaveProject { get; set; }
 

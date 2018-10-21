@@ -530,7 +530,6 @@ namespace SCADA
                         }
                     }
 
-
                     if (imageControl.ImageSer.StretchImage == "None")
                     {
                         imageControl.templateImage.Stretch = Stretch.None;
@@ -555,6 +554,115 @@ namespace SCADA
                 canvasPage.Children.Add(imageControl);
 
                 imageControl.ApplyTemplate();
+            }
+            foreach (EthernetSer ethernetSer in page.CollectionEthernet)
+            {
+                EthernetControl ethernetControl = new EthernetControl(PS, CanvasPage, ethernetSer);
+
+                ((AppWPF)Application.Current).CollectionEthernetSers.Add(ethernetSer);
+
+                ethernetControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    ethernetControl.PathFigureBorder.StartPoint = ethernetSer.Border.point[0];
+                    ethernetControl.PolyLineSegmentBorder.Points[0] = ethernetSer.Border.point[1];
+                    ethernetControl.PolyLineSegmentBorder.Points[1] = ethernetSer.Border.point[2];
+                    ethernetControl.PolyLineSegmentBorder.Points[2] = ethernetSer.Border.point[3];
+                    ethernetControl.PolyLineSegmentBorder.Points[3] = ethernetSer.Border.point[4];
+
+                    ethernetControl.PathFigureDownSize.StartPoint = ethernetSer.DownSize.point[0];
+                    ethernetControl.LineSegmentDownSize.Point = ethernetSer.DownSize.point[1];
+
+                    ethernetControl.PathFigureLeftSize.StartPoint = ethernetSer.LeftSize.point[0];
+                    ethernetControl.LineSegmentLeftSize.Point = ethernetSer.LeftSize.point[1];
+
+                    ethernetControl.PathFigureRightSize.StartPoint = ethernetSer.RightSize.point[0];
+                    ethernetControl.LineSegmentRightSize.Point = ethernetSer.RightSize.point[1];
+
+                    ethernetControl.PathFigureTopSize.StartPoint = ethernetSer.TopSize.point[0];
+                    ethernetControl.LineSegmentTopSize.Point = ethernetSer.TopSize.point[1];
+                }));
+
+                ethernetControl.SetValue(Canvas.LeftProperty, ethernetSer.Сoordinates.X);
+                ethernetControl.SetValue(Canvas.TopProperty, ethernetSer.Сoordinates.Y);
+
+                canvasPage.Children.Add(ethernetControl);
+
+                ethernetControl.ApplyTemplate();
+
+                foreach (EthernetOperational eo in ethernetControl.EthernetSer.CollectionEthernetOperational)
+                {
+                    eo.EthernetOperationalSearch.BufferSizeRec = eo.BufferSizeRec;
+                    eo.EthernetOperationalSearch.BufferSizeSend = eo.BufferSizeSend;
+                    eo.EthernetOperationalSearch.Description = eo.Description;
+                }
+            }
+            foreach (ComSer comSer in page.CollectionCom)
+            {
+                ComControl comControl = new ComControl(PS, CanvasPage, comSer);
+
+                ((AppWPF)Application.Current).CollectionComSers.Add(comSer);
+
+                comControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    comControl.PathFigureBorder.StartPoint = comSer.Border.point[0];
+                    comControl.PolyLineSegmentBorder.Points[0] = comSer.Border.point[1];
+                    comControl.PolyLineSegmentBorder.Points[1] = comSer.Border.point[2];
+                    comControl.PolyLineSegmentBorder.Points[2] = comSer.Border.point[3];
+                    comControl.PolyLineSegmentBorder.Points[3] = comSer.Border.point[4];
+
+                    comControl.PathFigureDownSize.StartPoint = comSer.DownSize.point[0];
+                    comControl.LineSegmentDownSize.Point = comSer.DownSize.point[1];
+
+                    comControl.PathFigureLeftSize.StartPoint = comSer.LeftSize.point[0];
+                    comControl.LineSegmentLeftSize.Point = comSer.LeftSize.point[1];
+
+                    comControl.PathFigureRightSize.StartPoint = comSer.RightSize.point[0];
+                    comControl.LineSegmentRightSize.Point = comSer.RightSize.point[1];
+
+                    comControl.PathFigureTopSize.StartPoint = comSer.TopSize.point[0];
+                    comControl.LineSegmentTopSize.Point = comSer.TopSize.point[1];
+                }));
+
+                comControl.SetValue(Canvas.LeftProperty, comSer.Сoordinates.X);
+                comControl.SetValue(Canvas.TopProperty, comSer.Сoordinates.Y);
+
+                canvasPage.Children.Add(comControl);
+
+                comControl.ApplyTemplate();
+            }
+            foreach (ModbusSer modbusSer in page.CollectionModbus)
+            {
+                ModbusControl modbusControl = new ModbusControl(PS, CanvasPage, modbusSer);
+
+                ((AppWPF)Application.Current).CollectionModbusSers.Add(modbusSer);
+
+                modbusControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    modbusControl.PathFigureBorder.StartPoint = modbusSer.Border.point[0];
+                    modbusControl.PolyLineSegmentBorder.Points[0] = modbusSer.Border.point[1];
+                    modbusControl.PolyLineSegmentBorder.Points[1] = modbusSer.Border.point[2];
+                    modbusControl.PolyLineSegmentBorder.Points[2] = modbusSer.Border.point[3];
+                    modbusControl.PolyLineSegmentBorder.Points[3] = modbusSer.Border.point[4];
+
+                    modbusControl.PathFigureDownSize.StartPoint = modbusSer.DownSize.point[0];
+                    modbusControl.LineSegmentDownSize.Point = modbusSer.DownSize.point[1];
+
+                    modbusControl.PathFigureLeftSize.StartPoint = modbusSer.LeftSize.point[0];
+                    modbusControl.LineSegmentLeftSize.Point = modbusSer.LeftSize.point[1];
+
+                    modbusControl.PathFigureRightSize.StartPoint = modbusSer.RightSize.point[0];
+                    modbusControl.LineSegmentRightSize.Point = modbusSer.RightSize.point[1];
+
+                    modbusControl.PathFigureTopSize.StartPoint = modbusSer.TopSize.point[0];
+                    modbusControl.LineSegmentTopSize.Point = modbusSer.TopSize.point[1];
+                }));
+
+                modbusControl.SetValue(Canvas.LeftProperty, modbusSer.Сoordinates.X);
+                modbusControl.SetValue(Canvas.TopProperty, modbusSer.Сoordinates.Y);
+
+                canvasPage.Children.Add(modbusControl);
+
+                modbusControl.ApplyTemplate();
             }
         }
 

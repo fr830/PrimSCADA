@@ -68,26 +68,14 @@ namespace SCADA
                     bindingRun.Path = new PropertyPath("Value");
 
                     Display.RunBinding.SetBinding(Run.TextProperty, bindingRun);
-
-                    Display.DisplaySer.ItemNetSearch = PropertiesEthernet.TVItemNet.ItemNetSearch;
-
-                    if (PropertiesEthernet.TVItemNet.EthernetOperationalSearch != null)
-                    {
-                        Display.DisplaySer.EthernetOperationalSearch = PropertiesEthernet.TVItemNet.EthernetOperationalSearch;
-                        Display.DisplaySer.EthernetSearch = PropertiesEthernet.TVItemNet.EthernetSearch;
-                    }
-                    else
-                    {
-                        Display.DisplaySer.EthernetSearch = PropertiesEthernet.TVItemNet.EthernetSearch;
-                        Display.DisplaySer.EthernetOperationalSearch = null;
-                    }
-                                                                                     
+                    Display.DisplaySer.ItemNetSearch = PropertiesEthernet.TVItemNet.ItemNetSearch;                    
+                    Display.DisplaySer.EthernetSearch = PropertiesEthernet.TVItemNet.EthernetSearch;
+                                                                                                           
                     ((AppWPF)Application.Current).SaveTabItem(Display.CanvasTab.TabItemParent);
                 }
                 else if (Display.DisplaySer.ItemNetSearch != null && PropertiesEthernet.TVItemNet.ItemNetSearch == null)
                 {
                     Display.DisplaySer.ItemNetSearch = null;
-                    Display.DisplaySer.EthernetOperationalSearch = null;
                     Display.DisplaySer.EthernetSearch = null;
 
                     ((AppWPF)Application.Current).SaveTabItem(Display.CanvasTab.TabItemParent);
@@ -103,16 +91,9 @@ namespace SCADA
 
                     Display.DisplaySer.ItemNetSearch = PropertiesEthernet.TVItemNet.ItemNetSearch;
                     
-                    if (PropertiesEthernet.TVItemNet.EthernetOperationalSearch != null)
-                    {
-                        Display.DisplaySer.EthernetOperationalSearch = PropertiesEthernet.TVItemNet.EthernetOperationalSearch;
+                    
                         Display.DisplaySer.EthernetSearch = PropertiesEthernet.TVItemNet.EthernetSearch;
-                    }
-                    else
-                    {
-                        Display.DisplaySer.EthernetOperationalSearch = null;
-                        Display.DisplaySer.EthernetSearch = PropertiesEthernet.TVItemNet.EthernetSearch;
-                    }                    
+                                        
 
                     ((AppWPF)Application.Current).SaveTabItem(Display.CanvasTab.TabItemParent);
                 } 

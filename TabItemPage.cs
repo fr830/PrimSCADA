@@ -587,14 +587,7 @@ namespace SCADA
 
                 canvasPage.Children.Add(ethernetControl);
 
-                ethernetControl.ApplyTemplate();
-
-                foreach (EthernetOperational eo in ethernetControl.EthernetSer.CollectionEthernetOperational)
-                {
-                    eo.EthernetOperationalSearch.BufferSizeRec = eo.BufferSizeRec;
-                    eo.EthernetOperationalSearch.BufferSizeSend = eo.BufferSizeSend;
-                    eo.EthernetOperationalSearch.Description = eo.Description;
-                }
+                ethernetControl.ApplyTemplate();               
             }
             foreach (ComSer comSer in page.CollectionCom)
             {
